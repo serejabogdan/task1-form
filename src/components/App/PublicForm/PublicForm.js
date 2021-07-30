@@ -1,37 +1,22 @@
-import React from 'react';
-import PropTypes, {func} from 'prop-types';
+import React, {useEffect} from 'react';
+import PropTypes from 'prop-types';
 
 import './PublicForm.css'
 
-import { Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from "axios";
-import {logDOM} from "@testing-library/react";
 
-const PublicForm = props => {
-    /*function test() {
+import {connect} from "react-redux";
 
+import { setToken } from '../../../redux/actions'
 
-        const user = {
-            client: "admin_application",
-            password: "#=!!4966",
-            name: "admin@example.com",
-        }
-        const URL = 'https://healthene-gateway-dev.intelliceed.cf:443/api/auth/token';
-        axios.get(URL, {
-            params: {
-                ...user
-            },
-            headers: {'Authrorization': 'Basic TOKEN'}
-        })
-            .then((res) => console.log(res));
-        axios({
-            method: 'post',
-            url: URL,
-            user,
-            headers: {'Authrorization': 'Basic TOKEN'}
-        }).then((res) => console.log(res));
-    }*/
+const PublicForm = ({setToken, token, ...props}) => {
+    console.log(props)
+
+    useEffect(() => {
+        console.log(token)
+    }, [token]);
+
 
     return (
         <div className="public-form">
@@ -46,14 +31,26 @@ const PublicForm = props => {
                     <Input type="password" name="password" id="password" placeholder="Enter password" />
                 </FormGroup>
 
-                <Button>Go!</Button>
+                <Button onClick={() => setToken('123')}>Go!</Button>
             </Form>
         </div>
     );
 };
 
 PublicForm.propTypes = {
+    token: PropTypes.string,
+    setToken: PropTypes.func
+}
 
-};
+const mapStateToProps = (state) => {
+    console.log(state)
+    return {
+        token: state.token
+    }
+}
 
-export default PublicForm;
+const mapDispatchToProps = {
+    setToken
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);
