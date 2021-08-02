@@ -8,14 +8,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {connect} from "react-redux";
 
-import {setToken} from '../../../redux/actions'
+import {asyncSetToken, setToken} from '../../../redux/actions'
 import {reduxForm, Field} from "redux-form";
 import {email, maxLength15, required} from "../../../utils/formValidators";
 import InputField from "../../common/InputField";
 
 const PublicForm = (props) => {
     function submit(values) {
-        console.log(values)
+        console.log(values);
+        props.asyncSetToken(values);
     }
 
     return (
@@ -55,6 +56,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
+    asyncSetToken,
     setToken
 }
 
