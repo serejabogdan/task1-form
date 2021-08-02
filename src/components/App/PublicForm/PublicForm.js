@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 
 import './PublicForm.css'
 
-import {Button, Form, FormGroup, Label, Input} from 'reactstrap';
+import {Button, Form, FormGroup} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {connect} from "react-redux";
 
 import {setToken} from '../../../redux/actions'
 import {reduxForm, Field} from "redux-form";
+import {email, maxLength15, required} from "../../../utils/formValidators";
+import InputField from "../../common/InputField";
 
 const PublicForm = (props) => {
     function submit(values) {
@@ -24,27 +26,14 @@ const PublicForm = (props) => {
     );
 };
 
-function InputField ({input, type, id, label, meta: {touched, warning, error}, ...props}) {
-    const hasError = touched && ((error && <span>{error}</span>) || warning && <span>{warning}</span>);
-    return (
-        <div>
-            <Label for={id}>{label}</Label>
-            <Input id={id} placeholder={label} {...input}/>
-            {hasError}
-        </div>
-    );
-}
-
 const userForm = (props) => {
     return (
         <Form onSubmit={props.handleSubmit}>
             <FormGroup>
-                <Field type="text" name="username" id="username" label="Username" component={InputField}/>
+                <Field type="text" name="username" id="username" label="Username" component={InputField} validate={[required, email]}/>
             </FormGroup>
             <FormGroup>
-                <Field type="password" name="password" id="password" label="Password" component={InputField}/>
-
-                {/*<Input type="password" name="password" id="password" placeholder="Enter password"/>*/}
+                <Field type="password" name="password" id="password" label="Password" component={InputField} validate={[required, maxLength15]}/>
             </FormGroup>
 
             <Button>Go!</Button>
