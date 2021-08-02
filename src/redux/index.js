@@ -1,11 +1,11 @@
 import {createStore, applyMiddleware} from 'redux';
-import rootReducer from "./reducers/rootReducer";
+import rootReducer from "./reducer";
 import createSagaMiddleware from 'redux-saga';
-import setTokenWatcher from "./sagas/setToken";
+import pagesSaga from "../pages/saga";
 
 const sagaMiddleWare = createSagaMiddleware();
 const store = createStore(rootReducer, applyMiddleware(sagaMiddleWare));
 
-sagaMiddleWare.run(setTokenWatcher);
+sagaMiddleWare.run(pagesSaga);
 
 export default store;

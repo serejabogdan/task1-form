@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './components/App/App';
 
-import store from './redux/store'
+import store from './redux'
 import {Provider} from "react-redux";
+import PublicForm from "./pages/public/sign-in";
 
 ReactDOM.render(
-  // <React.StrictMode>
       <Provider store={store}>
-          <App />
+          <div>
+              <PublicForm/>
+          </div>
       </Provider>,
-  // </React.StrictMode>,
   document.getElementById('root')
 );
