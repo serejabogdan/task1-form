@@ -1,6 +1,6 @@
-import {fork} from 'redux-saga/effects'
-import publicSaga from "./public/saga";
+import { fork } from 'redux-saga/effects';
+import publicSaga from './public/saga';
 
-export default function* pagesSaga() {
-    yield fork(publicSaga);
+export default function * pagesSaga () {
+  yield fork(publicSaga);
 }
