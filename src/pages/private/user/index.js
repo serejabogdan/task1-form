@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { asyncSetUser } from '../../reducer';
 
-export default function User (props) {
+export default function User () {
   const { user } = useSelector(state => state.pages.pages);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -15,7 +15,7 @@ export default function User (props) {
   return (
     <div>
       <div>{ user.id }</div>
-      <div>{ user.clinicRole }</div>
+      <div>{ user.name }</div>
     </div>
   );
 }

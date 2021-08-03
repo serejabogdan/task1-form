@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import './sign-in.css';
@@ -10,24 +10,16 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 
 import { reduxForm, Field } from 'redux-form';
 import InputField from '../../../components/input-field';
-import { asyncSetToken, asyncSetUser } from '../../reducer';
+import { asyncSetToken } from '../../reducer';
 
-function PublicForm (props) {
-  const {
-    initialized,
-    errorMessage,
-    disabled,
-    initialValues: { client }
-  } = useSelector(state => state.pages.public.signin.login);
+function PublicForm () {
+  const { initialValues: { client } }
+    = useSelector(state => state.pages.public.signin.login);
   const dispatch = useDispatch();
 
   function submit (values) {
     dispatch(asyncSetToken({ client, ...values }));
   }
-
-  useEffect(() => {
-  }, []);
-
 
   return (
     <div className="public-form">
@@ -38,16 +30,17 @@ function PublicForm (props) {
 }
 
 function UserForm (props) {
+  const { disabled } = useSelector(state => state.pages.public.signin.login);
   return (
     <Form onSubmit={props.handleSubmit}>
       <FormGroup>
-        <Field type="text" name="username" id="username" label="Username" component={InputField}/>
+        <Field disabled={disabled} type="text" name="username" id="username" label="Username" component={InputField}/>
       </FormGroup>
       <FormGroup>
-        <Field type="password" name="password" id="password" label="Password" component={InputField}/>
+        <Field disabled={disabled} type="password" name="password" id="password" label="Password" component={InputField}/>
       </FormGroup>
 
-      <Button>Go!</Button>
+      <Button disabled={disabled}>Go!</Button>
     </Form>
   );
 }

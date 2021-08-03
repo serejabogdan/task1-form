@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 
 export const SET_INITIALIZED = 'SET_INITIALIZED';
+export const SET_DISABLED = 'SET_DISABLED';
 
 const loginInitialState = {
   initialized: false,
@@ -20,14 +21,20 @@ function signInReducer (state = loginInitialState, action) {
   }
 }
 
-export default combineReducers({
-  login: signInReducer
-});
-
-
 export function setInitialized (flag) {
   return {
     type: SET_INITIALIZED,
     payload: flag
   };
 }
+
+export function setDisabled (flag) {
+  return {
+    type: SET_DISABLED,
+    payload: flag
+  };
+}
+
+export default combineReducers({
+  login: signInReducer
+});
