@@ -1,5 +1,5 @@
 import pagesReducer from '../../pages/reducer';
-import {reduxForm} from "redux-form";
+import {reducer as reduxForm} from "redux-form";
 import {combineReducers} from "redux";
 
 export default combineReducers({

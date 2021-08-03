@@ -1,7 +1,7 @@
 import React from 'react';
 import {Input, Label} from "reactstrap";
 
-function InputField ({input, type, id, label, meta: {touched, warning, error}, ...props}) {
+function InputField ({input, type, id, label, meta: {touched, warning, error}}) {
     const errorMessage = <span>{error}</span>
     const hasError = touched && ((error && errorMessage) || (warning && errorMessage));
     return (
