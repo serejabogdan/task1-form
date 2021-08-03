@@ -1,6 +1,5 @@
 import {combineReducers} from "redux";
 
-export const SET_TOKEN = "SET_TOKEN";
 export const ASYNC_SET_TOKEN = 'ASYNC_SET_TOKEN';
 export const SET_USER = 'SET_USER';
 export const ASYNC_SET_USER = 'ASYNC_SET_USER';
@@ -32,30 +31,9 @@ function loginReducer(state = loginInitialState, action) {
     }
 }
 
-const tokenInitialState = {
-    accessToken: localStorage.getItem('token') || ''
-};
-
-function tokenReducer(state = tokenInitialState, action) {
-    switch (action.type) {
-        case SET_TOKEN:
-            return {token: action.payload};
-        default:
-            return state;
-    }
-}
-
 export default combineReducers({
-    login: loginReducer,
-    token: tokenReducer
+    login: loginReducer
 });
-
-export function setToken(token) {
-    return {
-        type: SET_TOKEN,
-        payload: token
-    }
-}
 
 export function asyncSetToken(data) {
     return {

@@ -13,13 +13,13 @@ import {reduxForm, Field} from "redux-form";
 import InputField from "../../../components/input-field";
 
  function PublicForm(props) {
-    const {accessToken} = useSelector(state => state.pages.signin.token);
+    const {accessToken} = useSelector(state => state.pages.token);
     const {
         initialized,
         errorMessage,
         disabled,
         initialValues: {client, password, username}
-    } = useSelector(state => state.pages.signin.login);
+    } = useSelector(state => state.pages.public.signin.login);
     const dispatch = useDispatch();
 
     function submit(values) {
