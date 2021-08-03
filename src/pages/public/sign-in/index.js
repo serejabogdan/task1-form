@@ -6,19 +6,24 @@ import './sign-in.css';
 import {Button, Form, FormGroup} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import {connect} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
-import {asyncSetToken, setToken} from './reducer';
+import {asyncSetToken} from './reducer';
 import {reduxForm, Field} from "redux-form";
-// import {email, maxLength15, required} from "../../../utils/form-validators";
 import InputField from "../../../components/input-field";
 
-const PublicForm = (props) => {
-    // const {login, token} = useSelector(state => state.pagesReducer.signInReducer);
-    // const dispatch = useDispatch();
-    const {asyncSetToken, client, initialized} = props;
+export default function PublicForm(props) {
+    const {accessToken} = useSelector(state => state.pages.signin.token);
+    const {
+        initialized,
+        errorMessage,
+        disabled,
+        initialValues: {client, password, username}
+    } = useSelector(state => state.pages.signin.login);
+    const dispatch = useDispatch();
+
     function submit(values) {
-        asyncSetToken({client, ...values});
+        dispatch(asyncSetToken({client, ...values}));
     }
 
     /*useEffect(() => {
@@ -37,14 +42,14 @@ const PublicForm = (props) => {
     );
 };
 
-const UserForm = (props) => {
+function UserForm(props) {
     return (
         <Form onSubmit={props.handleSubmit}>
             <FormGroup>
-                <Field type="text" name="username" id="username" label="Username" component={InputField} />
+                <Field type="text" name="username" id="username" label="Username" component={InputField}/>
             </FormGroup>
             <FormGroup>
-                <Field type="password" name="password" id="password" label="Password" component={InputField} />
+                <Field type="password" name="password" id="password" label="Password" component={InputField}/>
             </FormGroup>
 
             <Button>Go!</Button>
@@ -58,19 +63,3 @@ PublicForm.propTypes = {
     token: PropTypes.string,
     setToken: PropTypes.func
 };
-
-const mapStateToProps = (state) => {
-    const {login, token} = state.pages.signin;
-    return {
-        initialized: state.pages.signin.initialized,
-        token: token.accessToken,
-        client: login.initialValues.client
-    };
-}
-
-const mapDispatchToProps = {
-    asyncSetToken,
-    setToken
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(PublicForm);
