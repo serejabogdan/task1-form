@@ -6,13 +6,13 @@ import './sign-in.css';
 import {Button, Form, FormGroup} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import {useDispatch, useSelector} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 
 import {asyncSetToken} from './reducer';
 import {reduxForm, Field} from "redux-form";
 import InputField from "../../../components/input-field";
 
-export default function PublicForm(props) {
+ function PublicForm(props) {
     const {accessToken} = useSelector(state => state.pages.signin.token);
     const {
         initialized,
@@ -63,3 +63,5 @@ PublicForm.propTypes = {
     token: PropTypes.string,
     setToken: PropTypes.func
 };
+
+export default connect()(PublicForm);
