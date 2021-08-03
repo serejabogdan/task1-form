@@ -13,7 +13,7 @@ function * setTokenWorker (action) {
 function * setUserWorker (action) {
   const data = yield call(getUserData, action.payload);
   yield put(setUser(data.data));
-  yield put((push('/user')));
+  yield put((push('/private/user')));
   localStorage.removeItem('token');
 }
 

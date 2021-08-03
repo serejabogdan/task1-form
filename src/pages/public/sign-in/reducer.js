@@ -1,5 +1,3 @@
-import { combineReducers } from 'redux';
-
 export const SET_INITIALIZED = 'SET_INITIALIZED';
 export const SET_DISABLED = 'SET_DISABLED';
 
@@ -35,6 +33,4 @@ export function setDisabled (flag) {
   };
 }
 
-export default combineReducers({
-  login: signInReducer
-});
+export default signInReducer;

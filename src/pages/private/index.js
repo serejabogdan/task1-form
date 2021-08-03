@@ -6,7 +6,7 @@ import User from './user';
 import Homepage from './homepage';
 
 function Private () {
-  const { user } = useSelector(state => state.pages.pages);
+  const { user } = useSelector(state => state.pages.publicPages);
 
   return (
     <Switch>

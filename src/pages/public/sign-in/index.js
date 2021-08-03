@@ -14,7 +14,7 @@ import { asyncSetToken } from '../../reducer';
 
 function PublicForm () {
   const { initialValues: { client } }
-    = useSelector(state => state.pages.public.signin.login);
+    = useSelector(state => state.pages.publicPages.signin);
   const dispatch = useDispatch();
 
   function submit (values) {
@@ -30,7 +30,7 @@ function PublicForm () {
 }
 
 function UserForm (props) {
-  const { disabled } = useSelector(state => state.pages.public.signin.login);
+  const { disabled } = useSelector(state => state.pages.publicPages.signin);
   return (
     <Form onSubmit={props.handleSubmit}>
       <FormGroup>

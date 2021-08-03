@@ -1,4 +1,5 @@
-import publicReducers from './public/reducer';
+import publicReducer from './public/reducer';
+import privateReducer from './private/reducer';
 import { combineReducers } from 'redux';
 
 export const SET_TOKEN = 'SET_TOKEN';
@@ -11,7 +12,7 @@ const initialState = {
   user: ''
 };
 
-function pagesReducer (state = initialState, action) {
+function accessReducer (state = initialState, action) {
   switch (action.type) {
     case SET_TOKEN:
       return { token: action.payload };
@@ -51,6 +52,7 @@ export function setToken (token) {
 }
 
 export default combineReducers({
-  public: publicReducers,
-  pages: pagesReducer
+  publicPages: publicReducer,
+  accessData: accessReducer,
+  privatePages: privateReducer
 });
