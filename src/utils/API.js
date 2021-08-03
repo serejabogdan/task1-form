@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const URL = 'https://healthene-gateway-dev.intelliceed.cf/api';
 
-export default axios.create({
+export const API = axios.create({
     baseURL: URL,
     withCredentials: false,
     headers: {
@@ -10,3 +10,21 @@ export default axios.create({
         'Content-Type': 'application/json',
     }
 });
+
+export function getDataFromApi(payload) {
+    return API({
+        method: 'POST',
+        url: 'auth/token',
+        data: {...payload}
+    });
+}
+
+export function getUserData(token) {
+    return API({
+        method: 'GET',
+        url: 'auth/users/me',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    });
+}
