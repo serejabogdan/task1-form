@@ -11,7 +11,7 @@ function * setTokenWorker (action) {
   yield put(asyncSetUser(data.accessToken));
 }
 
-function * setUserWorker (action) {
+function * signinWorker (action) {
   try {
     const { data } = yield call(getUserData, action.payload);
     yield put(setUser(data));
@@ -23,10 +23,9 @@ function * setUserWorker (action) {
     }
   }
   yield put(setInitialized(true));
-
 }
 
 export default function * () {
   yield takeEvery(ASYNC_SET_TOKEN, setTokenWorker);
-  yield takeEvery(ASYNC_SET_USER, setUserWorker);
+  yield takeEvery(ASYNC_SET_USER, signinWorker);
 }

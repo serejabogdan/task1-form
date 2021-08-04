@@ -5,6 +5,7 @@ import { combineReducers } from 'redux';
 export const SET_USER = 'SET_USER';
 export const ASYNC_SET_USER = 'ASYNC_SET_USER';
 export const SET_INITIALIZED = 'SET_INITIALIZED';
+export const APP_INITIALIZING = 'APP_INITIALIZING';
 export const SET_DISABLED = 'SET_DISABLED';
 
 const initialState = {
@@ -52,6 +53,12 @@ export function setDisabled (flag) {
   return {
     type: SET_DISABLED,
     payload: flag
+  };
+}
+export function appInitializing (data) {
+  return {
+    type: APP_INITIALIZING,
+    payload: data
   };
 }
 
