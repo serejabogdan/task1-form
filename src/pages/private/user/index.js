@@ -1,12 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import UserData from '../../../components/user-data';
 
 export default function User ({ user }) {
   return (
-    <div>
-      <div>{ user.id }</div>
-      <div>{ user.name }</div>
-    </div>
+    <UserData user={user}/>
   );
 }
 
@@ -15,8 +13,5 @@ User.defaultProps = {
 };
 
 User.propTypes = {
-  user: PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string
-  })
+  user: PropTypes.object
 };
