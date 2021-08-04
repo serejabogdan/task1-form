@@ -4,6 +4,7 @@ import Public from './public';
 import Private from './private';
 import { useDispatch, useSelector } from 'react-redux';
 import { appInitializing } from './reducer';
+import Preloader from '../components/preloader';
 
 function Pages () {
   const { initialized } = useSelector(state => state.root.pagesInitialize);
@@ -22,7 +23,7 @@ function Pages () {
           <Route path="/public" component={Public}/>
           <Route path="/private" component={Private}/>
           <Route exact path="/" render={() => <Redirect to="/public"/>}/>
-        </Switch> : <span>Load</span> }
+        </Switch> : <Preloader/> }
     </>
   );
 }
