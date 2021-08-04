@@ -5,7 +5,7 @@ import { connectRouter } from 'connected-react-router';
 
 export default function rootReducer (history) {
   return combineReducers({
-    pages: pagesReducer,
+    root: pagesReducer,
     form: reduxForm,
     router: connectRouter(history)
   });

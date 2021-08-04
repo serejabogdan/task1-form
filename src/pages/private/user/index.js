@@ -1,17 +1,7 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { asyncSetUser } from '../../reducer';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default function User () {
-  const { user } = useSelector(state => state.pages.publicPages);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      dispatch(asyncSetUser(token));
-    }
-  }, [dispatch]);
-
+export default function User ({ user }) {
   return (
     <div>
       <div>{ user.id }</div>
@@ -19,3 +9,14 @@ export default function User () {
     </div>
   );
 }
+
+User.defaultProps = {
+  user: {}
+};
+
+User.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.number,
+    name: PropTypes.string
+  })
+};

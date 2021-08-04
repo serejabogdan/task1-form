@@ -2,20 +2,24 @@ import publicReducer from './public/reducer';
 import privateReducer from './private/reducer';
 import { combineReducers } from 'redux';
 
-export const SET_TOKEN = 'SET_TOKEN';
 export const SET_USER = 'SET_USER';
 export const ASYNC_SET_USER = 'ASYNC_SET_USER';
-export const ASYNC_SET_TOKEN = 'ASYNC_SET_TOKEN';
+export const SET_INITIALIZED = 'SET_INITIALIZED';
+export const SET_DISABLED = 'SET_DISABLED';
 
 const initialState = {
-  accessToken: localStorage.getItem('token') || '',
+  initialized: false,
+  errorMessage: 'Something wrong',
+  disabled: false,
   user: ''
 };
 
-function accessReducer (state = initialState, action) {
+function pagesReducer (state = initialState, action) {
   switch (action.type) {
-    case SET_TOKEN:
-      return { token: action.payload };
+    case SET_INITIALIZED:
+      return { ...state, initialized: action.payload };
+    case SET_DISABLED:
+      return { ...state, disabled: action.payload };
     case SET_USER:
       return { ...state, user: action.payload };
     default:
@@ -30,13 +34,6 @@ export function asyncSetUser (data) {
   };
 }
 
-export function asyncSetToken (data) {
-  return {
-    type: ASYNC_SET_TOKEN,
-    payload: data
-  };
-}
-
 export function setUser (data) {
   return {
     type: SET_USER,
@@ -44,15 +41,26 @@ export function setUser (data) {
   };
 }
 
-export function setToken (token) {
+export function setInitialized (flag) {
   return {
-    type: SET_TOKEN,
-    payload: token
+    type: SET_INITIALIZED,
+    payload: flag
   };
 }
 
+export function setDisabled (flag) {
+  return {
+    type: SET_DISABLED,
+    payload: flag
+  };
+}
+
+const pages = combineReducers({
+  public: publicReducer,
+  private: privateReducer
+});
+
 export default combineReducers({
-  publicPages: publicReducer,
-  accessData: accessReducer,
-  privatePages: privateReducer
+  pagesInitialize: pagesReducer,
+  pages
 });

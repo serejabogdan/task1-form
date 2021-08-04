@@ -10,11 +10,11 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 
 import { reduxForm, Field } from 'redux-form';
 import InputField from '../../../components/input-field';
-import { asyncSetToken } from '../../reducer';
+import { asyncSetToken } from './reducer';
 
 function PublicForm () {
   const { initialValues: { client } }
-    = useSelector(state => state.pages.publicPages.signin);
+    = useSelector(state => state.root.pages.public.signin);
   const dispatch = useDispatch();
 
   function submit (values) {
@@ -30,7 +30,7 @@ function PublicForm () {
 }
 
 function UserForm (props) {
-  const { disabled } = useSelector(state => state.pages.publicPages.signin);
+  const { disabled } = useSelector(state => state.root.pagesInitialize);
   return (
     <Form onSubmit={props.handleSubmit}>
       <FormGroup>

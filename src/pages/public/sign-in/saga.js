@@ -1,7 +1,8 @@
 import { put, takeEvery, call } from 'redux-saga/effects';
 import { getDataFromApi, getUserData } from '../../../utils/API';
-import { ASYNC_SET_TOKEN, ASYNC_SET_USER, asyncSetUser, setToken, setUser } from '../../reducer';
 import { push } from 'connected-react-router';
+import { ASYNC_SET_TOKEN, setToken } from './reducer';
+import { ASYNC_SET_USER, asyncSetUser, setInitialized, setUser } from '../../reducer';
 
 function * setTokenWorker (action) {
   const { data } = yield call(getDataFromApi, action.payload);
@@ -11,10 +12,18 @@ function * setTokenWorker (action) {
 }
 
 function * setUserWorker (action) {
-  const data = yield call(getUserData, action.payload);
-  yield put(setUser(data.data));
-  yield put((push('/private/user')));
-  localStorage.removeItem('token');
+  try {
+    const { data } = yield call(getUserData, action.payload);
+    yield put(setUser(data));
+    yield put(push('/private/user'));
+  } catch (e) {
+    const UNAUTHORIZED = 401;
+    if (e.response.status === UNAUTHORIZED) {
+      yield put(push('/public/sign-in'));
+    }
+  }
+  yield put(setInitialized(true));
+
 }
 
 export default function * () {

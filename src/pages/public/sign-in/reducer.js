@@ -1,35 +1,33 @@
-export const SET_INITIALIZED = 'SET_INITIALIZED';
-export const SET_DISABLED = 'SET_DISABLED';
+export const SET_TOKEN = 'SET_TOKEN';
+export const ASYNC_SET_TOKEN = 'ASYNC_SET_TOKEN';
 
 const loginInitialState = {
-  initialized: false,
-  errorMessage: 'Something wrong',
-  disabled: false,
   initialValues: {
     client: 'admin_application'
-  }
+  },
+  accessToken: localStorage.getItem('token') || '',
 };
 
 function signInReducer (state = loginInitialState, action) {
   switch (action.type) {
-    case SET_INITIALIZED:
-      return { ...state, initialized: action.payload };
+    case SET_TOKEN:
+      return { ...state, accessToken: action.payload };
     default:
       return state;
   }
 }
 
-export function setInitialized (flag) {
+export function asyncSetToken (data) {
   return {
-    type: SET_INITIALIZED,
-    payload: flag
+    type: ASYNC_SET_TOKEN,
+    payload: data
   };
 }
 
-export function setDisabled (flag) {
+export function setToken (token) {
   return {
-    type: SET_DISABLED,
-    payload: flag
+    type: SET_TOKEN,
+    payload: token
   };
 }
 
