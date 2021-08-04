@@ -29,12 +29,9 @@ export function getUserData (token) {
   });
 }
 
-export function delay (timeDelay, flag) {
-  const second = 1000;
-  return new Promise((resolve, reject) => setTimeout(() => {
-    if (flag) {
-      resolve('data');
-    }
-    reject('error');
-  }, timeDelay * second));
+export function delay (timeDelay) {
+  const ONE_SECOND = 1000;
+  return new Promise((resolve) => setTimeout(() => {
+    resolve('delay');
+  }, timeDelay * ONE_SECOND));
 }
