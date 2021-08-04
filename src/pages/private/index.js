@@ -1,9 +1,10 @@
 import React from 'react';
 import { Switch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import PrivateRoute from '../../utils/private-route';
+
 import User from './user';
 import Homepage from './homepage';
+import PrivateRoute from '../../utils/private-route';
 
 function Private () {
   const { user } = useSelector(state => state.root.pagesInitialize);

@@ -1,11 +1,8 @@
 import React from 'react';
+import { Spinner } from 'reactstrap';
 
 function Preloader () {
-  return (
-    <div>
-      <img src="https://icons8.com/preloaders/preloaders/1479/Ghost.gif" alt="Preloader"/>
-    </div>
-  );
+  return <Spinner color="primary" />;
 }
 
 export default Preloader;

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Redirect, Route } from 'react-router-dom';
 
 export default function PrivateRoute ({ component: Component, isUserAuthed, ...rest }) {
   return (

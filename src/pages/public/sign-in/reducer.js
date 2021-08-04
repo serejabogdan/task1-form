@@ -31,4 +31,8 @@ export function setToken (token) {
   };
 }
 
+export function getClient () {
+  return state => state.root.pages.public.signin.initialValues.client;
+}
+
 export default signInReducer;

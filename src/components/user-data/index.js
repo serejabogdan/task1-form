@@ -1,16 +1,14 @@
 import React from 'react';
-import { ListGroup, ListGroupItem } from 'reactstrap';
 import PropTypes from 'prop-types';
+import { ListGroup, ListGroupItem } from 'reactstrap';
 
 function UserData ({ user }) {
-  const { id, name, coverImage } = user;
-  const { url } = coverImage;
   return (
     <div style={{ maxWidth: '700px', margin: '0 auto' }}>
       <ListGroup>
-        <ListGroupItem>id: { id }</ListGroupItem>
-        <ListGroupItem>name: { name }</ListGroupItem>
-        <ListGroupItem><img src={url} alt=""/></ListGroupItem>
+        <ListGroupItem>id: { user.id }</ListGroupItem>
+        <ListGroupItem>name: { user.name }</ListGroupItem>
+        <ListGroupItem><img src={user.coverImage.url} alt=""/></ListGroupItem>
       </ListGroup>
     </div>
   );
@@ -26,8 +24,8 @@ UserData.defaultProps = {
 
 UserData.propTypes = {
   user: PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string,
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
     coverImage: PropTypes.shape({
       url: PropTypes.string
     })

@@ -1,16 +1,17 @@
-import publicReducer from './public/reducer';
-import privateReducer from './private/reducer';
 import { combineReducers } from 'redux';
 
+import publicReducer from './public/reducer';
+import privateReducer from './private/reducer';
+
 export const SET_USER = 'SET_USER';
+export const SET_DISABLED = 'SET_DISABLED';
 export const ASYNC_SET_USER = 'ASYNC_SET_USER';
 export const SET_INITIALIZED = 'SET_INITIALIZED';
 export const APP_INITIALIZING = 'APP_INITIALIZING';
-export const SET_DISABLED = 'SET_DISABLED';
 
 const initialState = {
   initialized: false,
-  errorMessage: 'Something wrong',
+  errorMessage: '',
   disabled: false,
   user: ''
 };

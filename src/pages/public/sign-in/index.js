@@ -1,28 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import './sign-in.css';
-
-import { Button, Form, FormGroup } from 'reactstrap';
+import { reduxForm, Field } from 'redux-form';
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { Button, Form } from 'reactstrap';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
-import { reduxForm, Field } from 'redux-form';
+import { asyncSetToken, getClient } from './reducer';
 import InputField from '../../../components/input-field';
-import { asyncSetToken } from './reducer';
 
-function PublicForm () {
-  const { initialValues: { client } }
-    = useSelector(state => state.root.pages.public.signin);
+function SignIn () {
+  const client = useSelector(getClient());
   const dispatch = useDispatch();
 
   function submit (values) {
-    dispatch(asyncSetToken({ client, ...values }));
+    const submitData = { client, ...values };
+    dispatch(asyncSetToken(submitData));
   }
 
   return (
-    <div className="public-form">
+    <div style={{ minHeight: '100vh' }} className="d-flex flex-column justify-content-center align-items-center">
       <h1>Public form</h1>
       <UserFormRedux onSubmit={submit}/>
     </div>
@@ -30,29 +26,19 @@ function PublicForm () {
 }
 
 function UserForm (props) {
-  const { disabled } = useSelector(state => state.root.pagesInitialize);
   return (
     <Form onSubmit={props.handleSubmit}>
-      <FormGroup>
-        <Field disabled={disabled} type="text" name="username" id="username" label="Username" component={InputField}/>
-      </FormGroup>
-      <FormGroup>
-        <Field disabled={disabled} type="password" name="password" id="password" label="Password" component={InputField}/>
-      </FormGroup>
-
-      <Button disabled={disabled}>Go!</Button>
+      <Field type="text" name="username" id="username" label="Username" component={InputField}/>
+      <Field type="password" name="password" id="password" label="Password" component={InputField}/>
+      <Button>Go!</Button>
     </Form>
   );
 }
 
 const UserFormRedux = reduxForm({ form: 'userForm' })(UserForm);
 
-UserForm.defaultProps = {
-  handleSubmit: () => {}
-};
-
 UserForm.propTypes = {
-  handleSubmit: PropTypes.func
+  handleSubmit: PropTypes.func.isRequired
 };
 
-export default connect()(PublicForm);
+export default connect()(SignIn);

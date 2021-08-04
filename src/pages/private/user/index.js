@@ -8,10 +8,6 @@ export default function User ({ user }) {
   );
 }
 
-User.defaultProps = {
-  user: {}
-};
-
 User.propTypes = {
-  user: PropTypes.object
+  user: PropTypes.object.isRequired
 };

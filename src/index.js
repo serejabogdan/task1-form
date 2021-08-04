@@ -1,13 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-import './index.css';
-
-import store, { history } from './redux';
 import { Provider } from 'react-redux';
-
 import { ConnectedRouter } from 'connected-react-router';
+
 import Pages from './pages';
+import store, { history } from './redux';
 
 ReactDOM.render(
   <Provider store={store}>

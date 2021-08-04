@@ -20,18 +20,11 @@ export function getDataFromApi (payload) {
 }
 
 export function getUserData (token) {
+  if (token) {
+    API.defaults.headers.common.Authorization = `Bearer ${token}`;
+  }
   return API({
     method: 'GET',
     url: 'auth/users/me',
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
   });
-}
-
-export function delay (timeDelay) {
-  const ONE_SECOND = 1000;
-  return new Promise((resolve) => setTimeout(() => {
-    resolve('delay');
-  }, timeDelay * ONE_SECOND));
 }

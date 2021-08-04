@@ -1,22 +1,18 @@
 import React from 'react';
-import { Input, Label } from 'reactstrap';
 import PropTypes from 'prop-types';
+import { FormGroup, Input, Label } from 'reactstrap';
 
-function InputField ({ input, type, id, label, meta: { touched, warning, error }, disabled }) {
-  const errorMessage = <span>{ error }</span>;
-  const hasError = touched && ((error && errorMessage) || (warning && errorMessage));
+function InputField ({ input, type, id, label, meta, disabled }) {
   return (
-    <div>
+    <FormGroup>
       <Label for={id}>{ label }</Label>
       <Input disabled={disabled} type={type} id={id} placeholder={label} {...input}/>
-      { hasError }
-    </div>
+      { meta.touched && ((meta.error && <span>{ meta.error }</span>)) }
+    </FormGroup>
   );
 }
 
 InputField.defaultProps = {
-  input: {},
-  type: '',
   id: '',
   label: '',
   meta: {
@@ -27,9 +23,11 @@ InputField.defaultProps = {
   disabled: false
 };
 
+// TODO: CHECK propTypes and jsx
+
 InputField.propTypes = {
-  input: PropTypes.object,
-  type: PropTypes.string,
+  input: PropTypes.object.isRequired,
+  type: PropTypes.string.isRequired,
   id: PropTypes.string,
   label: PropTypes.string,
   meta: PropTypes.shape({
