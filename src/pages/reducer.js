@@ -8,16 +8,20 @@ export const SET_DISABLED = 'SET_DISABLED';
 export const ASYNC_SET_USER = 'ASYNC_SET_USER';
 export const SET_INITIALIZED = 'SET_INITIALIZED';
 export const APP_INITIALIZING = 'APP_INITIALIZING';
+export const PAGES_META = 'PAGES_META';
 
 const initialState = {
   initialized: false,
   errorMessage: '',
   disabled: false,
-  user: ''
+  user: '',
+  accessToken: localStorage.getItem('token') || '',
 };
 
 function pagesReducer (state = initialState, action) {
-  switch (action.type) {
+  const { type, payload } = action;
+  switch (type) {
+    case PAGES_META: return { ...state, ...payload };
     case SET_INITIALIZED:
       return { ...state, initialized: action.payload };
     case SET_DISABLED:
@@ -32,13 +36,6 @@ function pagesReducer (state = initialState, action) {
 export function asyncSetUser (data) {
   return {
     type: ASYNC_SET_USER,
-    payload: data
-  };
-}
-
-export function setUser (data) {
-  return {
-    type: SET_USER,
     payload: data
   };
 }
@@ -68,7 +65,15 @@ const pages = combineReducers({
   private: privateReducer
 });
 
+export function getAccessToken () {
+  return state => state.root.pagesData.accessToken;
+}
+
+export function getPagesData () {
+  return state => state.root.pagesData;
+}
+
 export default combineReducers({
-  pagesInitialize: pagesReducer,
+  pagesData: pagesReducer,
   pages
 });

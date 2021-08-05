@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const URL = 'https://healthene-gateway-dev.intelliceed.cf/api';
 
-export const API = axios.create({
+export const publicAPI = axios.create({
   baseURL: URL,
   withCredentials: false,
   headers: {
@@ -11,19 +11,20 @@ export const API = axios.create({
   }
 });
 
-export function getDataFromApi (payload) {
-  return API({
-    method: 'POST',
-    url: 'auth/token',
-    data: { ...payload }
-  });
-}
+export const privateAPI = axios.create({
+  baseURL: URL,
+  withCredentials: false,
+  headers: {
+    'Cache-Control': 'no-cache',
+    'Content-Type': 'application/json',
+  }
+});
 
 export function getUserData (token) {
   if (token) {
-    API.defaults.headers.common.Authorization = `Bearer ${token}`;
+    privateAPI.defaults.headers.common.Authorization = `Bearer ${token}`;
   }
-  return API({
+  return privateAPI({
     method: 'GET',
     url: 'auth/users/me',
   });

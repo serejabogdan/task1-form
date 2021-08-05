@@ -5,7 +5,6 @@ const loginInitialState = {
   initialValues: {
     client: 'admin_application'
   },
-  accessToken: localStorage.getItem('token') || '',
 };
 
 function signInReducer (state = loginInitialState, action) {
@@ -15,6 +14,13 @@ function signInReducer (state = loginInitialState, action) {
     default:
       return state;
   }
+}
+
+export function actionCreator (type, payload) {
+  return {
+    type,
+    payload
+  };
 }
 
 export function asyncSetToken (data) {
