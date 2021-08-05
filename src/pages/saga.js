@@ -5,7 +5,7 @@ import privateSaga from './private/saga';
 import { getUserData } from '../utils/API';
 import { push } from 'connected-react-router';
 import { PUBLIC_SIGN_IN } from '../utils/constants';
-import { APP_INITIALIZING, SET_INITIALIZED } from './reducer';
+import { APP_INITIALIZING, PAGES_META } from './reducer';
 import { PRIVATE_SAGA_VALID_TOKEN } from './private/reducer';
 
 function * appInitializeWorker (action) {
@@ -16,7 +16,7 @@ function * appInitializeWorker (action) {
   } catch (error) {
     yield put(push(PUBLIC_SIGN_IN));
   }
-  yield put({ type: SET_INITIALIZED, payload: true });
+  yield put({ type: PAGES_META, payload: { initialized: true } });
 }
 
 function * watchInitializeApp () {

@@ -1,7 +1,8 @@
 import { call, fork, put, takeEvery } from 'redux-saga/effects';
 
+import { PAGES_META } from '../reducer';
 import { publicAPI } from '../../utils/API';
-import { ASYNC_SET_TOKEN, setToken } from './sign-in/reducer';
+import { SAGA_SET_TOKEN } from './sign-in/reducer';
 import { PRIVATE_SAGA_VALID_TOKEN } from '../private/reducer';
 
 export function getTokenFromApi (payload) {
@@ -16,7 +17,7 @@ function * setTokenWorker (action) {
   try {
     const response = yield call(getTokenFromApi, action.payload);
     yield call([localStorage, localStorage.setItem], 'token', response.data.accessToken);
-    yield put(setToken(response.data.accessToken));
+    yield put({ type: PAGES_META, payload: { accessToken: response.data.accessToken } });
     yield put({ type: PRIVATE_SAGA_VALID_TOKEN, payload: response.data.accessToken });
   } catch (error) {
     console.log(error);
@@ -25,7 +26,7 @@ function * setTokenWorker (action) {
 }
 
 function * watchPublicPages () {
-  yield takeEvery(ASYNC_SET_TOKEN, setTokenWorker);
+  yield takeEvery(SAGA_SET_TOKEN, setTokenWorker);
 }
 
 export default function * publicSaga () {

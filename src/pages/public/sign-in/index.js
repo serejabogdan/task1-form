@@ -5,7 +5,7 @@ import { reduxForm, Field } from 'redux-form';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
-import { asyncSetToken, getClient } from './reducer';
+import { getClient, SAGA_SET_TOKEN } from './reducer';
 import InputField from '../../../components/input-field';
 
 function SignIn () {
@@ -14,7 +14,7 @@ function SignIn () {
 
   function submit (values) {
     const submitData = { client, ...values };
-    dispatch(asyncSetToken(submitData));
+    dispatch({ type: SAGA_SET_TOKEN, payload: submitData });
   }
 
   return (

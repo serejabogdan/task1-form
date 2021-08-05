@@ -1,5 +1,4 @@
-export const SET_TOKEN = 'SET_TOKEN';
-export const ASYNC_SET_TOKEN = 'ASYNC_SET_TOKEN';
+export const SAGA_SET_TOKEN = 'SAGA_SET_TOKEN';
 
 const loginInitialState = {
   initialValues: {
@@ -9,32 +8,9 @@ const loginInitialState = {
 
 function signInReducer (state = loginInitialState, action) {
   switch (action.type) {
-    case SET_TOKEN:
-      return { ...state, accessToken: action.payload };
     default:
       return state;
   }
-}
-
-export function actionCreator (type, payload) {
-  return {
-    type,
-    payload
-  };
-}
-
-export function asyncSetToken (data) {
-  return {
-    type: ASYNC_SET_TOKEN,
-    payload: data
-  };
-}
-
-export function setToken (token) {
-  return {
-    type: SET_TOKEN,
-    payload: token
-  };
 }
 
 export function getClient () {
