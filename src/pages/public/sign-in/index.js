@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Form } from 'reactstrap';
 import { reduxForm, Field } from 'redux-form';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Form } from 'reactstrap';
 import { connect, useDispatch, useSelector } from 'react-redux';
 
 import { asyncSetToken, getClient } from './reducer';

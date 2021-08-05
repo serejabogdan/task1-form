@@ -1,12 +1,12 @@
 import { fork, put, takeEvery, delay, call } from 'redux-saga/effects';
-// TODO: imports tree
+
 import publicSaga from './public/saga';
-import { APP_INITIALIZING, SET_INITIALIZED} from './reducer';
-import { getUserData } from '../utils/API';
-import { PRIVATE_SAGA_VALID_TOKEN } from './private/reducer';
 import privateSaga from './private/saga';
+import { getUserData } from '../utils/API';
 import { push } from 'connected-react-router';
 import { PUBLIC_SIGN_IN } from '../utils/constants';
+import { APP_INITIALIZING, SET_INITIALIZED } from './reducer';
+import { PRIVATE_SAGA_VALID_TOKEN } from './private/reducer';
 
 function * appInitializeWorker (action) {
   yield delay(500);

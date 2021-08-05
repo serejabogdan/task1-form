@@ -5,6 +5,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import Public from './public';
 import Private from './private';
 import Preloader from '../components/preloader';
+import { PRIVATE, PUBLIC } from '../utils/constants';
 import { APP_INITIALIZING, getAccessToken, getPagesData } from './reducer';
 
 function Pages () {
@@ -21,9 +22,9 @@ function Pages () {
     <>
       { initialized
         ? <Switch>
-          <Route path="/public" component={Public}/>
-          <Route path="/private" component={Private}/>
-          <Redirect to="/public"/>
+          <Route path={PUBLIC} component={Public}/>
+          <Route path={PRIVATE} component={Private}/>
+          <Redirect to={PUBLIC}/>
         </Switch> : <div><Preloader/> pages</div> }
     </>
   );
