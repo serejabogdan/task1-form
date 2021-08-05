@@ -1,14 +1,13 @@
+export const PRIVATE_META = 'PRIVATE_META';
 export const PRIVATE_SAGA_VALID_TOKEN = 'PRIVATE_SAGA_VALID_TOKEN';
 
-export const PRIVATE_META = 'PRIVATE_META';
-
-const initialState = {
+const initial = {
   initialized: false,
   errorMessage: '',
   disabled: false,
 };
 
-export default function privateReducer (state= initialState, action) {
+export default function privateReducer (state= initial, action) {
   const { type, payload } = action;
   switch (type) {
     case PRIVATE_META: return { ...state, ...payload };
@@ -16,6 +15,6 @@ export default function privateReducer (state= initialState, action) {
   }
 }
 
-export function getPrivateState() {
-  return state => state.root.pages.private;
+export function selector (state) {
+  return state.root.pages.private;
 }

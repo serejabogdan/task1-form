@@ -1,20 +1,20 @@
 export const SAGA_SET_TOKEN = 'SAGA_SET_TOKEN';
 
-const loginInitialState = {
+const initial = {
   initialValues: {
     client: 'admin_application'
   },
 };
 
-function signInReducer (state = loginInitialState, action) {
+function signInReducer (state = initial, action) {
   switch (action.type) {
     default:
       return state;
   }
 }
 
-export function getClient () {
-  return state => state.root.pages.public.signin.initialValues.client;
+export function selector (state) {
+  return state.root.pages.public.signin;
 }
 
 export default signInReducer;

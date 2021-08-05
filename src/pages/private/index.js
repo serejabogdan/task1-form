@@ -1,25 +1,27 @@
+// outsource dependencies
 import React from 'react';
 import { Switch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
+// local dependencies
 import User from './user';
 import Homepage from './homepage';
-import { getPagesData } from '../reducer';
-import { getPrivateState } from './reducer';
-import Preloader from '../../components/preloader';
+import { Spinner } from 'reactstrap';
+import { selector } from '../../redux/reducer';
 import PrivateRoute from '../../utils/private-route';
-import { PRIVATE_HOMEPAGE, PRIVATE_USER } from '../../utils/constants';
+import { PRIVATE_HOMEPAGE, PRIVATE_USER } from '../../constants/routes';
 
 function Private () {
-  const privateState = useSelector(getPrivateState());
-  const { user } = useSelector(getPagesData());
+  const root = useSelector(selector);
 
   return <>
     {
-      privateState.initialized ? <Switch>
-        <PrivateRoute path={PRIVATE_USER} isUserAuthed={!!user} user={user} component={User}/>
-        <PrivateRoute path={PRIVATE_HOMEPAGE} isUserAuthed={!!user} user={user} component={Homepage}/>
-      </Switch> : <div><Preloader/> private</div>
+      root.pages.private.initialized ? <Switch>
+        <PrivateRoute path={PRIVATE_USER} isUserAuthed={!!root.pagesData.user}
+          user={root.pagesData.user} component={User}/>
+        <PrivateRoute path={PRIVATE_HOMEPAGE} isUserAuthed={!!root.pagesData.user}
+          user={root.pagesData.user} component={Homepage}/>
+      </Switch> : <div><Spinner color="primary" /> private</div>
     }
   </>;
 }

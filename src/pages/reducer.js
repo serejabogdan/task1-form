@@ -1,20 +1,22 @@
+// outsource dependencies
 import { combineReducers } from 'redux';
 
+// local dependencies
 import publicReducer from './public/reducer';
 import privateReducer from './private/reducer';
 
 export const PAGES_META = 'PAGES_META';
 export const APP_INITIALIZING = 'APP_INITIALIZING';
 
-const initialState = {
+const initial = {
   user: '',
-  accessToken: localStorage.getItem('token') || '',
+  token: localStorage.getItem('token') || '',
   initialized: false,
   errorMessage: '',
   disabled: false,
 };
 
-function pagesReducer (state = initialState, action) {
+function pagesReducer (state = initial, action) {
   const { type, payload } = action;
   switch (type) {
     case PAGES_META: return { ...state, ...payload };
@@ -23,12 +25,8 @@ function pagesReducer (state = initialState, action) {
   }
 }
 
-export function getAccessToken () {
-  return state => state.root.pagesData.accessToken;
-}
-
-export function getPagesData () {
-  return state => state.root.pagesData;
+export function selector (state) {
+  return state.root.pagesData;
 }
 
 const pages = combineReducers({
