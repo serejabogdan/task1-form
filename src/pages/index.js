@@ -16,6 +16,9 @@ function Pages () {
 
   useEffect(() => {
     dispatch({ type: APP_INITIALIZING, payload: token });
+    return () => {
+      dispatch({ type: 'STOP_REFRESHING_TOKEN' });
+    };
   }, [dispatch, token]);
 
   return <>
