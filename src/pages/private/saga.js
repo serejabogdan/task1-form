@@ -19,10 +19,10 @@ function logOut () {
 }
 
 function * gettingUserDataWorker ({ type, payload }) {
-  const token = yield call(getLocalStorage, TOKEN);
   try {
-    yield call(addAuthorizationHeader, token);
-    const response = yield call(getUserData, token.accessToken);
+    const { accessToken } = yield call(getLocalStorage, TOKEN);
+    yield call(addAuthorizationHeader, accessToken);
+    const response = yield call(getUserData, accessToken);
     yield put({ type: PAGES_META, payload: { user: response.data } });
   } catch (error) {
     console.dir(error);

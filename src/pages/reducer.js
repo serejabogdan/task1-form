@@ -10,7 +10,8 @@ import { getLocalStorage } from '../utils/local-storage';
 export const PAGES_META = 'PAGES_META';
 export const PAGES_CLEAR = 'PAGES_CLEAR';
 export const APP_INITIALIZING = 'APP_INITIALIZING';
-export const REFRESH_TOKEN_SAGA = 'REFRESH_TOKEN_SAGA';
+export const UPDATE_TOKEN_SAGA = 'UPDATE_TOKEN_SAGA';
+export const CHECK_ACCESS_TOKEN_SAGA = 'CHECK_ACCESS_TOKEN_SAGA';
 
 const initial = {
   user: '',

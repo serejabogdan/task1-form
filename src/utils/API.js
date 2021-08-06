@@ -27,6 +27,6 @@ export function getUserData () {
   });
 }
 
-export function addAuthorizationHeader ({ accessToken }) {
-  privateAPI.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+export function addAuthorizationHeader (token) {
+  privateAPI.defaults.headers.common.Authorization = `Bearer ${token}`;
 }

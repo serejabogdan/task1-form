@@ -5,7 +5,7 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 import { publicAPI } from '../../../utils/API';
 import { TOKEN } from '../../../constants/local-storage';
 import { SAGA_SET_TOKEN, SIGN_IN_META } from './reducer';
-import { PAGES_META, REFRESH_TOKEN_SAGA } from '../../reducer';
+import { CHECK_ACCESS_TOKEN_SAGA, PAGES_META } from '../../reducer';
 import { PRIVATE_SAGA_VALID_TOKEN } from '../../private/reducer';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
@@ -24,7 +24,7 @@ function * authorizationWorker ({ type, payload }) {
     yield call(setLocalStorage, TOKEN, response.data);
     yield put({ type: PAGES_META, payload: response.data });
     yield put({ type: PRIVATE_SAGA_VALID_TOKEN, payload: response.data.accessToken });
-    yield put({ type: REFRESH_TOKEN_SAGA });
+    yield put({ type: CHECK_ACCESS_TOKEN_SAGA });
   } catch (error) {
     console.log(error);
     yield call(removeLocalStorage, TOKEN);
