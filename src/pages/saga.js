@@ -4,13 +4,13 @@ import { fork, put, takeEvery, delay, call } from 'redux-saga/effects';
 // local dependencies
 import publicSaga from './public/saga';
 import privateSaga from './private/saga';
-import { getUserData, privateAPI, publicAPI } from '../utils/API';
 import { push } from 'connected-react-router';
 import { TOKEN } from '../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../constants/routes';
-import { getLocalStorage, setLocalStorage } from '../utils/local-storage';
-import { APP_INITIALIZING, PAGES_META, REFRESH_TOKEN_SAGA } from './reducer';
 import { PRIVATE_SAGA_VALID_TOKEN } from './private/reducer';
+import { APP_INITIALIZING, META, REFRESH_TOKEN_SAGA } from './reducer';
+import { getLocalStorage, setLocalStorage } from '../utils/local-storage';
+import { addAuthorizationHeader, getUserData, publicAPI } from '../utils/API';
 
 function refreshTokenApi (token) {
   return publicAPI({
@@ -24,7 +24,7 @@ function * appInitializeWorker ({ type, payload }) {
   yield delay(500);
   const token = yield call(getLocalStorage, TOKEN);
   if (token) {
-    privateAPI.defaults.headers.common.Authorization = `Bearer ${token.accessToken}`;
+    yield call(addAuthorizationHeader, token);
   }
   try {
     yield call(getUserData);
@@ -34,7 +34,7 @@ function * appInitializeWorker ({ type, payload }) {
     console.log(error);
     yield put(push(PUBLIC_SIGN_IN));
   }
-  yield put({ type: PAGES_META, payload: { initialized: true } });
+  yield put({ type: META, payload: { initialized: true } });
 }
 
 function * refreshTokenWorker () {
@@ -44,8 +44,8 @@ function * refreshTokenWorker () {
   try {
     const response = yield call(refreshTokenApi, { refreshToken });
     yield call(setLocalStorage, TOKEN, response.data);
-    yield put({ type: PAGES_META, payload: response.data.refreshToken });
-    privateAPI.defaults.headers.common.Authorization = `Bearer ${response.data.accessToken}`;
+    yield put({ type: META, payload: response.data.refreshToken });
+    yield call(addAuthorizationHeader, response.data);
   } catch (error) {
     console.log(error);
   }

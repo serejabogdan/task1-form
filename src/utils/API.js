@@ -26,3 +26,7 @@ export function getUserData () {
     url: 'auth/users/me',
   });
 }
+
+export function addAuthorizationHeader ({ accessToken }) {
+  privateAPI.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+}

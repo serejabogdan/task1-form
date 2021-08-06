@@ -7,7 +7,7 @@ import privateReducer from './private/reducer';
 import { TOKEN } from '../constants/local-storage';
 import { getLocalStorage } from '../utils/local-storage';
 
-export const PAGES_META = 'PAGES_META';
+export const META = 'META';
 export const APP_INITIALIZING = 'APP_INITIALIZING';
 export const REFRESH_TOKEN_SAGA = 'REFRESH_TOKEN_SAGA';
 
@@ -22,7 +22,7 @@ const initial = {
 function pagesReducer (state = initial, action) {
   const { type, payload } = action;
   switch (type) {
-    case PAGES_META: return { ...state, ...payload };
+    case META: return { ...state, ...payload };
     default:
       return state;
   }
