@@ -4,13 +4,16 @@ import { combineReducers } from 'redux';
 // local dependencies
 import publicReducer from './public/reducer';
 import privateReducer from './private/reducer';
+import { TOKEN } from '../constants/local-storage';
+import { getLocalStorage } from '../utils/local-storage';
 
 export const PAGES_META = 'PAGES_META';
 export const APP_INITIALIZING = 'APP_INITIALIZING';
+export const REFRESH_TOKEN_SAGA = 'REFRESH_TOKEN_SAGA';
 
 const initial = {
   user: '',
-  token: localStorage.getItem('token') || '',
+  token: getLocalStorage(TOKEN) || '',
   initialized: false,
   errorMessage: '',
   disabled: false,

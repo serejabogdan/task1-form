@@ -20,10 +20,7 @@ export const privateAPI = axios.create({
   }
 });
 
-export function getUserData (token) {
-  if (token) {
-    privateAPI.defaults.headers.common.Authorization = `Bearer ${token}`;
-  }
+export function getUserData () {
   return privateAPI({
     method: 'GET',
     url: 'auth/users/me',
