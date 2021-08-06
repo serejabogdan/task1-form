@@ -12,7 +12,6 @@ import { getLocalStorage, setLocalStorage } from '../utils/local-storage';
 import { addAuthorizationHeader, getUserData, privateAPI } from '../utils/API';
 import { APP_INITIALIZING, PAGES_META, REFRESH_TOKEN_SAGA } from './reducer';
 
-
 function refreshTokenApi (token) {
   return privateAPI({
     method: 'POST',

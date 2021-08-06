@@ -6,7 +6,6 @@ import { useDispatch } from 'react-redux';
 import { Button, ListGroup, ListGroupItem } from 'reactstrap';
 
 function User ({ user }) {
-
   const dispatch = useDispatch();
 
   function logOut () {

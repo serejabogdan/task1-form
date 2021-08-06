@@ -2,10 +2,10 @@
 import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 
 // local dependencies
-import { PAGES_META, REFRESH_TOKEN_SAGA } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
 import { TOKEN } from '../../../constants/local-storage';
 import { SAGA_SET_TOKEN, SIGN_IN_META } from './reducer';
+import { PAGES_META, REFRESH_TOKEN_SAGA } from '../../reducer';
 import { PRIVATE_SAGA_VALID_TOKEN } from '../../private/reducer';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
