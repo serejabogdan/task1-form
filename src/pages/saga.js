@@ -9,8 +9,9 @@ import privateSaga from './private/saga';
 import { TYPE as PRIVATE_TYPE } from './private/reducer';
 import { TOKEN } from '../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../constants/routes';
-import { addAuthorizationHeader, getUserData, publicAPI } from '../utils/API';
+import { getUserData, publicAPI } from '../utils/API';
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../utils/local-storage';
+import request from '../utils/refresh-token';
 
 function updateTokenApi (token) {
   return publicAPI({
@@ -24,7 +25,6 @@ function * appInitialize ({ type, payload }) {
   yield delay(500);
   try {
     const { accessToken } = yield call(getLocalStorage, TOKEN);
-    yield call(addAuthorizationHeader, accessToken);
     yield call(getUserData);
     yield put({ type: PRIVATE_TYPE.VALID_TOKEN, payload: accessToken });
     yield put({ type: TYPE.CHECK_ACCESS_TOKEN });
@@ -37,10 +37,11 @@ function * appInitialize ({ type, payload }) {
 }
 
 function * checkAccessToken () {
+  const data = getLocalStorage(TOKEN);
+  setLocalStorage(TOKEN, {...data, accessToken: data.accessToken + '1'})
   try {
-    yield delay(10000);
-    const { accessToken } = yield call(getLocalStorage, TOKEN);
-    yield call(getUserData, { accessToken });
+    yield delay(4000);
+    yield call(getUserData);
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield put({ type: TYPE.UPDATE_TOKEN });
@@ -64,7 +65,7 @@ function * updateToken () {
     const response = yield call(updateTokenApi, { refreshToken });
     yield call(setLocalStorage, TOKEN, response.data);
     yield put({ type: TYPE.META, payload: { token: response.data } });
-    yield call(addAuthorizationHeader, response.data.accessToken);
+    // yield call(addAuthorizationHeader, response.data.accessToken);
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield put({ type: TYPE.CLEAR });
@@ -76,7 +77,7 @@ function * updateToken () {
 function * initializingPages () {
   yield takeEvery(TYPE.INITIALIZE, appInitialize);
   yield takeEvery(TYPE.CHECK_ACCESS_TOKEN, stopRefreshingToken);
-  yield takeEvery(TYPE.UPDATE_TOKEN, updateToken);
+  // yield takeEvery(TYPE.UPDATE_TOKEN, updateToken);
 }
 
 export default function * pagesSaga () {
