@@ -8,14 +8,14 @@ import Public from './public';
 import Private from './private';
 import { Spinner } from 'reactstrap';
 import { PRIVATE, PUBLIC } from '../constants/routes';
-import { APP_INITIALIZING, selector } from './reducer';
+import { selector, PAGES } from './reducer';
 
 function Pages () {
   const { initialized, token } = useSelector(selector);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: APP_INITIALIZING, payload: token });
+    dispatch({ type: PAGES.INITIALIZE, payload: token });
     return () => {
       dispatch({ type: 'STOP_REFRESHING_TOKEN' });
     };

@@ -4,7 +4,7 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 
 // local dependencies
 import { SAGA_LOGOUT } from './user/reducer';
-import { PAGES_CLEAR, PAGES_META } from '../reducer';
+import { PAGES } from '../reducer';
 import { TOKEN } from '../../constants/local-storage';
 import { PRIVATE_META, PRIVATE_SAGA_VALID_TOKEN } from './reducer';
 import { PRIVATE_USER, PUBLIC_SIGN_IN } from '../../constants/routes';
@@ -23,7 +23,7 @@ function * gettingUserDataWorker ({ type, payload }) {
     const { accessToken } = yield call(getLocalStorage, TOKEN);
     yield call(addAuthorizationHeader, accessToken);
     const response = yield call(getUserData, accessToken);
-    yield put({ type: PAGES_META, payload: { user: response.data } });
+    yield put({ type: PAGES.META, payload: { user: response.data } });
   } catch (error) {
     console.dir(error);
     yield put(push(PUBLIC_SIGN_IN));
@@ -36,7 +36,7 @@ function * gettingUserDataWorker ({ type, payload }) {
 function * logOutWorker () {
   try {
     yield call(logOut);
-    yield put({ type: PAGES_CLEAR });
+    yield put({ type: PAGES.CLEAR });
     yield call(removeLocalStorage, TOKEN);
     yield put(push(PUBLIC_SIGN_IN));
   } catch (error) {
