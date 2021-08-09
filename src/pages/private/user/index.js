@@ -1,16 +1,19 @@
 // outsource dependencies
 import React from 'react';
 import PropTypes from 'prop-types';
-import { SAGA_LOGOUT } from './reducer';
 import { useDispatch } from 'react-redux';
 import { Button, ListGroup, ListGroupItem } from 'reactstrap';
+
+// local dependencies
+import { PRIVATE } from '../reducer';
 
 function User ({ user }) {
   const dispatch = useDispatch();
 
   function logOut () {
-    dispatch({ type: SAGA_LOGOUT });
+    dispatch({ type: PRIVATE.LOGOUT });
   }
+
   return <div style={{ maxWidth: '700px', margin: '0 auto' }}>
     <ListGroup>
       <ListGroupItem>id: { user.id }</ListGroupItem>

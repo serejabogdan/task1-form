@@ -1,12 +1,13 @@
 // outsource dependencies
+import { push } from 'connected-react-router';
 import { fork, put, takeEvery, delay, call, take, cancel, cancelled } from 'redux-saga/effects';
+
 
 // local dependencies
 import { PAGES } from './reducer';
 import publicSaga from './public/saga';
 import privateSaga from './private/saga';
 import { PRIVATE } from './private/reducer';
-import { push } from 'connected-react-router';
 import { TOKEN } from '../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../constants/routes';
 import { addAuthorizationHeader, getUserData, publicAPI } from '../utils/API';
@@ -54,7 +55,7 @@ function * checkAccessToken () {
 
 function * stopRefreshingToken () {
   const refreshForked = yield fork(checkAccessToken);
-  yield take('STOP_REFRESHING_TOKEN');
+  yield take(PAGES.STOP_REFRESHING_TOKEN);
   yield cancel(refreshForked);
 }
 

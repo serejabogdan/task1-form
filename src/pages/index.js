@@ -1,14 +1,14 @@
 // outsource dependencies
 import React, { useEffect } from 'react';
+import { Spinner } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 // local dependencies
 import Public from './public';
 import Private from './private';
-import { Spinner } from 'reactstrap';
-import { PRIVATE, PUBLIC } from '../constants/routes';
 import { selector, PAGES } from './reducer';
+import { PRIVATE, PUBLIC } from '../constants/routes';
 
 function Pages () {
   const { initialized, token } = useSelector(selector);
@@ -17,7 +17,7 @@ function Pages () {
   useEffect(() => {
     dispatch({ type: PAGES.INITIALIZE, payload: token });
     return () => {
-      dispatch({ type: 'STOP_REFRESHING_TOKEN' });
+      dispatch({ type: PAGES.STOP_REFRESHING_TOKEN });
     };
   }, [dispatch, token]);
   return <>

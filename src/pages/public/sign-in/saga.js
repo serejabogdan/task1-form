@@ -5,8 +5,8 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 import { SIGN_IN } from './reducer';
 import { PAGES } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
-import { TOKEN } from '../../../constants/local-storage';
 import { PRIVATE } from '../../private/reducer';
+import { TOKEN } from '../../../constants/local-storage';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
 function getTokenFromApi (payload) {

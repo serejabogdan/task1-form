@@ -5,7 +5,6 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 // local dependencies
 import { PAGES } from '../reducer';
 import { PRIVATE } from './reducer';
-import { SAGA_LOGOUT } from './user/reducer';
 import { TOKEN } from '../../constants/local-storage';
 import { PRIVATE_USER, PUBLIC_SIGN_IN } from '../../constants/routes';
 import { getLocalStorage, removeLocalStorage } from '../../utils/local-storage';
@@ -46,7 +45,7 @@ function * logOutWorker () {
 
 function * watchGettingUser () {
   yield takeEvery(PRIVATE.VALID_TOKEN, gettingUserDataWorker);
-  yield takeEvery(SAGA_LOGOUT, logOutWorker);
+  yield takeEvery(PRIVATE.LOGOUT, logOutWorker);
 }
 
 export default function * privateSaga () {

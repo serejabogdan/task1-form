@@ -15,7 +15,8 @@ export const PAGES = (function (prefix) {
     // complex actions
     INITIALIZE: `${prefix}INITIALIZE`,
     UPDATE_TOKEN: `${prefix}UPDATE_TOKEN`,
-    CHECK_ACCESS_TOKEN: `${prefix}CHECK_ACCESS_TOKEN`
+    CHECK_ACCESS_TOKEN: `${prefix}CHECK_ACCESS_TOKEN`,
+    STOP_REFRESHING_TOKEN: `${prefix}STOP_REFRESHING_TOKEN`,
   };
 })('@pages/');
 

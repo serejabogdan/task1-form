@@ -4,7 +4,8 @@ export const PRIVATE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
-    VALID_TOKEN: `${prefix}VALID_TOKEN`
+    VALID_TOKEN: `${prefix}VALID_TOKEN`,
+    LOGOUT: `${prefix}LOGOUT`,
   };
 })('@private/');
 
