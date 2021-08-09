@@ -25,8 +25,8 @@ function * authorizationWorker ({ type, payload }) {
     yield put({ type: PAGES.META, payload: response.data });
     yield put({ type: PRIVATE.VALID_TOKEN, payload: response.data.accessToken });
     yield put({ type: PAGES.CHECK_ACCESS_TOKEN });
-  } catch (error) {
-    console.log(error);
+  } catch ({ message }) {
+    yield put({ type: PAGES.META, payload: { errorMessage: message } });
     yield call(removeLocalStorage, TOKEN);
   }
   yield delay(500);

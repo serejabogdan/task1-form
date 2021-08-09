@@ -3,10 +3,10 @@ import { push } from 'connected-react-router';
 import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 
 // local dependencies
-import { SAGA_LOGOUT } from './user/reducer';
 import { PAGES } from '../reducer';
-import { TOKEN } from '../../constants/local-storage';
 import { PRIVATE } from './reducer';
+import { SAGA_LOGOUT } from './user/reducer';
+import { TOKEN } from '../../constants/local-storage';
 import { PRIVATE_USER, PUBLIC_SIGN_IN } from '../../constants/routes';
 import { getLocalStorage, removeLocalStorage } from '../../utils/local-storage';
 import { addAuthorizationHeader, getUserData, privateAPI } from '../../utils/API';
@@ -24,8 +24,8 @@ function * gettingUserDataWorker ({ type, payload }) {
     yield call(addAuthorizationHeader, accessToken);
     const response = yield call(getUserData, accessToken);
     yield put({ type: PAGES.META, payload: { user: response.data } });
-  } catch (error) {
-    console.dir(error);
+  } catch ({ message }) {
+    yield put({ type: PAGES.META, payload: { errorMessage: message } });
     yield put(push(PUBLIC_SIGN_IN));
   }
   yield delay(500);
@@ -39,8 +39,8 @@ function * logOutWorker () {
     yield put({ type: PAGES.CLEAR });
     yield call(removeLocalStorage, TOKEN);
     yield put(push(PUBLIC_SIGN_IN));
-  } catch (error) {
-    console.log(error);
+  } catch ({ message }) {
+    yield put({ type: PAGES.META, payload: { errorMessage: message } });
   }
 }
 

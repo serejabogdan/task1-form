@@ -1,7 +1,7 @@
 // outsource dependencies
 import React from 'react';
-import { Button, Spinner } from 'reactstrap';
 import { Field } from 'redux-form';
+import { Button, Spinner } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 // local dependencies

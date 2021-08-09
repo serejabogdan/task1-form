@@ -12,17 +12,14 @@ function InputField ({ input, type, id, label, meta, disabled }) {
 }
 
 InputField.defaultProps = {
-  label: '',
   disabled: false
 };
-
-// TODO: CHECK propTypes and jsx
 
 InputField.propTypes = {
   input: PropTypes.object.isRequired,
   type: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  label: PropTypes.string,
+  label: PropTypes.string.isRequired,
   meta: PropTypes.shape({
     touched: PropTypes.bool,
     warning: PropTypes.string,

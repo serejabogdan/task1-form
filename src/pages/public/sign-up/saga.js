@@ -1,8 +1,6 @@
 import { fork } from 'redux-saga/effects';
 
-function * signUpWatcher () {
-
-}
+function * signUpWatcher () {}
 
 export default function * signUpSaga () {
   yield fork(signUpWatcher);
