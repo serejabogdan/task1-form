@@ -2,10 +2,10 @@
 import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 
 // local dependencies
-import { SIGN_IN } from './reducer';
-import { PAGES } from '../../reducer';
+import { TYPE as SIGN_IN_TYPE } from './reducer';
+import { TYPE } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
-import { PRIVATE } from '../../private/reducer';
+import { TYPE as PRIVATE_TYPE } from '../../private/reducer';
 import { TOKEN } from '../../../constants/local-storage';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
@@ -19,22 +19,22 @@ function getTokenFromApi (payload) {
 
 function * authorizationWorker ({ type, payload }) {
   try {
-    yield put({ type: SIGN_IN.META, payload: { disabled: true } });
+    yield put({ type: SIGN_IN_TYPE.META, payload: { disabled: true } });
     const response = yield call(getTokenFromApi, payload);
     yield call(setLocalStorage, TOKEN, response.data);
-    yield put({ type: PAGES.META, payload: response.data });
-    yield put({ type: PRIVATE.VALID_TOKEN, payload: response.data.accessToken });
-    yield put({ type: PAGES.CHECK_ACCESS_TOKEN });
+    yield put({ type: TYPE.META, payload: response.data });
+    yield put({ type: PRIVATE_TYPE.VALID_TOKEN, payload: response.data.accessToken });
+    yield put({ type: TYPE.CHECK_ACCESS_TOKEN });
   } catch ({ message }) {
-    yield put({ type: PAGES.META, payload: { errorMessage: message } });
+    yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield call(removeLocalStorage, TOKEN);
   }
   yield delay(500);
-  yield put({ type: SIGN_IN.META, payload: { disabled: false } });
+  yield put({ type: SIGN_IN_TYPE.META, payload: { disabled: false } });
 }
 
 function * signInWatcher () {
-  yield takeEvery(SIGN_IN.SET_TOKEN, authorizationWorker);
+  yield takeEvery(SIGN_IN_TYPE.SIGN_IN, authorizationWorker);
 }
 
 export default function * signInSaga () {

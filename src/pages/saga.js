@@ -2,12 +2,11 @@
 import { push } from 'connected-react-router';
 import { fork, put, takeEvery, delay, call, take, cancel, cancelled } from 'redux-saga/effects';
 
-
 // local dependencies
-import { PAGES } from './reducer';
+import { TYPE } from './reducer';
 import publicSaga from './public/saga';
 import privateSaga from './private/saga';
-import { PRIVATE } from './private/reducer';
+import { TYPE as PRIVATE_TYPE } from './private/reducer';
 import { TOKEN } from '../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../constants/routes';
 import { addAuthorizationHeader, getUserData, publicAPI } from '../utils/API';
@@ -26,15 +25,15 @@ function * appInitialize ({ type, payload }) {
   try {
     const { accessToken } = yield call(getLocalStorage, TOKEN);
     yield call(addAuthorizationHeader, accessToken);
-
     yield call(getUserData);
-    yield put({ type: PRIVATE.VALID_TOKEN, payload: accessToken });
-    yield put({ type: PAGES.CHECK_ACCESS_TOKEN });
+    yield put({ type: PRIVATE_TYPE.VALID_TOKEN, payload: accessToken });
+    yield put({ type: TYPE.CHECK_ACCESS_TOKEN });
+    yield put({ type: TYPE.META, payload: { auth: true } });
   } catch ({ message }) {
-    yield put({ type: PAGES.META, payload: { errorMessage: message } });
+    yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield put(push(PUBLIC_SIGN_IN));
   }
-  yield put({ type: PAGES.META, payload: { initialized: true } });
+  yield put({ type: TYPE.META, payload: { initialized: true } });
 }
 
 function * checkAccessToken () {
@@ -43,19 +42,19 @@ function * checkAccessToken () {
     const { accessToken } = yield call(getLocalStorage, TOKEN);
     yield call(getUserData, { accessToken });
   } catch ({ message }) {
-    yield put({ type: PAGES.META, payload: { errorMessage: message } });
-    yield put({ type: PAGES.UPDATE_TOKEN });
+    yield put({ type: TYPE.META, payload: { errorMessage: message } });
+    yield put({ type: TYPE.UPDATE_TOKEN });
   } finally {
     if (yield cancelled()) {
       console.log('checkToken is stopped');
     }
   }
-  yield put({ type: PAGES.CHECK_ACCESS_TOKEN });
+  yield put({ type: TYPE.CHECK_ACCESS_TOKEN });
 }
 
 function * stopRefreshingToken () {
   const refreshForked = yield fork(checkAccessToken);
-  yield take(PAGES.STOP_REFRESHING_TOKEN);
+  yield take(TYPE.STOP_REFRESHING_TOKEN);
   yield cancel(refreshForked);
 }
 
@@ -64,20 +63,20 @@ function * updateToken () {
     const { refreshToken } = yield call(getLocalStorage, TOKEN);
     const response = yield call(updateTokenApi, { refreshToken });
     yield call(setLocalStorage, TOKEN, response.data);
-    yield put({ type: PAGES.META, payload: { token: response.data } });
+    yield put({ type: TYPE.META, payload: { token: response.data } });
     yield call(addAuthorizationHeader, response.data.accessToken);
   } catch ({ message }) {
-    yield put({ type: PAGES.META, payload: { errorMessage: message } });
-    yield put({ type: PAGES.CLEAR });
+    yield put({ type: TYPE.META, payload: { errorMessage: message } });
+    yield put({ type: TYPE.CLEAR });
     yield call(removeLocalStorage, TOKEN);
     yield put(push(PUBLIC_SIGN_IN));
   }
 }
 
 function * initializingPages () {
-  yield takeEvery(PAGES.INITIALIZE, appInitialize);
-  yield takeEvery(PAGES.CHECK_ACCESS_TOKEN, stopRefreshingToken);
-  yield takeEvery(PAGES.UPDATE_TOKEN, updateToken);
+  yield takeEvery(TYPE.INITIALIZE, appInitialize);
+  yield takeEvery(TYPE.CHECK_ACCESS_TOKEN, stopRefreshingToken);
+  yield takeEvery(TYPE.UPDATE_TOKEN, updateToken);
 }
 
 export default function * pagesSaga () {

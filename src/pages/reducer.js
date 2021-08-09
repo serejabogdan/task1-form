@@ -7,7 +7,7 @@ import privateReducer from './private/reducer';
 import { TOKEN } from '../constants/local-storage';
 import { getLocalStorage } from '../utils/local-storage';
 
-export const PAGES = (function (prefix) {
+export const TYPE = (function (prefix) {
   return {
     // simple actions
     META: `${prefix}META`,
@@ -17,10 +17,12 @@ export const PAGES = (function (prefix) {
     UPDATE_TOKEN: `${prefix}UPDATE_TOKEN`,
     CHECK_ACCESS_TOKEN: `${prefix}CHECK_ACCESS_TOKEN`,
     STOP_REFRESHING_TOKEN: `${prefix}STOP_REFRESHING_TOKEN`,
+    AUTH: `${prefix}AUTH`
   };
 })('@pages/');
 
 const initial = {
+  auth: false,
   user: '',
   token: getLocalStorage(TOKEN) || '',
   initialized: false,
@@ -31,8 +33,8 @@ const initial = {
 function pagesReducer (state = initial, action) {
   const { type, payload } = action;
   switch (type) {
-    case PAGES.META: return { ...state, ...payload };
-    case PAGES.CLEAR: return { ...initial, initialized: true };
+    case TYPE.META: return { ...state, ...payload };
+    case TYPE.CLEAR: return { ...initial, initialized: true };
     default:
       return state;
   }

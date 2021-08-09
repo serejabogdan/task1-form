@@ -5,7 +5,7 @@ import { Button, Spinner } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 // local dependencies
-import { selector, SIGN_IN } from './reducer';
+import { selector, TYPE } from './reducer';
 import { ReduxForm } from '../../../utils/redux-form';
 import InputField from '../../../components/input-field';
 
@@ -39,11 +39,11 @@ function SignIn () {
   const dispatch = useDispatch();
 
   function submit (values) {
-    dispatch({ type: SIGN_IN.SET_TOKEN, payload: { client: signIn.initialValues.client, ...values } });
+    dispatch({ type: TYPE.SIGN_IN, payload: values });
   }
   return <div style={{ minHeight: '100vh' }} className="d-flex flex-column justify-content-center align-items-center">
     <h1>Public form</h1>
-    <ReduxForm form="SignInForm" onSubmit={submit} validate={formValidation}>
+    <ReduxForm form="SignInForm" onSubmit={submit} validate={formValidation} initialValues={signIn.initialValues}>
       <Field type="text" disabled={signIn.disabled} name="username" id="username" component={InputField}/>
       <Field type="password" disabled={signIn.disabled} name="password" id="password" component={InputField}/>
       <Button disabled={signIn.disabled}>Go!</Button>

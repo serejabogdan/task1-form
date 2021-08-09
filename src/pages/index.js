@@ -7,7 +7,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 // local dependencies
 import Public from './public';
 import Private from './private';
-import { selector, PAGES } from './reducer';
+import { selector, TYPE } from './reducer';
 import { PRIVATE, PUBLIC } from '../constants/routes';
 
 function Pages () {
@@ -15,9 +15,9 @@ function Pages () {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: PAGES.INITIALIZE, payload: token });
+    dispatch({ type: TYPE.INITIALIZE, payload: token });
     return () => {
-      dispatch({ type: PAGES.STOP_REFRESHING_TOKEN });
+      dispatch({ type: TYPE.STOP_REFRESHING_TOKEN });
     };
   }, [dispatch, token]);
   return initialized
@@ -25,7 +25,11 @@ function Pages () {
       <Route path={PUBLIC} component={Public}/>
       <Route path={PRIVATE} component={Private}/>
       <Redirect to={PUBLIC}/>
-    </Switch> : <div><Spinner color="primary" /> pages</div>;
+    </Switch>
+    : <div>
+      <Spinner color="primary" />
+      pages
+    </div>;
 }
 
 export default Pages;

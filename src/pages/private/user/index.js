@@ -5,22 +5,26 @@ import { useDispatch } from 'react-redux';
 import { Button, ListGroup, ListGroupItem } from 'reactstrap';
 
 // local dependencies
-import { PRIVATE } from '../reducer';
+import { TYPE } from '../reducer';
 
 function User ({ user }) {
   const dispatch = useDispatch();
 
   function logOut () {
-    dispatch({ type: PRIVATE.LOGOUT });
+    dispatch({ type: TYPE.LOGOUT });
   }
 
   return <div style={{ maxWidth: '700px', margin: '0 auto' }}>
     <ListGroup>
       <ListGroupItem>id: { user.id }</ListGroupItem>
       <ListGroupItem>name: { user.name }</ListGroupItem>
-      <ListGroupItem><img src={user.coverImage.url} alt="Here is should be user"/></ListGroupItem>
+      <ListGroupItem>
+        <img src={user.coverImage.url} alt="Here is should be user"/>
+      </ListGroupItem>
     </ListGroup>
-    <Button color="primary" onClick={logOut}>LogOut</Button>
+    <Button color="primary" onClick={logOut}>
+      LogOut
+    </Button>
   </div>;
 }
 

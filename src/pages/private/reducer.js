@@ -1,4 +1,4 @@
-export const PRIVATE = (function (prefix) {
+export const TYPE = (function (prefix) {
   return {
     // simple actions
     META: `${prefix}META`,
@@ -18,8 +18,8 @@ const initial = {
 export default function privateReducer (state= initial, action) {
   const { type, payload } = action;
   switch (type) {
-    case PRIVATE.META: return { ...state, ...payload };
-    case PRIVATE.CLEAR: return initial;
+    case TYPE.META: return { ...state, ...payload };
+    case TYPE.CLEAR: return initial;
     default: return state;
   }
 }
