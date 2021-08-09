@@ -16,22 +16,19 @@ function Private () {
   const { user } = useSelector(pagesSelector);
   const { initialized } = useSelector(privateSelector);
 
-  return <>
-    {
-      initialized ? <Switch>
-        <PrivateRoute
-          path={PRIVATE_USER}
-          isUserAuthed={!!user}
-          user={user}
-          component={User}/>
-        <PrivateRoute
-          path={PRIVATE_HOMEPAGE}
-          isUserAuthed={!!user}
-          user={user}
-          component={Homepage}/>
-      </Switch> : <div><Spinner color="primary" /> private</div>
-    }
-  </>;
+  return initialized
+    ? <Switch>
+      <PrivateRoute
+        path={PRIVATE_USER}
+        isUserAuthed={!!user}
+        user={user}
+        component={User}/>
+      <PrivateRoute
+        path={PRIVATE_HOMEPAGE}
+        isUserAuthed={!!user}
+        user={user}
+        component={Homepage}/>
+    </Switch> : <div><Spinner color="primary" /> private</div>;
 }
 
 export default Private;

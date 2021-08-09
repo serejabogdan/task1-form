@@ -20,14 +20,12 @@ function Pages () {
       dispatch({ type: PAGES.STOP_REFRESHING_TOKEN });
     };
   }, [dispatch, token]);
-  return <>
-    { initialized
-      ? <Switch>
-        <Route path={PUBLIC} component={Public}/>
-        <Route path={PRIVATE} component={Private}/>
-        <Redirect to={PUBLIC}/>
-      </Switch> : <div><Spinner color="primary" /> pages</div> }
-  </>;
+  return initialized
+    ? <Switch>
+      <Route path={PUBLIC} component={Public}/>
+      <Route path={PRIVATE} component={Private}/>
+      <Redirect to={PUBLIC}/>
+    </Switch> : <div><Spinner color="primary" /> pages</div>;
 }
 
 export default Pages;
