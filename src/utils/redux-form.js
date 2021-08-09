@@ -7,13 +7,13 @@ import { Form, reduxForm } from 'redux-form';
 
 // local dependencies
 
-const FormContent = memo((({ children, onSubmit, handleSubmit, className, autoComplete }) => <Form
+const FormContent = memo(({ children, onSubmit, handleSubmit, className, autoComplete }) => <Form
   className={className}
   autoComplete={autoComplete}
   onSubmit={handleSubmit(onSubmit)}
 >
   { children }
-</Form>));
+</Form>);
 FormContent.propTypes = {
   className: PropTypes.string,
   autoComplete: PropTypes.string,
