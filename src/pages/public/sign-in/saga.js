@@ -2,10 +2,10 @@
 import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 
 // local dependencies
+import { SIGN_IN } from './reducer';
+import { PAGES } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
 import { TOKEN } from '../../../constants/local-storage';
-import { SAGA_SET_TOKEN, SIGN_IN_META } from './reducer';
-import { PAGES } from '../../reducer';
 import { PRIVATE_SAGA_VALID_TOKEN } from '../../private/reducer';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
@@ -19,7 +19,7 @@ function getTokenFromApi (payload) {
 
 function * authorizationWorker ({ type, payload }) {
   try {
-    yield put({ type: SIGN_IN_META, payload: { disabled: true } });
+    yield put({ type: SIGN_IN.META, payload: { disabled: true } });
     const response = yield call(getTokenFromApi, payload);
     yield call(setLocalStorage, TOKEN, response.data);
     yield put({ type: PAGES.META, payload: response.data });
@@ -30,11 +30,11 @@ function * authorizationWorker ({ type, payload }) {
     yield call(removeLocalStorage, TOKEN);
   }
   yield delay(500);
-  yield put({ type: SIGN_IN_META, payload: { disabled: false } });
+  yield put({ type: SIGN_IN.META, payload: { disabled: false } });
 }
 
 function * signInWatcher () {
-  yield takeEvery(SAGA_SET_TOKEN, authorizationWorker);
+  yield takeEvery(SIGN_IN.SET_TOKEN, authorizationWorker);
 }
 
 export default function * signInSaga () {

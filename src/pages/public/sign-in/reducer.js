@@ -1,5 +1,12 @@
-export const SIGN_IN_META = 'SIGN_IN_META';
-export const SAGA_SET_TOKEN = 'SAGA_SET_TOKEN';
+export const SIGN_IN = (function (prefix) {
+  return {
+    // simple actions
+    META: `${prefix}META`,
+    CLEAR: `${prefix}/CLEAR`,
+    //complex actions
+    SET_TOKEN: `${prefix}SET_TOKEN`,
+  };
+})('@sign-in/');
 
 const initial = {
   initialValues: {
@@ -11,7 +18,8 @@ const initial = {
 function signInReducer (state = initial, action) {
   const { type, payload } = action;
   switch (type) {
-    case SIGN_IN_META: return { ...state, ...payload };
+    case SIGN_IN.META: return { ...state, ...payload };
+    case SIGN_IN.CLEAR: return initial;
     default:
       return state;
   }

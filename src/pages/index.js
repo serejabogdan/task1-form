@@ -20,7 +20,6 @@ function Pages () {
       dispatch({ type: 'STOP_REFRESHING_TOKEN' });
     };
   }, [dispatch, token]);
-
   return <>
     { initialized
       ? <Switch>
