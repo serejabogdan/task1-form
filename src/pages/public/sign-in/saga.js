@@ -6,7 +6,7 @@ import { SIGN_IN } from './reducer';
 import { PAGES } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
 import { TOKEN } from '../../../constants/local-storage';
-import { PRIVATE_SAGA_VALID_TOKEN } from '../../private/reducer';
+import { PRIVATE } from '../../private/reducer';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
 function getTokenFromApi (payload) {
@@ -23,7 +23,7 @@ function * authorizationWorker ({ type, payload }) {
     const response = yield call(getTokenFromApi, payload);
     yield call(setLocalStorage, TOKEN, response.data);
     yield put({ type: PAGES.META, payload: response.data });
-    yield put({ type: PRIVATE_SAGA_VALID_TOKEN, payload: response.data.accessToken });
+    yield put({ type: PRIVATE.VALID_TOKEN, payload: response.data.accessToken });
     yield put({ type: PAGES.CHECK_ACCESS_TOKEN });
   } catch (error) {
     console.log(error);

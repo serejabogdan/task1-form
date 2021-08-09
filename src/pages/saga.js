@@ -8,7 +8,7 @@ import privateSaga from './private/saga';
 import { push } from 'connected-react-router';
 import { TOKEN } from '../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../constants/routes';
-import { PRIVATE_SAGA_VALID_TOKEN } from './private/reducer';
+import { PRIVATE } from './private/reducer';
 import { addAuthorizationHeader, getUserData, publicAPI } from '../utils/API';
 import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../utils/local-storage';
 
@@ -27,7 +27,7 @@ function * appInitialize ({ type, payload }) {
     yield call(addAuthorizationHeader, accessToken);
 
     yield call(getUserData);
-    yield put({ type: PRIVATE_SAGA_VALID_TOKEN, payload: accessToken });
+    yield put({ type: PRIVATE.VALID_TOKEN, payload: accessToken });
     yield put({ type: PAGES.CHECK_ACCESS_TOKEN });
   } catch (error) {
     yield put(push(PUBLIC_SIGN_IN));

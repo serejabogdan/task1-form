@@ -1,5 +1,12 @@
-export const PRIVATE_META = 'PRIVATE_META';
-export const PRIVATE_SAGA_VALID_TOKEN = 'PRIVATE_SAGA_VALID_TOKEN';
+export const PRIVATE = (function (prefix) {
+  return {
+    // simple actions
+    META: `${prefix}META`,
+    CLEAR: `${prefix}CLEAR`,
+    // complex actions
+    VALID_TOKEN: `${prefix}VALID_TOKEN`
+  };
+})('@private/');
 
 const initial = {
   initialized: false,
@@ -10,7 +17,8 @@ const initial = {
 export default function privateReducer (state= initial, action) {
   const { type, payload } = action;
   switch (type) {
-    case PRIVATE_META: return { ...state, ...payload };
+    case PRIVATE.META: return { ...state, ...payload };
+    case PRIVATE.CLEAR: return initial;
     default: return state;
   }
 }
