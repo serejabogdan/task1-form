@@ -6,20 +6,11 @@ import { fork, put, takeEvery, delay, call, take, cancel, cancelled } from 'redu
 import { TYPE } from './reducer';
 import publicSaga from './public/saga';
 import privateSaga from './private/saga';
-import { TYPE as PRIVATE_TYPE } from './private/reducer';
+import { getUserData } from '../utils/API';
 import { TOKEN } from '../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../constants/routes';
-import { getUserData, publicAPI } from '../utils/API';
-import { getLocalStorage, removeLocalStorage, setLocalStorage } from '../utils/local-storage';
-import request from '../utils/refresh-token';
-
-function updateTokenApi (token) {
-  return publicAPI({
-    method: 'POST',
-    url: 'auth/token/refresh',
-    data: token
-  });
-}
+import { TYPE as PRIVATE_TYPE } from './private/reducer';
+import { getLocalStorage } from '../utils/local-storage';
 
 function * appInitialize ({ type, payload }) {
   yield delay(500);
@@ -37,10 +28,8 @@ function * appInitialize ({ type, payload }) {
 }
 
 function * checkAccessToken () {
-  const data = getLocalStorage(TOKEN);
-  setLocalStorage(TOKEN, {...data, accessToken: data.accessToken + '1'})
   try {
-    yield delay(4000);
+    yield delay(10000);
     yield call(getUserData);
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
@@ -59,25 +48,9 @@ function * stopRefreshingToken () {
   yield cancel(refreshForked);
 }
 
-function * updateToken () {
-  try {
-    const { refreshToken } = yield call(getLocalStorage, TOKEN);
-    const response = yield call(updateTokenApi, { refreshToken });
-    yield call(setLocalStorage, TOKEN, response.data);
-    yield put({ type: TYPE.META, payload: { token: response.data } });
-    // yield call(addAuthorizationHeader, response.data.accessToken);
-  } catch ({ message }) {
-    yield put({ type: TYPE.META, payload: { errorMessage: message } });
-    yield put({ type: TYPE.CLEAR });
-    yield call(removeLocalStorage, TOKEN);
-    yield put(push(PUBLIC_SIGN_IN));
-  }
-}
-
 function * initializingPages () {
   yield takeEvery(TYPE.INITIALIZE, appInitialize);
   yield takeEvery(TYPE.CHECK_ACCESS_TOKEN, stopRefreshingToken);
-  // yield takeEvery(TYPE.UPDATE_TOKEN, updateToken);
 }
 
 export default function * pagesSaga () {
