@@ -4,4 +4,5 @@ export const PUBLIC_SIGN_UP = `${PUBLIC}/sign-up`;
 
 export const PRIVATE = '/private';
 export const PRIVATE_USER = `${PRIVATE}/user`;
+export const PRIVATE_USERS = `${PRIVATE}/users`;
 export const PRIVATE_HOMEPAGE = `${PRIVATE}/homepage`;
