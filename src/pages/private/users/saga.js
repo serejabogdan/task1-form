@@ -37,9 +37,11 @@ function * initializeSaga () {
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
     const { size, page } = qs.parse(queryParams);
-    yield put(replace(`?size=${size}&page=${page}`));
-    yield call(getUsers, { params: { size, page } });
-    yield put({ type: TYPE.META, payload: { size, page } });
+    const sizeNumber = Number(size);
+    const pageNumber = Number(page);
+    yield put(replace(`?size=${sizeNumber}&page=${pageNumber}`));
+    yield call(getUsers, { params: { size: sizeNumber, page: pageNumber } });
+    yield put({ type: TYPE.META, payload: { size: sizeNumber, page: pageNumber } });
   } else {
     const { page, size } = yield select(selector);
     yield put(push(`?size=${size}&page=${page}`));
