@@ -1,45 +1,32 @@
 // outsource dependencies
 import React, { useEffect } from 'react';
+import moment from 'moment';
 import Pagination from 'rc-pagination';
 import { useDispatch, useSelector } from 'react-redux';
 import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, FormGroup, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
 // local dependencies
 import { TYPE, selector } from './reducer';
-import { setLocalStorage } from '../../../utils/local-storage';
-import { CURRENT_PAGE, USERS_NUMBER } from '../../../constants/local-storage';
 
 // styles
 import 'rc-pagination/assets/index.css';
-import { history } from '../../../redux';
-import { useHistory } from 'react-router-dom';
-
-function fixDate (digit) {
-  return digit < 10 ? `0${digit}` : digit;
-}
-
-function stringDateToObject (date) {
-  const createdDate = new Date(date);
-  return `${fixDate(createdDate.getMonth())}/${fixDate(createdDate.getDate())}/${fixDate(createdDate.getFullYear())}`;
-}
 
 function Users () {
-  const { initialized, data, pagination, dropdown, usersChecked, search } = useSelector(selector);
+  const { initialized, data, size, page, usersChecked, search, hasOpenedDropdown } = useSelector(selector);
   const dispatch = useDispatch();
 
   function changePage (page) {
-    dispatch({ type: TYPE.PAGINATION_META, payload: { currentPage: page } });
-    dispatch({ type: TYPE.GET_USERS, payload: { params: { page, size: dropdown.numberOfUsers } } });
+    dispatch({ type: TYPE.META, payload: { page } });
+    dispatch({ type: TYPE.UPDATE_FILTERS });
   }
 
   function changeNumberOfUsers (size) {
-    dispatch({ type: TYPE.PAGINATION_META, payload: { currentPage: 0 } });
-    dispatch({ type: TYPE.DROPDOWN_META, payload: { numberOfUsers: size } });
-    dispatch({ type: TYPE.GET_USERS, payload: { params: { size, page: 0 } } });
+    dispatch({ type: TYPE.META, payload: { page: 0, size } });
+    dispatch({ type: TYPE.UPDATE_FILTERS });
   }
 
   function dropdownToggle () {
-    dispatch({ type: TYPE.DROPDOWN_META, payload: { isOpen: !dropdown.isOpen } });
+    dispatch({ type: TYPE.META, payload: { hasOpenedDropdown: !hasOpenedDropdown } });
   }
 
   function hasUsersChecked (checked) {
@@ -62,36 +49,29 @@ function Users () {
     dispatch({
       type: TYPE.GET_USERS,
       payload: {
-        params: { size: dropdown.numberOfUsers, page: 0 },
+        params: { size, page: 0 },
         data: { name: search }
       }
     });
   }
-  const h = useHistory();
 
   useEffect(() => {
-
-    console.log(h.location.search);
-
-    dispatch({
-      type: TYPE.GET_USERS,
-      payload: { params: { page: pagination.currentPage, size: dropdown.numberOfUsers } }
-    });
-  }, [dispatch, dropdown.numberOfUsers, h, pagination.currentPage]);
+    dispatch({ type: TYPE.INITIALIZE });
+  }, [dispatch]);
 
   return initialized ? <div className="h-100 container-fluid">
     <h2 className="pt-3">USERS</h2>
     <header className="d-flex">
-      <Dropdown color="primary" group isOpen={dropdown.isOpen} toggle={() => { dropdownToggle(); }}>
+      <Dropdown color="primary" group isOpen={hasOpenedDropdown} toggle={() => { dropdownToggle(); }}>
         <DropdownToggle caret>
-          { dropdown.numberOfUsers }
+          { size }
         </DropdownToggle>
         <DropdownMenu>
-          { [10, 15, 30].map(numberOfUsers => {
+          { [10, 15, 30].map(size => {
             return <DropdownItem
-              key={numberOfUsers}
-              onClick={() => changeNumberOfUsers(numberOfUsers)} >
-              { numberOfUsers } items
+              key={size}
+              onClick={() => changeNumberOfUsers(size)} >
+              { size } items
             </DropdownItem>;
           }) }
         </DropdownMenu>
@@ -123,7 +103,7 @@ function Users () {
       </thead>
       <tbody>
         { data.content.map(user => {
-          const createdDate = stringDateToObject(user.createdDate);
+          const createdDate = moment(user.createdDate).format('L');
           return <tr key={user.id}>
             <td scope="row">
               <FormGroup check>
@@ -142,9 +122,10 @@ function Users () {
     </Table>
     <Pagination
       onChange={page => changePage(page - 1)}
-      current={pagination.currentPage + 1}
+      current={page + 1}
+      defaultCurrent={1}
       total={data.totalElements}
-      pageSize={dropdown.numberOfUsers}
+      pageSize={size}
     />
   </div> : <div>
     <Spinner color="primary" />

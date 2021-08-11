@@ -1,10 +1,12 @@
 // outsource dependencies
-import { call, fork, put, takeLatest } from 'redux-saga/effects';
+import qs from 'qs';
+import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 
 // local dependencies
-import { TYPE } from './reducer';
+import { history } from '../../../redux';
+import { selector, TYPE } from './reducer';
 import { privateAPI } from '../../../utils/API';
-import { replace } from 'connected-react-router';
+import { push, replace } from 'connected-react-router';
 
 function getUsersApi ({ data, params }) {
   return privateAPI({
@@ -15,23 +17,41 @@ function getUsersApi ({ data, params }) {
   });
 }
 
-function * getUsers ({ type, payload }) {
+function * getUsers (payload) {
   try {
     const users = yield call(getUsersApi, payload);
     yield put({ type: TYPE.META, payload: { data: users.data } });
   } catch (error) {
     console.log(error);
   }
-  yield call(initializeSaga, payload);
 }
 
-function * initializeSaga (payload) {
-  yield put(replace(`?s=${payload.params.size}&p=${payload.params.page}`));
+function * updateFilters () {
+  const { page, size } = yield select(selector);
+  yield put(replace(`?size=${size}&page=${page}`));
+  yield call(getUsers, { params: { size, page } });
+  yield put({ type: TYPE.META, payload: { size, page } });
+}
+
+function * initializeSaga () {
+  const queryParams = history.location.search.substr(1);
+  if (queryParams) {
+    const { size, page } = qs.parse(queryParams);
+    yield put(replace(`?size=${size}&page=${page}`));
+    yield call(getUsers, { params: { size, page } });
+    yield put({ type: TYPE.META, payload: { size, page } });
+  } else {
+    const { page, size } = yield select(selector);
+    yield put(push(`?size=${size}&page=${page}`));
+    yield call(getUsers, { params: { size, page } });
+    yield put({ type: TYPE.META, payload: { size, page } });
+  }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }
 
 function * usersWatcher () {
-  yield takeLatest(TYPE.GET_USERS, getUsers);
+  yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);
+  yield takeLatest(TYPE.INITIALIZE, initializeSaga);
 }
 
 export default function * usersSaga () {
