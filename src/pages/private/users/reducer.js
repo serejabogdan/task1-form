@@ -28,7 +28,8 @@ const initial = {
   dropdown: {
     isOpen: false,
     numberOfUsers: getLocalStorage(USERS_NUMBER) || 10
-  }
+  },
+  search: ''
 };
 
 export default function usersReducer (state= initial, action) {
