@@ -1,12 +1,12 @@
 // outsource dependencies
 import qs from 'qs';
+import { replace } from 'connected-react-router';
 import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 
 // local dependencies
 import { history } from '../../../redux';
 import { selector, TYPE } from './reducer';
 import { privateAPI } from '../../../utils/API';
-import { push, replace } from 'connected-react-router';
 
 function getUsersApi ({ data, params }) {
   return privateAPI({
@@ -28,25 +28,23 @@ function * getUsers (payload) {
 
 function * updateFilters () {
   const { page, size } = yield select(selector);
+  yield call(setFilters, { size, page });
+}
+
+function * setFilters ({ size, page }) {
   yield put(replace(`?size=${size}&page=${page}`));
   yield call(getUsers, { params: { size, page } });
-  yield put({ type: TYPE.META, payload: { size, page } });
+  yield put({ type: TYPE.META, payload: { size: Number(size), page: Number(page) } });
 }
 
 function * initializeSaga () {
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
     const { size, page } = qs.parse(queryParams);
-    const sizeNumber = Number(size);
-    const pageNumber = Number(page);
-    yield put(replace(`?size=${sizeNumber}&page=${pageNumber}`));
-    yield call(getUsers, { params: { size: sizeNumber, page: pageNumber } });
-    yield put({ type: TYPE.META, payload: { size: sizeNumber, page: pageNumber } });
+    yield call(setFilters, { size, page });
   } else {
     const { page, size } = yield select(selector);
-    yield put(push(`?size=${size}&page=${page}`));
-    yield call(getUsers, { params: { size, page } });
-    yield put({ type: TYPE.META, payload: { size, page } });
+    yield call(setFilters, { size, page });
   }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }

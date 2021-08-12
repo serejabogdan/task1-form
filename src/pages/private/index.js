@@ -1,7 +1,7 @@
 // outsource dependencies
 import React, { useEffect } from 'react';
 import { Spinner } from 'reactstrap';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // local dependencies
@@ -35,6 +35,7 @@ function Private () {
         path={PRIVATE_HOMEPAGE}
         component={() => <Homepage user={user}/>}
       />
+      <Redirect to={PRIVATE_USERS}/>
     </Switch>
     : <div>
       <Spinner color="primary" />
