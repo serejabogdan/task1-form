@@ -4,7 +4,7 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import Pagination from 'rc-pagination';
 import { useDispatch, useSelector } from 'react-redux';
-import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, FormGroup, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
+import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
 // local dependencies
 import { TYPE, selector } from './reducer';
@@ -59,8 +59,8 @@ function Users () {
   }, [dispatch]);
 
   return initialized
-    ? <div className="content d-flex flex-column vh-100">
-      <div className="h-100 container-fluid flex-grow-1">
+    ? <div className="content d-flex flex-column overflow-hidden vh-100">
+      <div className="container-fluid flex-grow-1">
         <h2 className="pt-3 text-primary">Users</h2>
         <hr className="row" />
         <div className="row mb-3">
@@ -94,7 +94,7 @@ function Users () {
           <div className="role col-3">
             <Input type="select" name="select">
               <option value="">Roles</option>
-              <option>1</option>
+              <option>USER</option>
               <option>2</option>
               <option>3</option>
               <option>4</option>
@@ -117,38 +117,50 @@ function Users () {
             <Link href="" className="mx-2 btn btn-success">Create User</Link>
           </div>
         </div>
-        <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '75vh' }}>
-          <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px' }}>
-            <Table striped bordered>
-              <thead>
-                <tr>
-                  <td>
-                    <FormGroup check>
+        <div className="table-header">
+          <Table>
+            <thead style={{ position: 'sticky' }}>
+              <tr>
+                <th className="col-4">
+                  <div className="d-flex align-items-center">
+                    <div className="check d-inline-block custom-checkbox custom-control">
                       <Input type="checkbox" onClick={(e) => hasUsersChecked(e.target.checked)} />
-                    </FormGroup>
-                  </td>
-                  <th>Name</th>
-                  <th>Id</th>
-                  <th>Roles</th>
-                  <th>Creation Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+                    </div>
+                    <button>Name</button>
+                  </div>
+                </th>
+                <th className="col-1">Id</th>
+                <th className="col-2">Roles</th>
+                <th className="col-2">Creation Date</th>
+                <th className="col-1">Actions</th>
+              </tr>
+            </thead>
+          </Table>
+        </div>
+        <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '60vh' }}>
+          <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px' }}>
+
+            <Table striped bordered>
               <tbody>
                 { data.content.map(user => {
                   const createdDate = moment(user.createdDate).format('L');
                   return <tr key={user.id}>
-                    <td scope="row">
-                      <FormGroup check>
-                        <Input type="checkbox" checked={usersChecked} onChange={e => console.log(e)} />
-                      </FormGroup>
+                    <td className="col-4">
+                      <div className="d-flex align-items-center">
+                        <div className="check d-inline-block custom-checkbox custom-control">
+                          <Input type="checkbox" checked={usersChecked} onChange={e => console.log(e)} />
+                        </div>
+                        <Link href="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
+                      </div>
                     </td>
-                    <td>{ user.name ? user.name : 'Undefined Name' }</td>
-                    <td>{ user.id }</td>
-                    <td>
+                    <td className="col-1">{ user.id }</td>
+                    <td className="col-2">
                       { user.roles.map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
                     </td>
-                    <td>{ createdDate }</td>
+                    <td className="col-2">{ createdDate }</td>
+                    <td className="col-1">
+                      <Link href="#" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
+                    </td>
                   </tr>;
                 }) }
               </tbody>
