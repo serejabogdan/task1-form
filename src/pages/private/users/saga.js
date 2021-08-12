@@ -27,21 +27,25 @@ function * getUsers (payload) {
 }
 
 function * updateFilters () {
-  const { page, size } = yield select(selector);
-  yield call(setFilters, { size, page });
+  const { page, size, name } = yield select(selector);
+  yield call(setFilters, { size, page, name });
 }
 
-function * setFilters ({ size, page }) {
-  yield put(replace(`?size=${size}&page=${page}`));
-  yield call(getUsers, { params: { size, page } });
-  yield put({ type: TYPE.META, payload: { size: Number(size), page: Number(page) } });
+function * setFilters (filters) {
+  const queriesString = qs.stringify(filters);
+  yield put(replace(`?${queriesString}`));
+  yield call(getUsers, { params: { ...filters } });
+  yield put({ type: TYPE.META, payload: { ...filters } });
 }
 
 function * initializeSaga () {
+  const validFilters = ['page', 'size', 'name'];
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
-    const { size, page } = qs.parse(queryParams);
-    yield call(setFilters, { size, page });
+    const queries = qs.parse(queryParams);
+    let filters = validFilters.reduce((acc, filter) => ({ ...acc, [filter]: queries[filter] }), {});
+    filters = { ...filters, size: Number(filters.size), page: Number(filters.page) };
+    yield call(setFilters, filters);
   } else {
     const { page, size } = yield select(selector);
     yield call(setFilters, { size, page });

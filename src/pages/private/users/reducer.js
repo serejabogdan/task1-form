@@ -12,6 +12,7 @@ export const TYPE = (function (prefix) {
 const initial = {
   page: 0,
   size: 10,
+  name: '',
   search: '',
   disabled: false,
   errorMessage: '',
