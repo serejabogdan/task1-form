@@ -12,7 +12,7 @@ import { TYPE, selector } from './reducer';
 import 'rc-pagination/assets/index.css';
 
 function Users () {
-  const { initialized, data, size, page, usersChecked, search, hasOpenedDropdown } = useSelector(selector);
+  const { initialized, data, size, page, usersChecked, name, hasOpenedDropdown } = useSelector(selector);
   const dispatch = useDispatch();
 
   function changePage (page) {
@@ -33,26 +33,24 @@ function Users () {
     dispatch({ type: TYPE.META, payload: { usersChecked: checked } });
   }
 
-  function changeSearch (searchValue) {
-    dispatch({ type: TYPE.META, payload: { search: searchValue } });
+  function changeSearch (name) {
+    dispatch({ type: TYPE.META, payload: { name } });
   }
 
   function clearSearch () {
-    dispatch({ type: TYPE.META, payload: { search: '' } });
+    dispatch({ type: TYPE.META, payload: { name: '' } });
+    dispatch({ type: TYPE.UPDATE_FILTERS });
   }
 
   function searchSubmit (e) {
-    console.log(e);
+    if (e.key === 'Enter') {
+      getUsersBySearch();
+    }
   }
 
   function getUsersBySearch () {
-    dispatch({
-      type: TYPE.GET_USERS,
-      payload: {
-        params: { size, page: 0 },
-        data: { name: search }
-      }
-    });
+    dispatch({ type: TYPE.META, payload: { size, page: 0, name } });
+    dispatch({ type: TYPE.UPDATE_FILTERS });
   }
 
   useEffect(() => {
@@ -77,12 +75,12 @@ function Users () {
         </DropdownMenu>
       </Dropdown>
       <InputGroup className="w-25">
-        { search && <InputGroupAddon addonType="prepend" onClick={clearSearch}>
+        { name && <InputGroupAddon addonType="prepend" onClick={clearSearch}>
           <Button color="primary">X</Button>
         </InputGroupAddon> }
-        <Input placeholder="Search" value={search} onChange={(e) => changeSearch(e.target.value)} />
+        <Input placeholder="Search" value={name} onChange={(e) => changeSearch(e.target.value)} onKeyPress={searchSubmit} />
         <InputGroupAddon addonType="append">
-          <Button color="primary" onClick={getUsersBySearch} onKeyPress={searchSubmit}>Search</Button>
+          <Button color="primary" onClick={getUsersBySearch}>Search</Button>
         </InputGroupAddon>
       </InputGroup>
     </header>

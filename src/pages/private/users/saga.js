@@ -28,13 +28,18 @@ function * getUsers (payload) {
 
 function * updateFilters () {
   const { page, size, name } = yield select(selector);
-  yield call(setFilters, { size, page, name });
+  const filters = { page, size };
+  if (name) {
+    filters.name = name;
+  }
+  yield call(setFilters, filters);
 }
 
 function * setFilters (filters) {
   const queriesString = qs.stringify(filters);
   yield put(replace(`?${queriesString}`));
-  yield call(getUsers, { params: { ...filters } });
+  const { size, page, name } = filters;
+  yield call(getUsers, { params: { size, page }, data: { name } });
   yield put({ type: TYPE.META, payload: { ...filters } });
 }
 
@@ -43,7 +48,9 @@ function * initializeSaga () {
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
     const queries = qs.parse(queryParams);
-    let filters = validFilters.reduce((acc, filter) => ({ ...acc, [filter]: queries[filter] }), {});
+    let filters = validFilters.reduce((acc, filter) => {
+      return { ...acc, [filter]: queries[filter] };
+    }, {});
     filters = { ...filters, size: Number(filters.size), page: Number(filters.page) };
     yield call(setFilters, filters);
   } else {
