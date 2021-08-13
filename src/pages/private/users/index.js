@@ -4,6 +4,8 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import Pagination from 'rc-pagination';
 import { useDispatch, useSelector } from 'react-redux';
+import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
 // local dependencies
@@ -13,25 +15,23 @@ import { TYPE, selector } from './reducer';
 import 'rc-pagination/assets/index.css';
 
 function Users () {
-  const { initialized, data, size, page, usersChecked, name, hasOpenedDropdown } = useSelector(selector);
+  const { initialized, data, size, page, hasAllUsersChecked, name, hasOpenedDropdown } = useSelector(selector);
   const dispatch = useDispatch();
 
   function changePage (page) {
+    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: false } });
     dispatch({ type: TYPE.META, payload: { page } });
     dispatch({ type: TYPE.UPDATE_FILTERS });
   }
 
   function changeNumberOfUsers (size) {
+    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: false } });
     dispatch({ type: TYPE.META, payload: { page: 0, size } });
     dispatch({ type: TYPE.UPDATE_FILTERS });
   }
 
   function dropdownToggle () {
     dispatch({ type: TYPE.META, payload: { hasOpenedDropdown: !hasOpenedDropdown } });
-  }
-
-  function hasUsersChecked (checked) {
-    dispatch({ type: TYPE.META, payload: { usersChecked: checked } });
   }
 
   function changeSearch (name) {
@@ -57,6 +57,16 @@ function Users () {
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE });
   }, [dispatch]);
+
+  function userChecked (payload) {
+    dispatch({ type: TYPE.USER_CHECKED, payload });
+    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: false } });
+  }
+
+  function usersChecked () {
+    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: !hasAllUsersChecked } });
+    dispatch({ type: TYPE.USERS_CHECKED });
+  }
 
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
@@ -124,22 +134,36 @@ function Users () {
                 <th className="col-4">
                   <div className="d-flex align-items-center">
                     <div className="check d-inline-block custom-checkbox custom-control">
-                      <Input type="checkbox" onClick={(e) => hasUsersChecked(e.target.checked)} />
+                      <Input type="checkbox" checked={hasAllUsersChecked} onClick={usersChecked} />
                     </div>
-                    <button>Name</button>
+                    <button className="text-nowrap btn btn-outline-link">
+                      <FontAwesomeIcon icon={faArrowUp} /> Name
+                    </button>
                   </div>
                 </th>
-                <th className="col-1">Id</th>
-                <th className="col-2">Roles</th>
-                <th className="col-2">Creation Date</th>
-                <th className="col-1">Actions</th>
+                <th className="col-1">
+                  <button className="text-nowrap btn btn-outline-link">
+                    <FontAwesomeIcon icon={faArrowUp} /> Id
+                  </button></th>
+                <th className="col-2">
+                  <button className="text-nowrap btn btn-outline-link" disabled={true}>
+                    Roles
+                  </button>
+                </th>
+                <th className="col-2">
+                  <button className="text-nowrap btn btn-outline-link">
+                    <FontAwesomeIcon icon={faArrowUp} /> Creation Date
+                  </button></th>
+                <th className="col-1">
+                  <button className="text-nowrap btn btn-outline-link">
+                    <FontAwesomeIcon icon={faArrowUp} /> Actions
+                  </button></th>
               </tr>
             </thead>
           </Table>
         </div>
         <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '60vh' }}>
-          <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px' }}>
-
+          <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px', marginRight: '-17px' }}>
             <Table striped bordered>
               <tbody>
                 { data.content.map(user => {
@@ -148,7 +172,7 @@ function Users () {
                     <td className="col-4">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={usersChecked} onChange={e => console.log(e)} />
+                          <Input type="checkbox" checked={user.checked} onChange={() => userChecked(user.id)} />
                         </div>
                         <Link href="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>

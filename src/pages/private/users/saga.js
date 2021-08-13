@@ -20,7 +20,10 @@ function getUsersApi ({ data, params }) {
 function * getUsers (payload) {
   try {
     const users = yield call(getUsersApi, payload);
-    yield put({ type: TYPE.META, payload: { data: users.data } });
+    const usersContent = users.data.content.map(user => {
+      return { ...user, checked: false };
+    });
+    yield put({ type: TYPE.META, payload: { data: { ...users.data, content: usersContent } } });
   } catch (error) {
     console.log(error);
   }
@@ -43,15 +46,20 @@ function * setFilters (filters) {
   yield put({ type: TYPE.META, payload: { ...filters } });
 }
 
-function * initializeSaga () {
+function * parseQueryParams (queryParams) {
   const validFilters = ['page', 'size', 'name'];
+  const queries = yield call(qs.parse, queryParams);
+  let filters = validFilters.reduce((acc, filter) => {
+    return { ...acc, [filter]: queries[filter] };
+  }, {});
+  filters = { ...filters, size: Number(filters.size), page: Number(filters.page) };
+  return filters;
+}
+
+function * initializeSaga () {
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
-    const queries = qs.parse(queryParams);
-    let filters = validFilters.reduce((acc, filter) => {
-      return { ...acc, [filter]: queries[filter] };
-    }, {});
-    filters = { ...filters, size: Number(filters.size), page: Number(filters.page) };
+    const filters = yield call(parseQueryParams, queryParams);
     yield call(setFilters, filters);
   } else {
     const { page, size } = yield select(selector);
