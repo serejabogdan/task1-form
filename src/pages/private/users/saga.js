@@ -29,13 +29,46 @@ function * getUsers (payload) {
   }
 }
 
-function * updateFilters () {
-  const { page, size, name } = yield select(selector);
+function * updateFilters ({ type, payload }) {
+  const { page, size, name } = payload;
   const filters = { page, size };
   if (name) {
     filters.name = name;
   }
   yield call(setFilters, filters);
+  yield put({ type: TYPE.META, payload: { page, size, name, hasAllUsersChecked: false, ...filters } });
+}
+
+function * userSelected ({ type, payload }) {
+  const { data } = yield select(selector);
+  const users = yield data.content.map(user => {
+    if (user.id === payload.userId) {
+      return { ...user, checked: !user.checked };
+    }
+    return user;
+  });
+  yield put({
+    type: TYPE.META,
+    payload: {
+      hasAllUsersChecked: false,
+      data: { ...data, content: users }
+    }
+  });
+}
+
+function * usersSelected ({ type, payload }) {
+  const state = yield select(selector);
+  const { data, hasAllUsersChecked } = state;
+  const users = data.content.map(user => {
+    return ({ ...user, checked: !hasAllUsersChecked });
+  });
+  yield put({
+    type: TYPE.META,
+    payload: {
+      hasAllUsersChecked: !hasAllUsersChecked,
+      data: { ...data, content: users }
+    }
+  });
 }
 
 function * setFilters (filters) {
@@ -43,7 +76,6 @@ function * setFilters (filters) {
   yield put(replace(`?${queriesString}`));
   const { size, page, name } = filters;
   yield call(getUsers, { params: { size, page }, data: { name } });
-  yield put({ type: TYPE.META, payload: { ...filters } });
 }
 
 function * parseQueryParams (queryParams) {
@@ -71,6 +103,8 @@ function * initializeSaga () {
 function * usersWatcher () {
   yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);
   yield takeLatest(TYPE.INITIALIZE, initializeSaga);
+  yield takeLatest(TYPE.USER_SELECTED, userSelected);
+  yield takeLatest(TYPE.USERS_SELECTED, usersSelected);
 }
 
 export default function * usersSaga () {

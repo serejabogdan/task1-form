@@ -5,8 +5,8 @@ export const TYPE = (function (prefix) {
     CLEAR: `${prefix}CLEAR`,
     // complex actions
     INITIALIZE: `${prefix}INITIALIZE`,
-    USER_CHECKED: `${prefix}USER_CHECKED`,
-    USERS_CHECKED: `${prefix}USERS_CHECKED`,
+    USER_SELECTED: `${prefix}USER_SELECTED`,
+    USERS_SELECTED: `${prefix}USERS_SELECTED`,
     UPDATE_FILTERS: `${prefix}UPDATE_FILTERS`,
   };
 })('@users/');
@@ -18,6 +18,7 @@ const initial = {
   search: '',
   disabled: false,
   errorMessage: '',
+  selectedRole: '',
   initialized: false,
   hasCheckedUsers: [],
   hasOpenedDropdown: false,
@@ -37,27 +38,6 @@ export default function usersReducer (state= initial, action) {
   switch (type) {
     case TYPE.META: return { ...state, ...payload };
     case TYPE.CLEAR: return { ...initial, initialized: true };
-    case TYPE.USER_CHECKED: return {
-      ...state,
-      data: {
-        ...state.data,
-        content: state.data.content.map(user => {
-          if (user.id === payload) {
-            return ({ ...user, checked: !user.checked });
-          }
-          return user;
-        })
-      }
-    };
-    case TYPE.USERS_CHECKED: return {
-      ...state,
-      data: {
-        ...state.data,
-        content: state.data.content.map(user => {
-          return ({ ...user, checked: state.hasAllUsersChecked });
-        })
-      }
-    };
     default: return state;
   }
 }

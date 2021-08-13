@@ -1,8 +1,9 @@
 // outsource dependencies
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import Select from 'react-select';
 import Pagination from 'rc-pagination';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,34 +15,72 @@ import { TYPE, selector } from './reducer';
 // styles
 import 'rc-pagination/assets/index.css';
 
+const selectOptions = [
+  { value: 'USER', label: 'USER' },
+  { value: 'CHEF', label: 'CHEF' },
+  { value: 'SUPER_ADMIN', label: 'SUPER_ADMIN' },
+  { value: 'NUTRITIONIST', label: 'NUTRITIONIST' },
+  { value: 'TALENT_ADMIN', label: 'TALENT_ADMIN' },
+  { value: 'DATABASE_MANAGER', label: 'DATABASE_MANAGER' },
+];
+
+const numberOfUsers = [10, 15, 30];
+
+function numberOfUsersDropdown (changeNumberOfUsers) {
+  if (Array.isArray(numberOfUsers)) {
+    return numberOfUsers.map(size => {
+      return <DropdownItem key={size} onClick={() => changeNumberOfUsers(size)} >
+        { size } items
+      </DropdownItem>;
+    });
+  }
+  return <DropdownItem disabled={true}>
+    Menu is broken. Bye!
+  </DropdownItem>;
+}
+
 function Users () {
-  const { initialized, data, size, page, hasAllUsersChecked, name, hasOpenedDropdown } = useSelector(selector);
+  const {
+    data,
+    size,
+    page,
+    name,
+    initialized,
+    selectedRole,
+    hasOpenedDropdown,
+    hasAllUsersChecked,
+  } = useSelector(selector);
   const dispatch = useDispatch();
 
-  function changePage (page) {
-    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: false } });
-    dispatch({ type: TYPE.META, payload: { page } });
-    dispatch({ type: TYPE.UPDATE_FILTERS });
-  }
+  const content = useMemo(
+    () => Array.isArray(data.content) ? data.content : [],
+    [data.content]
+  );
 
-  function changeNumberOfUsers (size) {
-    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: false } });
-    dispatch({ type: TYPE.META, payload: { page: 0, size } });
-    dispatch({ type: TYPE.UPDATE_FILTERS });
-  }
+  const handleChangePage = useCallback(
+    page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1, size, name } }),
+    [dispatch, name, size]
+  );
 
-  function dropdownToggle () {
-    dispatch({ type: TYPE.META, payload: { hasOpenedDropdown: !hasOpenedDropdown } });
-  }
+  const memoChangeNumberOfUsers = useCallback(
+    (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size, name } }),
+    [dispatch, name]
+  );
 
-  function changeSearch (name) {
-    dispatch({ type: TYPE.META, payload: { name } });
-  }
+  const memoDropdownToggle = useCallback(
+    () => dispatch({ type: TYPE.META, payload: { hasOpenedDropdown: !hasOpenedDropdown } }),
+    [dispatch, hasOpenedDropdown]
+  );
 
-  function clearSearch () {
-    dispatch({ type: TYPE.META, payload: { name: '' } });
-    dispatch({ type: TYPE.UPDATE_FILTERS });
-  }
+  const memoChangeSearch = useCallback(
+    (name) => dispatch({ type: TYPE.META, payload: { name } }),
+    [dispatch]
+  );
+
+  const handleClearSearch = useCallback(
+    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page, size, name: '' } }),
+    [dispatch, page, size]
+  );
 
   function searchSubmit (e) {
     if (e.key === 'Enter') {
@@ -50,22 +89,22 @@ function Users () {
   }
 
   function getUsersBySearch () {
-    dispatch({ type: TYPE.META, payload: { size, page: 0, name } });
-    dispatch({ type: TYPE.UPDATE_FILTERS });
+    dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, name } });
   }
 
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE });
+    return () => {
+      console.log('users is destructured');
+    };
   }, [dispatch]);
 
-  function userChecked (payload) {
-    dispatch({ type: TYPE.USER_CHECKED, payload });
-    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: false } });
-  }
+  const handleUsersSelected = () => dispatch({ type: TYPE.USERS_SELECTED });
 
-  function usersChecked () {
-    dispatch({ type: TYPE.META, payload: { hasAllUsersChecked: !hasAllUsersChecked } });
-    dispatch({ type: TYPE.USERS_CHECKED });
+  const handleUserSelected = userId => dispatch({ type: TYPE.USER_SELECTED, payload: { userId } });
+
+  function changeSelectedRole (selectedRole) {
+    dispatch({ type: TYPE.META, payload: { selectedRole } });
   }
 
   return initialized
@@ -76,40 +115,31 @@ function Users () {
         <div className="row mb-3">
           <div className="search col-4">
             <InputGroup>
-              { name && <InputGroupAddon addonType="prepend" onClick={clearSearch}>
+              { name && <InputGroupAddon addonType="prepend" onClick={handleClearSearch}>
                 <Button color="primary">X</Button>
               </InputGroupAddon> }
-              <Input placeholder="Search" value={name} onChange={(e) => changeSearch(e.target.value)} onKeyPress={searchSubmit} />
+              <Input
+                placeholder="Search"
+                value={name}
+                onChange={(e) => memoChangeSearch(e.target.value)}
+                onKeyPress={searchSubmit} />
               <InputGroupAddon addonType="append">
                 <Button color="primary" onClick={getUsersBySearch}>Search</Button>
               </InputGroupAddon>
             </InputGroup>
           </div>
           <div className="dropdown col-1">
-            <Dropdown color="primary" group isOpen={hasOpenedDropdown} toggle={() => { dropdownToggle(); }}>
+            <Dropdown color="primary" group isOpen={hasOpenedDropdown} toggle={memoDropdownToggle}>
               <DropdownToggle caret color="secondary">
                 { size }
               </DropdownToggle>
               <DropdownMenu>
-                { [10, 15, 30].map(size => {
-                  return <DropdownItem
-                    key={size}
-                    onClick={() => changeNumberOfUsers(size)} >
-                    { size } items
-                  </DropdownItem>;
-                }) }
+                { numberOfUsersDropdown(memoChangeNumberOfUsers) }
               </DropdownMenu>
             </Dropdown>
           </div>
           <div className="role col-3">
-            <Input type="select" name="select">
-              <option value="">Roles</option>
-              <option>USER</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4</option>
-              <option>5</option>
-            </Input>
+            <Select value={selectedRole} onChange={changeSelectedRole} options={selectOptions} />
           </div>
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={false} toggle={() => {}}>
@@ -117,14 +147,12 @@ function Users () {
             List actions
               </DropdownToggle>
               <DropdownMenu>
-                { [10, 15, 30].map(size => {
-                  return <DropdownItem key={size} >
-                    { size } items
-                  </DropdownItem>;
-                }) }
+                <DropdownItem disabled={true}>
+                Menu is broken. Bye!
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <Link href="" className="mx-2 btn btn-success">Create User</Link>
+            <Link href="#" className="mx-2 btn btn-success">Create User</Link>
           </div>
         </div>
         <div className="table-header">
@@ -134,7 +162,7 @@ function Users () {
                 <th className="col-4">
                   <div className="d-flex align-items-center">
                     <div className="check d-inline-block custom-checkbox custom-control">
-                      <Input type="checkbox" checked={hasAllUsersChecked} onClick={usersChecked} />
+                      <Input type="checkbox" checked={hasAllUsersChecked} onClick={handleUsersSelected} />
                     </div>
                     <button className="text-nowrap btn btn-outline-link">
                       <FontAwesomeIcon icon={faArrowUp} /> Name
@@ -166,13 +194,13 @@ function Users () {
           <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px', marginRight: '-17px' }}>
             <Table striped bordered>
               <tbody>
-                { data.content.map(user => {
+                { content.map(user => {
                   const createdDate = moment(user.createdDate).format('L');
                   return <tr key={user.id}>
                     <td className="col-4">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={user.checked} onChange={() => userChecked(user.id)} />
+                          <Input type="checkbox" checked={user.checked} onChange={() => handleUserSelected(user.id)} />
                         </div>
                         <Link href="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
@@ -194,7 +222,7 @@ function Users () {
       </div>
       <div className="pagination mb-3" style={{ margin: '0 auto' }}>
         <Pagination
-          onChange={page => changePage(page - 1)}
+          onChange={handleChangePage}
           current={page + 1}
           defaultCurrent={1}
           total={data.totalElements}
@@ -207,4 +235,4 @@ function Users () {
     </div>;
 }
 
-export default Users;
+export default React.memo(Users);
