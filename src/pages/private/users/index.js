@@ -1,6 +1,5 @@
 // outsource dependencies
 import React, { useCallback, useEffect, useMemo } from 'react';
-import moment from 'moment';
 import Select from 'react-select';
 import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
@@ -26,19 +25,6 @@ const selectOptions = [
 
 const numberOfUsers = [10, 15, 30];
 
-function numberOfUsersDropdown (changeNumberOfUsers) {
-  if (Array.isArray(numberOfUsers)) {
-    return numberOfUsers.map(size => {
-      return <DropdownItem key={size} onClick={() => changeNumberOfUsers(size)} >
-        { size } items
-      </DropdownItem>;
-    });
-  }
-  return <DropdownItem disabled={true}>
-    Menu is broken. Bye!
-  </DropdownItem>;
-}
-
 function Users () {
   const {
     data,
@@ -57,23 +43,23 @@ function Users () {
     [data.content]
   );
 
+  const hasRoles = (roles) => Array.isArray(roles) ? roles : [];
+
   const handleChangePage = useCallback(
     page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1, size, name } }),
     [dispatch, name, size]
   );
 
-  const memoChangeNumberOfUsers = useCallback(
-    (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size, name } }),
-    [dispatch, name]
-  );
+  const handleChangeNumberOfUsers = (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size, name } });
 
-  const memoDropdownToggle = useCallback(
+  const handleDropdownToggle = useCallback(
     () => dispatch({ type: TYPE.META, payload: { hasOpenedDropdown: !hasOpenedDropdown } }),
     [dispatch, hasOpenedDropdown]
   );
 
-  const memoChangeSearch = useCallback(
-    (name) => dispatch({ type: TYPE.META, payload: { name } }),
+  // function gets event for getting value by target to keep the right memo
+  const handleChangeSearch = useCallback(
+    (event) => dispatch({ type: TYPE.META, payload: { name: event.target.value } }),
     [dispatch]
   );
 
@@ -82,15 +68,25 @@ function Users () {
     [dispatch, page, size]
   );
 
-  function searchSubmit (e) {
-    if (e.key === 'Enter') {
-      getUsersBySearch();
-    }
-  }
+  const handleGetUsersBySearch = useCallback(
+    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, name } }),
+    [dispatch, name, size]
+  );
 
-  function getUsersBySearch () {
-    dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, name } });
-  }
+  const handleSubmitSearch = useCallback(event => {
+    if (event.key === 'Enter') {
+      handleGetUsersBySearch();
+    }
+  }, [handleGetUsersBySearch]);
+
+  const handleUsersSelected = () => dispatch({ type: TYPE.USERS_SELECTED });
+
+  const handleUserSelected = userId => dispatch({ type: TYPE.USER_SELECTED, payload: { userId } });
+
+  const handleChangeSelectedRole = useCallback(
+    (selectedRole) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, roles: [selectedRole.value] } }),
+    [dispatch, size]
+  );
 
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE });
@@ -98,14 +94,6 @@ function Users () {
       console.log('users is destructured');
     };
   }, [dispatch]);
-
-  const handleUsersSelected = () => dispatch({ type: TYPE.USERS_SELECTED });
-
-  const handleUserSelected = userId => dispatch({ type: TYPE.USER_SELECTED, payload: { userId } });
-
-  function changeSelectedRole (selectedRole) {
-    dispatch({ type: TYPE.META, payload: { selectedRole } });
-  }
 
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
@@ -121,25 +109,29 @@ function Users () {
               <Input
                 placeholder="Search"
                 value={name}
-                onChange={(e) => memoChangeSearch(e.target.value)}
-                onKeyPress={searchSubmit} />
+                onChange={handleChangeSearch}
+                onKeyPress={handleSubmitSearch} />
               <InputGroupAddon addonType="append">
-                <Button color="primary" onClick={getUsersBySearch}>Search</Button>
+                <Button color="primary" onClick={handleGetUsersBySearch}>Search</Button>
               </InputGroupAddon>
             </InputGroup>
           </div>
           <div className="dropdown col-1">
-            <Dropdown color="primary" group isOpen={hasOpenedDropdown} toggle={memoDropdownToggle}>
+            <Dropdown color="primary" group isOpen={hasOpenedDropdown} toggle={handleDropdownToggle}>
               <DropdownToggle caret color="secondary">
                 { size }
               </DropdownToggle>
               <DropdownMenu>
-                { numberOfUsersDropdown(memoChangeNumberOfUsers) }
+                { numberOfUsers.map(size => {
+                  return <DropdownItem key={size} onClick={() => handleChangeNumberOfUsers(size)} >
+                    { size } items
+                  </DropdownItem>;
+                }) }
               </DropdownMenu>
             </Dropdown>
           </div>
           <div className="role col-3">
-            <Select value={selectedRole} onChange={changeSelectedRole} options={selectOptions} />
+            <Select value={selectedRole} onChange={handleChangeSelectedRole} options={selectOptions} />
           </div>
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={false} toggle={() => {}}>
@@ -195,7 +187,6 @@ function Users () {
             <Table striped bordered>
               <tbody>
                 { content.map(user => {
-                  const createdDate = moment(user.createdDate).format('L');
                   return <tr key={user.id}>
                     <td className="col-4">
                       <div className="d-flex align-items-center">
@@ -207,9 +198,9 @@ function Users () {
                     </td>
                     <td className="col-1">{ user.id }</td>
                     <td className="col-2">
-                      { user.roles.map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
+                      { hasRoles(user.roles).map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
                     </td>
-                    <td className="col-2">{ createdDate }</td>
+                    <td className="col-2">{ user.createdDate.format('L') }</td>
                     <td className="col-1">
                       <Link href="#" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
                     </td>

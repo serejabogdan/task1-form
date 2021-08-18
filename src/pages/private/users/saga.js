@@ -1,5 +1,6 @@
 // outsource dependencies
 import qs from 'qs';
+import moment from 'moment';
 import { replace } from 'connected-react-router';
 import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 
@@ -21,7 +22,7 @@ function * getUsers (payload) {
   try {
     const users = yield call(getUsersApi, payload);
     const usersContent = users.data.content.map(user => {
-      return { ...user, checked: false };
+      return { ...user, createdDate: moment(user.createdDate), checked: false };
     });
     yield put({ type: TYPE.META, payload: { data: { ...users.data, content: usersContent } } });
   } catch (error) {
@@ -30,13 +31,17 @@ function * getUsers (payload) {
 }
 
 function * updateFilters ({ type, payload }) {
-  const { page, size, name } = payload;
+  const { page, size, name, roles } = payload;
   const filters = { page, size };
   if (name) {
     filters.name = name;
   }
+  if (roles) {
+    filters.roles = roles;
+  }
+  // yield console.log(filters);
   yield call(setFilters, filters);
-  yield put({ type: TYPE.META, payload: { page, size, name, hasAllUsersChecked: false, ...filters } });
+  yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
 }
 
 function * userSelected ({ type, payload }) {
@@ -72,10 +77,10 @@ function * usersSelected ({ type, payload }) {
 }
 
 function * setFilters (filters) {
-  const queriesString = qs.stringify(filters);
+  const { size, page, name, roles } = filters;
+  const queriesString = qs.stringify({ size, page, name });
   yield put(replace(`?${queriesString}`));
-  const { size, page, name } = filters;
-  yield call(getUsers, { params: { size, page }, data: { name } });
+  yield call(getUsers, { params: { size, page }, data: { name, roles } });
 }
 
 function * parseQueryParams (queryParams) {
