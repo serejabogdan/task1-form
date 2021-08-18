@@ -1,5 +1,6 @@
 // outsource dependencies
 import React, { useCallback, useEffect, useMemo } from 'react';
+import moment from 'moment';
 import Select from 'react-select';
 import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
@@ -39,11 +40,18 @@ function Users () {
   const dispatch = useDispatch();
 
   const content = useMemo(
-    () => Array.isArray(data.content) ? data.content : [],
+    () => {
+      if (Array.isArray(data.content)) {
+        return data.content.map(user => {
+          const createdDate = typeof user.createdDate === 'string' ? moment(user.createdDate) : '';
+          const roles = Array.isArray(user.roles) ? user.roles : [];
+          return { ...user, createdDate, roles };
+        });
+      }
+      return [];
+    },
     [data.content]
   );
-
-  const hasRoles = (roles) => Array.isArray(roles) ? roles : [];
 
   const handleChangePage = useCallback(
     page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1, size, name } }),
@@ -198,7 +206,7 @@ function Users () {
                     </td>
                     <td className="col-1">{ user.id }</td>
                     <td className="col-2">
-                      { hasRoles(user.roles).map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
+                      { user.roles.map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
                     </td>
                     <td className="col-2">{ user.createdDate.format('L') }</td>
                     <td className="col-1">

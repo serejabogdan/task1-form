@@ -15,12 +15,10 @@ const initial = {
   page: 0,
   size: 10,
   name: '',
-  search: '',
   disabled: false,
   errorMessage: '',
-  selectedRole: '',
+  roles: [],
   initialized: false,
-  hasCheckedUsers: [],
   hasOpenedDropdown: false,
   hasAllUsersChecked: false,
   data: {

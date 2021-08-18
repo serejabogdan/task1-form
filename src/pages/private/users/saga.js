@@ -1,6 +1,5 @@
 // outsource dependencies
 import qs from 'qs';
-import moment from 'moment';
 import { replace } from 'connected-react-router';
 import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 
@@ -22,7 +21,7 @@ function * getUsers (payload) {
   try {
     const users = yield call(getUsersApi, payload);
     const usersContent = users.data.content.map(user => {
-      return { ...user, createdDate: moment(user.createdDate), checked: false };
+      return { ...user, checked: false };
     });
     yield put({ type: TYPE.META, payload: { data: { ...users.data, content: usersContent } } });
   } catch (error) {
