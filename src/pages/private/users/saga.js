@@ -43,7 +43,17 @@ function * updateFilters ({ type, payload }) {
   yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
 }
 
+function * isAtLeastOneSelected () {
+  const { data } = yield select(selector);
+  const isActionsDropdownDisabled = yield !data.content.some(user => user.checked);
+  yield put({
+    type: TYPE.META,
+    payload: { isActionsDropdownDisabled }
+  });
+}
+
 function * userSelected ({ type, payload }) {
+  // variable isSelected checks at least one checked
   const { data } = yield select(selector);
   const users = yield data.content.map(user => {
     if (user.id === payload.userId) {
@@ -58,6 +68,7 @@ function * userSelected ({ type, payload }) {
       data: { ...data, content: users }
     }
   });
+  yield call(isAtLeastOneSelected);
 }
 
 function * usersSelected ({ type, payload }) {
@@ -73,6 +84,7 @@ function * usersSelected ({ type, payload }) {
       data: { ...data, content: users }
     }
   });
+  yield call(isAtLeastOneSelected);
 }
 
 function * setFilters (filters) {

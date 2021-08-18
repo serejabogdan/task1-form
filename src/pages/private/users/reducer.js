@@ -19,8 +19,8 @@ const initial = {
   errorMessage: '',
   roles: [],
   initialized: false,
-  hasOpenedDropdown: false,
   hasAllUsersChecked: false,
+  isActionsDropdownDisabled: true,
   data: {
     content: [],
     size: 0,

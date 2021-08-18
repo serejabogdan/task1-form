@@ -1,5 +1,5 @@
 // outsource dependencies
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import moment from 'moment';
 import Select from 'react-select';
 import Pagination from 'rc-pagination';
@@ -33,11 +33,14 @@ function Users () {
     page,
     name,
     initialized,
-    selectedRole,
-    hasOpenedDropdown,
+    roles,
     hasAllUsersChecked,
+    isActionsDropdownDisabled
   } = useSelector(selector);
   const dispatch = useDispatch();
+
+  const [isTableDropdownOpened, setTableDropdownOpened] = useState(false);
+  const [isActionsDropdownOpened, setActionsDropdownOpened] = useState(false);
 
   const content = useMemo(
     () => {
@@ -60,9 +63,14 @@ function Users () {
 
   const handleChangeNumberOfUsers = (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size, name } });
 
-  const handleDropdownToggle = useCallback(
-    () => dispatch({ type: TYPE.META, payload: { hasOpenedDropdown: !hasOpenedDropdown } }),
-    [dispatch, hasOpenedDropdown]
+  const handleToggleTableDropdown = useCallback(
+    () => setTableDropdownOpened(state => !state),
+    [setTableDropdownOpened]
+  );
+
+  const handleToggleActionsDropdown = useCallback(
+    () => setActionsDropdownOpened(state => !state),
+    [setActionsDropdownOpened]
   );
 
   // function gets event for getting value by target to keep the right memo
@@ -87,9 +95,11 @@ function Users () {
     }
   }, [handleGetUsersBySearch]);
 
-  const handleUsersSelected = () => dispatch({ type: TYPE.USERS_SELECTED });
+  const handleSelectedAllUsers = useCallback(() => dispatch({ type: TYPE.USERS_SELECTED }), [dispatch]);
 
-  const handleUserSelected = userId => dispatch({ type: TYPE.USER_SELECTED, payload: { userId } });
+  const handleSelectedUser = userId => {
+    dispatch({ type: TYPE.USER_SELECTED, payload: { userId } });
+  };
 
   const handleChangeSelectedRole = useCallback(
     (selectedRole) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, roles: [selectedRole.value] } }),
@@ -125,7 +135,7 @@ function Users () {
             </InputGroup>
           </div>
           <div className="dropdown col-1">
-            <Dropdown color="primary" group isOpen={hasOpenedDropdown} toggle={handleDropdownToggle}>
+            <Dropdown color="primary" group isOpen={isTableDropdownOpened} toggle={handleToggleTableDropdown}>
               <DropdownToggle caret color="secondary">
                 { size }
               </DropdownToggle>
@@ -139,16 +149,16 @@ function Users () {
             </Dropdown>
           </div>
           <div className="role col-3">
-            <Select value={selectedRole} onChange={handleChangeSelectedRole} options={selectOptions} />
+            <Select value={roles.join(',')} onChange={handleChangeSelectedRole} options={selectOptions} />
           </div>
           <div className="d-flex justify-content-end col-4">
-            <Dropdown group isOpen={false} toggle={() => {}}>
-              <DropdownToggle caret color="secondary" disabled={true}>
+            <Dropdown group isOpen={isActionsDropdownOpened} toggle={handleToggleActionsDropdown}>
+              <DropdownToggle caret color="secondary" disabled={isActionsDropdownDisabled}>
             List actions
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem disabled={true}>
-                Menu is broken. Bye!
+                <DropdownItem disabled={isActionsDropdownDisabled}>
+                Delete
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -162,7 +172,7 @@ function Users () {
                 <th className="col-4">
                   <div className="d-flex align-items-center">
                     <div className="check d-inline-block custom-checkbox custom-control">
-                      <Input type="checkbox" checked={hasAllUsersChecked} onClick={handleUsersSelected} />
+                      <Input type="checkbox" checked={hasAllUsersChecked} onClick={handleSelectedAllUsers} />
                     </div>
                     <button className="text-nowrap btn btn-outline-link">
                       <FontAwesomeIcon icon={faArrowUp} /> Name
@@ -199,7 +209,7 @@ function Users () {
                     <td className="col-4">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={user.checked} onChange={() => handleUserSelected(user.id)} />
+                          <Input type="checkbox" checked={user.checked} onChange={() => handleSelectedUser(user.id)} />
                         </div>
                         <Link href="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
