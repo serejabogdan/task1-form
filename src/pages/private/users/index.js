@@ -32,8 +32,8 @@ function Users () {
     size,
     page,
     name,
-    initialized,
     roles,
+    initialized,
     hasAllUsersChecked,
     isActionsDropdownDisabled
   } = useSelector(selector);
@@ -149,7 +149,8 @@ function Users () {
             </Dropdown>
           </div>
           <div className="role col-3">
-            <Select value={roles.join(',')} onChange={handleChangeSelectedRole} options={selectOptions} />
+            // TODO: deal with the value and isClearable
+            <Select onChange={handleChangeSelectedRole} options={selectOptions} />
           </div>
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={isActionsDropdownOpened} toggle={handleToggleActionsDropdown}>

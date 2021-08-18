@@ -17,43 +17,7 @@ function getUsersApi ({ data, params }) {
   });
 }
 
-function * getUsers (payload) {
-  try {
-    const users = yield call(getUsersApi, payload);
-    const usersContent = users.data.content.map(user => {
-      return { ...user, checked: false };
-    });
-    yield put({ type: TYPE.META, payload: { data: { ...users.data, content: usersContent } } });
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-function * updateFilters ({ type, payload }) {
-  const { page, size, name, roles } = payload;
-  const filters = { page, size };
-  if (name) {
-    filters.name = name;
-  }
-  if (roles) {
-    filters.roles = roles;
-  }
-  // yield console.log(filters);
-  yield call(setFilters, filters);
-  yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
-}
-
-function * isAtLeastOneSelected () {
-  const { data } = yield select(selector);
-  const isActionsDropdownDisabled = yield !data.content.some(user => user.checked);
-  yield put({
-    type: TYPE.META,
-    payload: { isActionsDropdownDisabled }
-  });
-}
-
 function * userSelected ({ type, payload }) {
-  // variable isSelected checks at least one checked
   const { data } = yield select(selector);
   const users = yield data.content.map(user => {
     if (user.id === payload.userId) {
@@ -74,9 +38,7 @@ function * userSelected ({ type, payload }) {
 function * usersSelected ({ type, payload }) {
   const state = yield select(selector);
   const { data, hasAllUsersChecked } = state;
-  const users = data.content.map(user => {
-    return ({ ...user, checked: !hasAllUsersChecked });
-  });
+  const users = data.content.map(user => ({ ...user, checked: !hasAllUsersChecked }));
   yield put({
     type: TYPE.META,
     payload: {
@@ -85,6 +47,34 @@ function * usersSelected ({ type, payload }) {
     }
   });
   yield call(isAtLeastOneSelected);
+}
+
+function * getUsers (payload) {
+  try {
+    const users = yield call(getUsersApi, payload);
+    const usersContent = users.data.content.map(user => {
+      return { ...user, checked: false };
+    });
+    yield put({ type: TYPE.META, payload: { data: { ...users.data, content: usersContent } } });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function * updateFilters ({ type, payload }) {
+  const { page, size, name, roles } = yield select(selector);
+  const filters = { page, size, name, roles, ...payload };
+  yield call(setFilters, filters);
+  yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
+}
+
+function * isAtLeastOneSelected () {
+  const { data } = yield select(selector);
+  const isActionsDropdownDisabled = yield !data.content.some(user => user.checked);
+  yield put({
+    type: TYPE.META,
+    payload: { isActionsDropdownDisabled }
+  });
 }
 
 function * setFilters (filters) {
@@ -110,8 +100,8 @@ function * initializeSaga () {
     const filters = yield call(parseQueryParams, queryParams);
     yield call(setFilters, filters);
   } else {
-    const { page, size } = yield select(selector);
-    yield call(setFilters, { size, page });
+    const { page, size, name, roles } = yield select(selector);
+    yield call(setFilters, { size, page, name, roles });
   }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }
