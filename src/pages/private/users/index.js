@@ -32,7 +32,6 @@ function Users () {
     size,
     page,
     name,
-    roles,
     initialized,
     hasAllUsersChecked,
     isActionsDropdownDisabled
@@ -57,11 +56,11 @@ function Users () {
   );
 
   const handleChangePage = useCallback(
-    page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1, size, name } }),
-    [dispatch, name, size]
+    page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1 } }),
+    [dispatch]
   );
 
-  const handleChangeNumberOfUsers = (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size, name } });
+  const handleChangeNumberOfUsers = (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size } });
 
   const handleToggleTableDropdown = useCallback(
     () => setTableDropdownOpened(state => !state),
@@ -80,13 +79,13 @@ function Users () {
   );
 
   const handleClearSearch = useCallback(
-    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page, size, name: '' } }),
-    [dispatch, page, size]
+    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { name: '' } }),
+    [dispatch]
   );
 
   const handleGetUsersBySearch = useCallback(
-    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, name } }),
-    [dispatch, name, size]
+    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0 } }),
+    [dispatch]
   );
 
   const handleSubmitSearch = useCallback(event => {
@@ -102,8 +101,11 @@ function Users () {
   };
 
   const handleChangeSelectedRole = useCallback(
-    (selectedRole) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { size, page: 0, roles: [selectedRole.value] } }),
-    [dispatch, size]
+    (selectedRole) => {
+      const hasRolesValue = selectedRole ? [selectedRole.value] : [];
+      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, roles: hasRolesValue } });
+    },
+    [dispatch]
   );
 
   useEffect(() => {
@@ -149,8 +151,7 @@ function Users () {
             </Dropdown>
           </div>
           <div className="role col-3">
-            // TODO: deal with the value and isClearable
-            <Select onChange={handleChangeSelectedRole} options={selectOptions} />
+            <Select isClearable={true} onChange={handleChangeSelectedRole} options={selectOptions} placeholder="Roles" />
           </div>
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={isActionsDropdownOpened} toggle={handleToggleActionsDropdown}>
@@ -163,7 +164,7 @@ function Users () {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <Link href="#" className="mx-2 btn btn-success">Create User</Link>
+            <Link to="#" className="mx-2 btn btn-success">Create User</Link>
           </div>
         </div>
         <div className="table-header">
@@ -173,7 +174,7 @@ function Users () {
                 <th className="col-4">
                   <div className="d-flex align-items-center">
                     <div className="check d-inline-block custom-checkbox custom-control">
-                      <Input type="checkbox" checked={hasAllUsersChecked} onClick={handleSelectedAllUsers} />
+                      <Input type="checkbox" checked={hasAllUsersChecked} readOnly onChange={handleSelectedAllUsers} />
                     </div>
                     <button className="text-nowrap btn btn-outline-link">
                       <FontAwesomeIcon icon={faArrowUp} /> Name
@@ -210,9 +211,9 @@ function Users () {
                     <td className="col-4">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={user.checked} onChange={() => handleSelectedUser(user.id)} />
+                          <Input type="checkbox" checked={user.checked} readOnly onChange={() => handleSelectedUser(user.id)} />
                         </div>
-                        <Link href="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
+                        <Link to="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
                     </td>
                     <td className="col-1">{ user.id }</td>
@@ -221,7 +222,7 @@ function Users () {
                     </td>
                     <td className="col-2">{ user.createdDate.format('L') }</td>
                     <td className="col-1">
-                      <Link href="#" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
+                      <Link to="#" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
                     </td>
                   </tr>;
                 }) }
