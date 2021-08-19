@@ -33,9 +33,11 @@ function Users () {
     size,
     page,
     name,
+    sortField,
     initialized,
+    sortDirection,
     hasAllUsersChecked,
-    isActionsDropdownDisabled
+    isActionsDropdownDisabled,
   } = useSelector(selector);
   const dispatch = useDispatch();
 
@@ -117,28 +119,22 @@ function Users () {
   const sortUp = useMemo(() => <FontAwesomeIcon icon={faSortAmountUp} className="text-gray-d" />, []);
   const sortDown = useMemo(() => <FontAwesomeIcon icon={faSortAmountDown} className="text-gray-d" />, []);
 
-  const [sortingDirection, setSortDirection] = useState({ direction: true, name: '' });
-
   const sortIcon = useCallback((name) => {
-    // sortingDirection.name !== name ? sortDefault : sortingDirection.direction ? sortDown : sortUp
-    if (sortingDirection.name !== name) {
+    if (sortField !== name) {
       return sortDefault;
     }
-    if (sortingDirection.direction) {
+    if (sortDirection) {
       return sortDown;
     }
     return sortUp;
-  }, [sortDefault, sortDown, sortUp, sortingDirection.direction, sortingDirection.name]);
+  }, [sortDefault, sortDirection, sortDown, sortField, sortUp]);
 
-  function nameSorted (name) {
-    setSortDirection(state => {
-      if (state.name === name) {
-        dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${name},${!state.direction ? 'ASC' : 'DESC'}` } });
-        return { ...state, direction: !state.direction };
-      }
-      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${name},ASC` } });
-      return { name, direction: true };
-    });
+  function nameSorted (fieldName) {
+    if (sortField === fieldName) {
+      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${fieldName},${!sortDirection ? 'ASC' : 'DESC'}`, sortDirection: !sortDirection } });
+    } else {
+      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${fieldName},ASC`, sortField: fieldName, sortDirection: true } });
+    }
   }
 
   return initialized

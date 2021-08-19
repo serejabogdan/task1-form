@@ -1,6 +1,6 @@
 // outsource dependencies
 import qs from 'qs';
-import { replace } from 'connected-react-router';
+import { push } from 'connected-react-router';
 import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 
 // local dependencies
@@ -62,7 +62,10 @@ function * updateFilters ({ type, payload }) {
   const { page, size, name, roles, sort } = yield select(selector);
   const filters = { page, size, name, roles, sort, ...payload };
   yield call(setFilters, filters);
-  yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
+  yield put({
+    type: TYPE.META,
+    payload: { ...filters, hasAllUsersChecked: false }
+  });
 }
 
 function * isAtLeastOneSelected () {
@@ -77,7 +80,7 @@ function * isAtLeastOneSelected () {
 function * setFilters (filters) {
   const { size, page, name, roles, sort } = filters;
   const queriesString = qs.stringify({ size, page, sort });
-  yield put(replace(`?${queriesString}`));
+  yield put(push(`?${queriesString}`));
   yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
 }
 
@@ -98,7 +101,10 @@ function * initializeSaga () {
   if (queryParams) {
     const filters = yield call(parseQueryParams, queryParams);
     yield call(updateFilters, { payload: filters });
-    yield put({ type: TYPE.META, payload: filters });
+    // parsed sort params like field by sorted and direction
+    const [sortField, sortDirection] = filters.sort.split(',');
+    const sortDirectionBoolean = sortDirection === 'ASC';
+    yield put({ type: TYPE.META, payload: { ...filters, sortField, sortDirection: sortDirectionBoolean, } });
   } else {
     yield call(updateFilters, {});
   }
