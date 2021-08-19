@@ -10,10 +10,10 @@ import Users from './users';
 import Homepage from './homepage';
 import { selector as privateSelector } from './reducer';
 import { selector as pagesSelector, TYPE } from '../reducer';
-import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USERS } from '../../constants/routes';
+import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USERS, PUBLIC_SIGN_IN } from '../../constants/routes';
 
 function Private () {
-  const { user, auth } = useSelector(pagesSelector);
+  const { auth } = useSelector(pagesSelector);
   const { initialized } = useSelector(privateSelector);
   const dispatch = useDispatch();
 
@@ -29,13 +29,13 @@ function Private () {
       />
       <Route
         path={PRIVATE_USER}
-        render={() => <User user={user}/>}
+        component={User}
       />
       <Route
         path={PRIVATE_HOMEPAGE}
-        component={() => <Homepage user={user}/>}
+        component={Homepage}
       />
-      <Redirect to={PRIVATE_USERS}/>
+      <Redirect to={PUBLIC_SIGN_IN}/>
     </Switch>
     : <div>
       <Spinner color="primary" />
