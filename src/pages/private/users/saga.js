@@ -59,8 +59,8 @@ function * getUsers (payload) {
 }
 
 function * updateFilters ({ type, payload }) {
-  const { page, size, name, roles } = yield select(selector);
-  const filters = { page, size, name, roles, ...payload };
+  const { page, size, name, roles, sort } = yield select(selector);
+  const filters = { page, size, name, roles, sort, ...payload };
   yield call(setFilters, filters);
   yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
 }
@@ -75,17 +75,19 @@ function * isAtLeastOneSelected () {
 }
 
 function * setFilters (filters) {
-  const { size, page, name, roles } = filters;
-  const queriesString = qs.stringify({ size, page, name });
+  const { size, page, name, roles, sort } = filters;
+  const queriesString = qs.stringify({ size, page, sort });
   yield put(replace(`?${queriesString}`));
-  yield call(getUsers, { params: { size, page }, data: { name, roles } });
+  yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
 }
 
 function * parseQueryParams (queryParams) {
   const validFilters = ['page', 'size', 'sort'];
+  const state = yield select(selector);
   const queries = yield call(qs.parse, queryParams);
   let filters = validFilters.reduce((acc, filter) => {
-    return { ...acc, [filter]: queries[filter] };
+    const hasQuery = queries[filter] ? queries[filter] : state[filter];
+    return { ...acc, [filter]: hasQuery };
   }, {});
   filters = { ...filters, size: Number(filters.size), page: Number(filters.page) };
   return filters;
@@ -95,11 +97,10 @@ function * initializeSaga () {
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
     const filters = yield call(parseQueryParams, queryParams);
-    yield call(setFilters, filters);
+    yield call(updateFilters, { payload: filters });
     yield put({ type: TYPE.META, payload: filters });
   } else {
-    const { page, size, name, roles } = yield select(selector);
-    yield call(setFilters, { size, page, name, roles });
+    yield call(updateFilters, {});
   }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }

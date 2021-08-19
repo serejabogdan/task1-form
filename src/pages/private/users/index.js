@@ -5,7 +5,7 @@ import Select from 'react-select';
 import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { faArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faSort, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
@@ -13,6 +13,7 @@ import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, In
 import { TYPE, selector } from './reducer';
 
 // styles
+import './styles.css';
 import 'rc-pagination/assets/index.css';
 
 const selectOptions = [
@@ -47,12 +48,13 @@ function Users () {
         return data.content.map(user => {
           const createdDate = typeof user.createdDate === 'string' ? moment(user.createdDate) : '';
           const roles = Array.isArray(user.roles) ? user.roles : [];
-          return { ...user, createdDate, roles };
+          const onSelect = () => dispatch({ type: TYPE.USER_SELECTED, payload: { userId: user.id } });
+          return { ...user, createdDate, roles, onSelect };
         });
       }
       return [];
     },
-    [data.content]
+    [data.content, dispatch]
   );
 
   const handleChangePage = useCallback(
@@ -96,10 +98,6 @@ function Users () {
 
   const handleSelectedAllUsers = useCallback(() => dispatch({ type: TYPE.USERS_SELECTED }), [dispatch]);
 
-  const handleSelectedUser = userId => {
-    dispatch({ type: TYPE.USER_SELECTED, payload: { userId } });
-  };
-
   const handleChangeSelectedRole = useCallback(
     (selectedRole) => {
       const hasRolesValue = selectedRole ? [selectedRole.value] : [];
@@ -115,9 +113,37 @@ function Users () {
     };
   }, [dispatch]);
 
+  const sortDefault = useMemo(() => <FontAwesomeIcon icon={faSort} className="text-gray" />, []);
+  const sortUp = useMemo(() => <FontAwesomeIcon icon={faSortAmountUp} className="text-gray-d" />, []);
+  const sortDown = useMemo(() => <FontAwesomeIcon icon={faSortAmountDown} className="text-gray-d" />, []);
+
+  const [sortingDirection, setSortDirection] = useState({ direction: true, name: '' });
+
+  const sortIcon = useCallback((name) => {
+    // sortingDirection.name !== name ? sortDefault : sortingDirection.direction ? sortDown : sortUp
+    if (sortingDirection.name !== name) {
+      return sortDefault;
+    }
+    if (sortingDirection.direction) {
+      return sortDown;
+    }
+    return sortUp;
+  }, [sortDefault, sortDown, sortUp, sortingDirection.direction, sortingDirection.name]);
+
+  function nameSorted (name) {
+    setSortDirection(state => {
+      if (state.name === name) {
+        dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${name},${!state.direction ? 'ASC' : 'DESC'}` } });
+        return { ...state, direction: !state.direction };
+      }
+      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${name},ASC` } });
+      return { name, direction: true };
+    });
+  }
+
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
-      <div className="container-fluid flex-grow-1">
+      <div className="container-fluid">
         <h2 className="pt-3 text-primary">Users</h2>
         <hr className="row" />
         <div className="row mb-3">
@@ -156,7 +182,7 @@ function Users () {
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={isActionsDropdownOpened} toggle={handleToggleActionsDropdown}>
               <DropdownToggle caret color="secondary" disabled={isActionsDropdownDisabled}>
-            List actions
+                List actions
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem disabled={isActionsDropdownDisabled}>
@@ -169,21 +195,21 @@ function Users () {
         </div>
         <div className="table-header">
           <Table>
-            <thead style={{ position: 'sticky' }}>
+            <thead>
               <tr>
                 <th className="col-4">
                   <div className="d-flex align-items-center">
                     <div className="check d-inline-block custom-checkbox custom-control">
                       <Input type="checkbox" checked={hasAllUsersChecked} readOnly onChange={handleSelectedAllUsers} />
                     </div>
-                    <button className="text-nowrap btn btn-outline-link">
-                      <FontAwesomeIcon icon={faArrowUp} /> Name
+                    <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('name')}>
+                      { sortIcon('name') } <strong className="text-primary">Name</strong>
                     </button>
                   </div>
                 </th>
                 <th className="col-1">
-                  <button className="text-nowrap btn btn-outline-link">
-                    <FontAwesomeIcon icon={faArrowUp} /> Id
+                  <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('id')}>
+                    { sortIcon('id') } <strong className="text-primary">id</strong>
                   </button></th>
                 <th className="col-2">
                   <button className="text-nowrap btn btn-outline-link" disabled={true}>
@@ -191,12 +217,12 @@ function Users () {
                   </button>
                 </th>
                 <th className="col-2">
-                  <button className="text-nowrap btn btn-outline-link">
-                    <FontAwesomeIcon icon={faArrowUp} /> Creation Date
+                  <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('createdDate')}>
+                    { sortIcon('createdDate') } <strong className="text-primary">Creation Date</strong>
                   </button></th>
                 <th className="col-1">
                   <button className="text-nowrap btn btn-outline-link">
-                    <FontAwesomeIcon icon={faArrowUp} /> Actions
+                    <strong className="text-primary">Actions</strong>
                   </button></th>
               </tr>
             </thead>
@@ -211,7 +237,7 @@ function Users () {
                     <td className="col-4">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={user.checked} readOnly onChange={() => handleSelectedUser(user.id)} />
+                          <Input type="checkbox" checked={user.checked} readOnly onChange={user.onSelect} />
                         </div>
                         <Link to="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
