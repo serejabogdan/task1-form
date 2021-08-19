@@ -4,9 +4,10 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 
 // local dependencies
 import { TYPE } from '../reducer';
+import usersSaga from './users/saga';
 import { TYPE as PRIVATE_TYPE } from './reducer';
 import { TOKEN } from '../../constants/local-storage';
-import { PRIVATE_USER, PUBLIC_SIGN_IN } from '../../constants/routes';
+import { PUBLIC_SIGN_IN } from '../../constants/routes';
 import { getLocalStorage, removeLocalStorage } from '../../utils/local-storage';
 import { addAuthorizationHeader, getUserData, privateAPI } from '../../utils/API';
 
@@ -28,8 +29,7 @@ function * gettingUserDataWorker ({ type, payload }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield put(push(PUBLIC_SIGN_IN));
   }
-  yield delay(500);
-  yield put(push(PRIVATE_USER));
+  yield delay(200);
   yield put({ type: PRIVATE_TYPE.META, payload: { initialized: true } });
 }
 
@@ -51,4 +51,5 @@ function * watchGettingUser () {
 
 export default function * privateSaga () {
   yield fork(watchGettingUser);
+  yield fork(usersSaga);
 }

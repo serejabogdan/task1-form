@@ -1,0 +1,12 @@
+:root {
+    --text-gray: #dde6e9;
+    --text-gray-d: #a5a5a5;
+}
+
+.text-gray {
+    color: var(--text-gray);
+}
+
+.text-gray-d {
+    color: var(--text-gray-d);
+}
