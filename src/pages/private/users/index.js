@@ -11,6 +11,7 @@ import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, In
 
 // local dependencies
 import { TYPE, selector } from './reducer';
+import { SIZE } from '../../../constants/query-params-validation';
 
 // styles
 import './styles.css';
@@ -24,8 +25,6 @@ const selectOptions = [
   { value: 'TALENT_ADMIN', label: 'TALENT_ADMIN' },
   { value: 'DATABASE_MANAGER', label: 'DATABASE_MANAGER' },
 ];
-
-const numberOfUsers = [10, 15, 30];
 
 function Users () {
   const {
@@ -164,7 +163,7 @@ function Users () {
                 { size }
               </DropdownToggle>
               <DropdownMenu>
-                { numberOfUsers.map(size => {
+                { SIZE.map(size => {
                   return <DropdownItem key={size} onClick={() => handleChangeNumberOfUsers(size)} >
                     { size } items
                   </DropdownItem>;
