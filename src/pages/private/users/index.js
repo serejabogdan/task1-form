@@ -5,7 +5,7 @@ import Select from 'react-select';
 import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { faSort, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSearch, faSort, faSortAmountDown, faSortAmountUp, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
@@ -114,9 +114,10 @@ function Users () {
     };
   }, [dispatch]);
 
-  const sortDefault = useMemo(() => <FontAwesomeIcon icon={faSort} className="text-gray" />, []);
-  const sortUp = useMemo(() => <FontAwesomeIcon icon={faSortAmountUp} className="text-gray-d" />, []);
-  const sortDown = useMemo(() => <FontAwesomeIcon icon={faSortAmountDown} className="text-gray-d" />, []);
+  const getFontIcon = useCallback((props) => <FontAwesomeIcon {...props} />, []);
+  const sortDefault = getFontIcon({ icon: faSort, className: 'text-gray' });
+  const sortUp = getFontIcon({ icon: faSortAmountUp, className: 'text-gray-d' });
+  const sortDown = getFontIcon({ icon: faSortAmountDown, className: 'text-gray-d' });
 
   const sortIcon = useCallback((name) => {
     if (sortField !== name) {
@@ -145,15 +146,15 @@ function Users () {
           <div className="search col-4">
             <InputGroup>
               { name && <InputGroupAddon addonType="prepend" onClick={handleClearSearch}>
-                <Button color="primary">X</Button>
+                <Button color="primary">{ getFontIcon({ icon: faTimes }) }</Button>
               </InputGroupAddon> }
               <Input
-                placeholder="Search"
+                placeholder="⌕ Search"
                 value={name}
                 onChange={handleChangeSearch}
                 onKeyPress={handleSubmitSearch} />
               <InputGroupAddon addonType="append">
-                <Button color="primary" onClick={handleGetUsersBySearch}>Search</Button>
+                <Button color="primary" onClick={handleGetUsersBySearch}>{ getFontIcon({ icon: faSearch }) }</Button>
               </InputGroupAddon>
             </InputGroup>
           </div>
@@ -181,11 +182,11 @@ function Users () {
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem disabled={isActionsDropdownDisabled}>
-                Delete
+                  Delete
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <Link to="#" className="mx-2 btn btn-success">Create User</Link>
+            <Link to="#" className="mx-2 btn btn-success"> { getFontIcon({ icon: faPlus, className: 'mr-1' }) } Create User</Link>
           </div>
         </div>
         <div className="table-header">
@@ -207,18 +208,18 @@ function Users () {
                     { sortIcon('id') } <strong className="text-primary">id</strong>
                   </button></th>
                 <th className="col-2">
-                  <button className="text-nowrap btn btn-outline-link" disabled={true}>
-                    Roles
+                  <button className="text-nowrap btn btn-outline-link" disabled={true} onClick={() => nameSorted('roles')}>
+                    { sortIcon('roles') } Roles
                   </button>
                 </th>
                 <th className="col-2">
                   <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('createdDate')}>
                     { sortIcon('createdDate') } <strong className="text-primary">Creation Date</strong>
-                  </button></th>
-                <th className="col-1">
-                  <button className="text-nowrap btn btn-outline-link">
-                    <strong className="text-primary">Actions</strong>
-                  </button></th>
+                  </button>
+                </th>
+                <th className="col-1 align-middle">
+                  <h6 className="m-0 font-weight-bold text-primary">Actions</h6>
+                </th>
               </tr>
             </thead>
           </Table>
@@ -229,7 +230,7 @@ function Users () {
               <tbody>
                 { content.map(user => {
                   return <tr key={user.id}>
-                    <td className="col-4">
+                    <td className="col-4 align-middle">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
                           <Input type="checkbox" checked={user.checked} readOnly onChange={user.onSelect} />
@@ -237,12 +238,12 @@ function Users () {
                         <Link to="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
                     </td>
-                    <td className="col-1">{ user.id }</td>
-                    <td className="col-2">
+                    <td className="col-1 align-middle">{ user.id }</td>
+                    <td className="col-2 align-middle">
                       { user.roles.map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
                     </td>
-                    <td className="col-2">{ user.createdDate.format('L') }</td>
-                    <td className="col-1">
+                    <td className="col-2 align-middle">{ user.createdDate.format('L') }</td>
+                    <td className="col-1 align-middle">
                       <Link to="#" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
                     </td>
                   </tr>;
