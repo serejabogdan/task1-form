@@ -6,11 +6,11 @@ import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { faPlus, faSearch, faSort, faSortAmountDown, faSortAmountUp, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
 // local dependencies
 import { TYPE, selector } from './reducer';
+import FontIcon from '../../../components/font-icon';
 import { SIZE } from '../../../constants/query-params-validation';
 
 // styles
@@ -34,8 +34,8 @@ function Users () {
     name,
     sortField,
     initialized,
-    sortDirection,
     hasAllUsersChecked,
+    sortDirectionBoolean,
     isActionsDropdownDisabled,
   } = useSelector(selector);
   const dispatch = useDispatch();
@@ -114,28 +114,41 @@ function Users () {
     };
   }, [dispatch]);
 
-  const getFontIcon = useCallback((props) => <FontAwesomeIcon {...props} />, []);
-  const sortDefault = getFontIcon({ icon: faSort, className: 'text-gray' });
-  const sortUp = getFontIcon({ icon: faSortAmountUp, className: 'text-gray-d' });
-  const sortDown = getFontIcon({ icon: faSortAmountDown, className: 'text-gray-d' });
-
-  const sortIcon = useCallback((name) => {
+  const getSortIcon = useCallback((name) => {
     if (sortField !== name) {
-      return sortDefault;
+      return <FontIcon icon={faSort} className="text-gray" />;
     }
-    if (sortDirection) {
-      return sortDown;
+    if (sortDirectionBoolean) {
+      return <FontIcon icon={faSortAmountDown} className="text-gray-d" />;
     }
-    return sortUp;
-  }, [sortDefault, sortDirection, sortDown, sortField, sortUp]);
+    return <FontIcon icon={faSortAmountUp} className="text-gray-d" />;
+  }, [sortDirectionBoolean, sortField]);
 
-  function nameSorted (fieldName) {
+  const setSortName = useCallback((fieldName) => {
     if (sortField === fieldName) {
-      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${fieldName},${!sortDirection ? 'ASC' : 'DESC'}`, sortDirection: !sortDirection } });
+      dispatch({
+        type: TYPE.UPDATE_FILTERS,
+        payload: {
+          sort: `${fieldName},${!sortDirectionBoolean ? 'ASC' : 'DESC'}`,
+          sortDirectionBoolean: !sortDirectionBoolean
+        }
+      });
     } else {
-      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { sort: `${fieldName},ASC`, sortField: fieldName, sortDirection: true } });
+      dispatch({
+        type: TYPE.UPDATE_FILTERS,
+        payload: {
+          sort: `${fieldName},ASC`,
+          sortField: fieldName,
+          sortDirectionBoolean: true
+        }
+      });
     }
-  }
+  }, [dispatch, sortDirectionBoolean, sortField]);
+
+  const sortByName = useCallback(() => setSortName('name'), [setSortName]);
+  const sortById = useCallback(() => setSortName('id'), [setSortName]);
+  const sortByRoles = useCallback(() => setSortName('roles'), [setSortName]);
+  const sortByCreatedDate = useCallback(() => setSortName('createdDate'), [setSortName]);
 
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
@@ -146,7 +159,9 @@ function Users () {
           <div className="search col-4">
             <InputGroup>
               { name && <InputGroupAddon addonType="prepend" onClick={handleClearSearch}>
-                <Button color="primary">{ getFontIcon({ icon: faTimes }) }</Button>
+                <Button color="primary">
+                  <FontIcon icon={faTimes} />
+                </Button>
               </InputGroupAddon> }
               <Input
                 placeholder="⌕ Search"
@@ -154,7 +169,9 @@ function Users () {
                 onChange={handleChangeSearch}
                 onKeyPress={handleSubmitSearch} />
               <InputGroupAddon addonType="append">
-                <Button color="primary" onClick={handleGetUsersBySearch}>{ getFontIcon({ icon: faSearch }) }</Button>
+                <Button color="primary" onClick={handleGetUsersBySearch}>
+                  <FontIcon icon={faSearch} />
+                </Button>
               </InputGroupAddon>
             </InputGroup>
           </div>
@@ -186,7 +203,9 @@ function Users () {
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
-            <Link to="#" className="mx-2 btn btn-success"> { getFontIcon({ icon: faPlus, className: 'mr-1' }) } Create User</Link>
+            <Link to="#" className="mx-2 btn btn-success">
+              <FontIcon icon={faPlus} className="mr-1" /> Create User
+            </Link>
           </div>
         </div>
         <div className="table-header">
@@ -198,23 +217,24 @@ function Users () {
                     <div className="check d-inline-block custom-checkbox custom-control">
                       <Input type="checkbox" checked={hasAllUsersChecked} readOnly onChange={handleSelectedAllUsers} />
                     </div>
-                    <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('name')}>
-                      { sortIcon('name') } <strong className="text-primary">Name</strong>
+                    <button className="text-nowrap btn btn-outline-link" onClick={sortByName}>
+                      { getSortIcon('name') } <strong className="text-primary">Name</strong>
                     </button>
                   </div>
                 </th>
                 <th className="col-1">
-                  <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('id')}>
-                    { sortIcon('id') } <strong className="text-primary">id</strong>
-                  </button></th>
-                <th className="col-2">
-                  <button className="text-nowrap btn btn-outline-link" disabled={true} onClick={() => nameSorted('roles')}>
-                    { sortIcon('roles') } Roles
+                  <button className="text-nowrap btn btn-outline-link" onClick={sortById}>
+                    { getSortIcon('id') } <strong className="text-primary">id</strong>
                   </button>
                 </th>
                 <th className="col-2">
-                  <button className="text-nowrap btn btn-outline-link" onClick={() => nameSorted('createdDate')}>
-                    { sortIcon('createdDate') } <strong className="text-primary">Creation Date</strong>
+                  <button className="text-nowrap btn btn-outline-link" disabled={true} onClick={sortByRoles}>
+                    { getSortIcon('roles') } Roles
+                  </button>
+                </th>
+                <th className="col-2">
+                  <button className="text-nowrap btn btn-outline-link" onClick={sortByCreatedDate}>
+                    { getSortIcon('createdDate') } <strong className="text-primary">Creation Date</strong>
                   </button>
                 </th>
                 <th className="col-1 align-middle">

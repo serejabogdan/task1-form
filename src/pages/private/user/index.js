@@ -9,16 +9,16 @@ import { selector } from '../../reducer';
 
 function User () {
   const dispatch = useDispatch();
-  const state = useSelector(selector);
+  const { user } = useSelector(selector);
 
-  const user = useMemo(() => {
-    if (state.user instanceof Object) {
-      const coverImage = state.user.coverImage instanceof Object
-        ? state.user.coverImage : {};
-      return { ...state.user, coverImage };
+  const { id, name, coverImage } = useMemo(() => {
+    if (user instanceof Object) {
+      const coverImage = user.coverImage instanceof Object
+        ? user.coverImage : {};
+      return { ...user, coverImage };
     }
     return {};
-  }, [state.user]);
+  }, [user]);
 
   function logOut () {
     dispatch({ type: TYPE.LOGOUT });
@@ -26,10 +26,10 @@ function User () {
 
   return <div style={{ maxWidth: '700px', margin: '0 auto' }}>
     <ListGroup>
-      <ListGroupItem>id: { user.id }</ListGroupItem>
-      <ListGroupItem>name: { user.name }</ListGroupItem>
+      <ListGroupItem>id: { id }</ListGroupItem>
+      <ListGroupItem>name: { name }</ListGroupItem>
       <ListGroupItem>
-        <img src={user.coverImage.url} alt="Here is should be user"/>
+        <img src={coverImage.url} alt="Here is should be user"/>
       </ListGroupItem>
     </ListGroup>
     <Button color="primary" onClick={logOut}>

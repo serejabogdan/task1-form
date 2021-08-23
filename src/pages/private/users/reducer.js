@@ -20,9 +20,10 @@ const initial = {
   errorMessage: '',
   sort: 'name,ASC',
   sortField: 'name',
-  sortDirection: true,
   initialized: false,
+  sortDirection: true,
   hasAllUsersChecked: false,
+  sortDirectionBoolean: true,
   isActionsDropdownDisabled: true,
   data: {
     content: [],
