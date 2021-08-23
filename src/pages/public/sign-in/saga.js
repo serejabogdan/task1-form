@@ -26,7 +26,6 @@ function * authorizationWorker ({ type, payload }) {
     yield call(setLocalStorage, TOKEN, response.data);
     yield put({ type: TYPE.META, payload: response.data });
     yield put({ type: PRIVATE_TYPE.VALID_TOKEN, payload: response.data.accessToken });
-    yield put({ type: TYPE.CHECK_ACCESS_TOKEN });
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield call(removeLocalStorage, TOKEN);
