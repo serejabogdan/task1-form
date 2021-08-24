@@ -17,7 +17,7 @@ function Pages () {
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE, payload: token });
     return () => {
-      dispatch({ type: TYPE.STOP_REFRESHING_TOKEN });
+      console.log('app is destroyed');
     };
   }, [dispatch, token]);
   return initialized

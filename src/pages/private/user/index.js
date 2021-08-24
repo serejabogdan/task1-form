@@ -1,14 +1,24 @@
 // outsource dependencies
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import React, { useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, ListGroup, ListGroupItem } from 'reactstrap';
 
 // local dependencies
 import { TYPE } from '../reducer';
+import { selector } from '../../reducer';
 
-function User ({ user }) {
+function User () {
   const dispatch = useDispatch();
+  const { user } = useSelector(selector);
+
+  const { id, name, coverImage } = useMemo(() => {
+    if (user instanceof Object) {
+      const coverImage = user.coverImage instanceof Object
+        ? user.coverImage : {};
+      return { ...user, coverImage };
+    }
+    return {};
+  }, [user]);
 
   function logOut () {
     dispatch({ type: TYPE.LOGOUT });
@@ -16,10 +26,10 @@ function User ({ user }) {
 
   return <div style={{ maxWidth: '700px', margin: '0 auto' }}>
     <ListGroup>
-      <ListGroupItem>id: { user.id }</ListGroupItem>
-      <ListGroupItem>name: { user.name }</ListGroupItem>
+      <ListGroupItem>id: { id }</ListGroupItem>
+      <ListGroupItem>name: { name }</ListGroupItem>
       <ListGroupItem>
-        <img src={user.coverImage.url} alt="Here is should be user"/>
+        <img src={coverImage.url} alt="Here is should be user"/>
       </ListGroupItem>
     </ListGroup>
     <Button color="primary" onClick={logOut}>
@@ -27,15 +37,5 @@ function User ({ user }) {
     </Button>
   </div>;
 }
-
-User.propTypes = {
-  user: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    coverImage: PropTypes.shape({
-      url: PropTypes.string
-    })
-  }).isRequired
-};
 
 export default User;

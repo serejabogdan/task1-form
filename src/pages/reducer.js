@@ -13,11 +13,8 @@ export const TYPE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
+    AUTH: `${prefix}AUTH`,
     INITIALIZE: `${prefix}INITIALIZE`,
-    UPDATE_TOKEN: `${prefix}UPDATE_TOKEN`,
-    CHECK_ACCESS_TOKEN: `${prefix}CHECK_ACCESS_TOKEN`,
-    STOP_REFRESHING_TOKEN: `${prefix}STOP_REFRESHING_TOKEN`,
-    AUTH: `${prefix}AUTH`
   };
 })('@pages/');
 
@@ -50,6 +47,6 @@ const pages = combineReducers({
 });
 
 export default combineReducers({
+  pages,
   pagesData: pagesReducer,
-  pages
 });
