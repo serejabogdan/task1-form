@@ -7,7 +7,7 @@ import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 import { history } from '../../../redux';
 import { selector, TYPE } from './reducer';
 import { privateAPI } from '../../../utils/API';
-import { SIZE, SORT_DOWN, SORT_UP, VALID_FILTERS, VALID_SORT_NAMES } from '../../../constants/query-params-validation';
+import { FILTERS, SIZES, SORT_DOWN, SORT_FIELDS, SORT_UP } from '../../../constants/valid-query-params';
 
 function getUsersApi ({ data, params }) {
   return privateAPI({
@@ -88,7 +88,7 @@ function * setFilters (filters) {
 function * parseQueryParams (queryParams) {
   const state = yield select(selector);
   const queries = yield call(qs.parse, queryParams);
-  const filters = VALID_FILTERS.reduce((acc, filter) => {
+  const filters = FILTERS.reduce((acc, filter) => {
     const hasQuery = queries[filter] ? queries[filter] : state[filter];
     return { ...acc, [filter]: hasQuery };
   }, {});
@@ -100,8 +100,8 @@ function validParsedQueryParams (filters, state) {
   const [sortField, sortDirection] = filters.sort.split(',');
   const pageNumber = Number(filters.page);
   const validPage = pageNumber >= 0 ? pageNumber : state.page;
-  const validSize = SIZE.includes(filters.size) ? filters.size : state.size;
-  const validSortField = VALID_SORT_NAMES.includes(sortField) ? sortField : state.sortField;
+  const validSize = SIZES.includes(filters.size) ? filters.size : state.size;
+  const validSortField = Object.values(SORT_FIELDS).includes(sortField) ? sortField : state.sortField;
   const validSortDirection = sortDirection === SORT_DOWN || sortDirection === SORT_UP ? sortDirection : SORT_DOWN;
   const sortDirectionBoolean = validSortDirection === SORT_DOWN;
   return {

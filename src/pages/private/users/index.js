@@ -11,7 +11,8 @@ import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, In
 // local dependencies
 import { TYPE, selector } from './reducer';
 import FontIcon from '../../../components/font-icon';
-import { SIZE } from '../../../constants/query-params-validation';
+import { EMPTY_STRING, START_PAGE } from '../../../constants/common';
+import { SIZES, SORT_DOWN, SORT_FIELDS, SORT_UP } from '../../../constants/valid-query-params';
 
 // styles
 import './styles.css';
@@ -47,7 +48,7 @@ function Users () {
     () => {
       if (Array.isArray(data.content)) {
         return data.content.map(user => {
-          const createdDate = typeof user.createdDate === 'string' ? moment(user.createdDate) : '';
+          const createdDate = typeof user.createdDate === 'string' ? moment(user.createdDate) : EMPTY_STRING;
           const roles = Array.isArray(user.roles) ? user.roles : [];
           const onSelect = () => dispatch({ type: TYPE.USER_SELECTED, payload: { userId: user.id } });
           return { ...user, createdDate, roles, onSelect };
@@ -63,7 +64,10 @@ function Users () {
     [dispatch]
   );
 
-  const handleChangeNumberOfUsers = (size) => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, size } });
+  const handleChangeNumberOfUsers = (size) => dispatch({
+    type: TYPE.UPDATE_FILTERS,
+    payload: { page: START_PAGE, size }
+  });
 
   const handleToggleTableDropdown = useCallback(
     () => setTableDropdownOpened(state => !state),
@@ -82,12 +86,12 @@ function Users () {
   );
 
   const handleClearSearch = useCallback(
-    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { name: '' } }),
+    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { name: EMPTY_STRING } }),
     [dispatch]
   );
 
   const handleGetUsersBySearch = useCallback(
-    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0 } }),
+    () => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: START_PAGE } }),
     [dispatch]
   );
 
@@ -102,7 +106,7 @@ function Users () {
   const handleChangeSelectedRole = useCallback(
     (selectedRole) => {
       const hasRolesValue = selectedRole ? [selectedRole.value] : [];
-      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: 0, roles: hasRolesValue } });
+      dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: START_PAGE, roles: hasRolesValue } });
     },
     [dispatch]
   );
@@ -129,26 +133,26 @@ function Users () {
       dispatch({
         type: TYPE.UPDATE_FILTERS,
         payload: {
-          sort: `${fieldName},${!sortDirectionBoolean ? 'ASC' : 'DESC'}`,
-          sortDirectionBoolean: !sortDirectionBoolean
+          sortDirectionBoolean: !sortDirectionBoolean,
+          sort: `${fieldName},${!sortDirectionBoolean ? SORT_DOWN : SORT_UP}`,
         }
       });
     } else {
       dispatch({
         type: TYPE.UPDATE_FILTERS,
         payload: {
-          sort: `${fieldName},ASC`,
           sortField: fieldName,
-          sortDirectionBoolean: true
+          sortDirectionBoolean: true,
+          sort: `${fieldName},${SORT_DOWN}`,
         }
       });
     }
   }, [dispatch, sortDirectionBoolean, sortField]);
 
-  const sortByName = useCallback(() => setSortName('name'), [setSortName]);
-  const sortById = useCallback(() => setSortName('id'), [setSortName]);
-  const sortByRoles = useCallback(() => setSortName('roles'), [setSortName]);
-  const sortByCreatedDate = useCallback(() => setSortName('createdDate'), [setSortName]);
+  const sortByName = useCallback(() => setSortName(SORT_FIELDS.NAME), [setSortName]);
+  const sortById = useCallback(() => setSortName(SORT_FIELDS.ID), [setSortName]);
+  const sortByRoles = useCallback(() => setSortName(SORT_FIELDS.ROLES), [setSortName]);
+  const sortByCreatedDate = useCallback(() => setSortName(SORT_FIELDS.CREATED_DATE), [setSortName]);
 
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
@@ -181,7 +185,7 @@ function Users () {
                 { size }
               </DropdownToggle>
               <DropdownMenu>
-                { SIZE.map(size => {
+                { SIZES.map(size => {
                   return <DropdownItem key={size} onClick={() => handleChangeNumberOfUsers(size)} >
                     { size } items
                   </DropdownItem>;
@@ -218,23 +222,23 @@ function Users () {
                       <Input type="checkbox" checked={hasAllUsersChecked} readOnly onChange={handleSelectedAllUsers} />
                     </div>
                     <button className="text-nowrap btn btn-outline-link" onClick={sortByName}>
-                      { getSortIcon('name') } <strong className="text-primary">Name</strong>
+                      { getSortIcon(SORT_FIELDS.NAME) } <strong className="text-primary">Name</strong>
                     </button>
                   </div>
                 </th>
                 <th className="col-1">
                   <button className="text-nowrap btn btn-outline-link" onClick={sortById}>
-                    { getSortIcon('id') } <strong className="text-primary">id</strong>
+                    { getSortIcon(SORT_FIELDS.ID) } <strong className="text-primary">id</strong>
                   </button>
                 </th>
                 <th className="col-2">
                   <button className="text-nowrap btn btn-outline-link" disabled={true} onClick={sortByRoles}>
-                    { getSortIcon('roles') } Roles
+                    { getSortIcon(SORT_FIELDS.ROLES) } Roles
                   </button>
                 </th>
                 <th className="col-2">
                   <button className="text-nowrap btn btn-outline-link" onClick={sortByCreatedDate}>
-                    { getSortIcon('createdDate') } <strong className="text-primary">Creation Date</strong>
+                    { getSortIcon(SORT_FIELDS.CREATED_DATE) } <strong className="text-primary">Creation Date</strong>
                   </button>
                 </th>
                 <th className="col-1 align-middle">
