@@ -4,6 +4,7 @@ export const TYPE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
+    SORT_BY: `${prefix}SORT_BY`,
     INITIALIZE: `${prefix}INITIALIZE`,
     USER_SELECTED: `${prefix}USER_SELECTED`,
     USERS_SELECTED: `${prefix}USERS_SELECTED`,
@@ -19,9 +20,9 @@ const initial = {
   disabled: false,
   errorMessage: '',
   sort: 'name,ASC',
-  sortField: 'name',
   initialized: false,
   sortDirection: true,
+  currentSortField: 'name',
   hasAllUsersChecked: false,
   sortDirectionBoolean: true,
   isActionsDropdownDisabled: true,

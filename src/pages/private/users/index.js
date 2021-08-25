@@ -5,14 +5,15 @@ import Select from 'react-select';
 import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { faPlus, faSearch, faSort, faSortAmountDown, faSortAmountUp, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Spinner, Table } from 'reactstrap';
 
 // local dependencies
 import { TYPE, selector } from './reducer';
 import FontIcon from '../../../components/font-icon';
+import SortField from '../../../components/sort-field';
 import { EMPTY_STRING, START_PAGE } from '../../../constants/common';
-import { SIZES, SORT_DOWN, SORT_FIELDS, SORT_UP } from '../../../constants/valid-query-params';
+import { SIZES, SORT_FIELDS } from '../../../constants/valid-query-params';
 
 // styles
 import './styles.css';
@@ -33,10 +34,8 @@ function Users () {
     size,
     page,
     name,
-    sortField,
     initialized,
     hasAllUsersChecked,
-    sortDirectionBoolean,
     isActionsDropdownDisabled,
   } = useSelector(selector);
   const dispatch = useDispatch();
@@ -118,45 +117,9 @@ function Users () {
     };
   }, [dispatch]);
 
-  const getSortIcon = useCallback((name) => {
-    if (sortField !== name) {
-      return <FontIcon icon={faSort} className="text-gray" />;
-    }
-    if (sortDirectionBoolean) {
-      return <FontIcon icon={faSortAmountDown} className="text-gray-d" />;
-    }
-    return <FontIcon icon={faSortAmountUp} className="text-gray-d" />;
-  }, [sortDirectionBoolean, sortField]);
-
-  const setSortName = useCallback((fieldName) => {
-    if (sortField === fieldName) {
-      dispatch({
-        type: TYPE.UPDATE_FILTERS,
-        payload: {
-          sortDirectionBoolean: !sortDirectionBoolean,
-          sort: `${fieldName},${!sortDirectionBoolean ? SORT_DOWN : SORT_UP}`,
-        }
-      });
-    } else {
-      dispatch({
-        type: TYPE.UPDATE_FILTERS,
-        payload: {
-          sortField: fieldName,
-          sortDirectionBoolean: true,
-          sort: `${fieldName},${SORT_DOWN}`,
-        }
-      });
-    }
-  }, [dispatch, sortDirectionBoolean, sortField]);
-
-  const sortByName = useCallback(() => setSortName(SORT_FIELDS.NAME), [setSortName]);
-  const sortById = useCallback(() => setSortName(SORT_FIELDS.ID), [setSortName]);
-  const sortByRoles = useCallback(() => setSortName(SORT_FIELDS.ROLES), [setSortName]);
-  const sortByCreatedDate = useCallback(() => setSortName(SORT_FIELDS.CREATED_DATE), [setSortName]);
-
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
-      <div className="container-fluid">
+      <div className="container-fluid flex-grow-1 overflow-hidden mb-3">
         <h2 className="pt-3 text-primary">Users</h2>
         <hr className="row" />
         <div className="row mb-3">
@@ -221,25 +184,25 @@ function Users () {
                     <div className="check d-inline-block custom-checkbox custom-control">
                       <Input type="checkbox" checked={hasAllUsersChecked} readOnly onChange={handleSelectedAllUsers} />
                     </div>
-                    <button className="text-nowrap btn btn-outline-link" onClick={sortByName}>
-                      { getSortIcon(SORT_FIELDS.NAME) } <strong className="text-primary">Name</strong>
-                    </button>
+                    <SortField sortFieldName={SORT_FIELDS.NAME}>
+                      <strong className="text-primary">Name</strong>
+                    </SortField>
                   </div>
                 </th>
                 <th className="col-1">
-                  <button className="text-nowrap btn btn-outline-link" onClick={sortById}>
-                    { getSortIcon(SORT_FIELDS.ID) } <strong className="text-primary">id</strong>
-                  </button>
+                  <SortField sortFieldName={SORT_FIELDS.ID}>
+                    <strong className="text-primary">id</strong>
+                  </SortField>
                 </th>
                 <th className="col-2">
-                  <button className="text-nowrap btn btn-outline-link" disabled={true} onClick={sortByRoles}>
-                    { getSortIcon(SORT_FIELDS.ROLES) } Roles
-                  </button>
+                  <SortField sortFieldName={SORT_FIELDS.ROLES}>
+                    Roles
+                  </SortField>
                 </th>
                 <th className="col-2">
-                  <button className="text-nowrap btn btn-outline-link" onClick={sortByCreatedDate}>
-                    { getSortIcon(SORT_FIELDS.CREATED_DATE) } <strong className="text-primary">Creation Date</strong>
-                  </button>
+                  <SortField sortFieldName={SORT_FIELDS.CREATED_DATE}>
+                    <strong className="text-primary">Creation Date</strong>
+                  </SortField>
                 </th>
                 <th className="col-1 align-middle">
                   <h6 className="m-0 font-weight-bold text-primary">Actions</h6>
@@ -248,7 +211,7 @@ function Users () {
             </thead>
           </Table>
         </div>
-        <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '60vh' }}>
+        <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
           <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px', marginRight: '-17px' }}>
             <Table striped bordered>
               <tbody>

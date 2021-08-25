@@ -59,6 +59,28 @@ function * getUsers (payload) {
   }
 }
 
+function * handleSortBy ({ type, payload: fieldName }) {
+  const { currentSortField, sortDirectionBoolean } = yield select(selector);
+  if (currentSortField === fieldName) {
+    yield put({
+      type: TYPE.UPDATE_FILTERS,
+      payload: {
+        sortDirectionBoolean: !sortDirectionBoolean,
+        sort: `${fieldName},${!sortDirectionBoolean ? SORT_DOWN : SORT_UP}`,
+      }
+    });
+  } else {
+    yield put({
+      type: TYPE.UPDATE_FILTERS,
+      payload: {
+        sortDirectionBoolean: true,
+        currentSortField: fieldName,
+        sort: `${fieldName},${SORT_DOWN}`,
+      }
+    });
+  }
+}
+
 function * updateFilters ({ type, payload }) {
   const { page, size, name, roles, sort } = yield select(selector);
   const filters = { page, size, name, roles, sort, ...payload };
@@ -126,10 +148,11 @@ function * initializeSaga () {
 }
 
 function * usersWatcher () {
-  yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);
+  yield takeLatest(TYPE.SORT_BY, handleSortBy);
   yield takeLatest(TYPE.INITIALIZE, initializeSaga);
   yield takeLatest(TYPE.USER_SELECTED, userSelected);
   yield takeLatest(TYPE.USERS_SELECTED, usersSelected);
+  yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);
 }
 
 export default function * usersSaga () {
