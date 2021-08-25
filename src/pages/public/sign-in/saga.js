@@ -6,8 +6,8 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 import { TYPE } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
 import { TYPE as SIGN_IN_TYPE } from './reducer';
-import { PRIVATE } from '../../../constants/routes';
 import { TOKEN } from '../../../constants/local-storage';
+import { PRIVATE_USERS } from '../../../constants/routes';
 import { TYPE as PRIVATE_TYPE } from '../../private/reducer';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
@@ -26,14 +26,12 @@ function * authorizationWorker ({ type, payload }) {
     yield call(setLocalStorage, TOKEN, response.data);
     yield put({ type: TYPE.META, payload: response.data });
     yield put({ type: PRIVATE_TYPE.VALID_TOKEN, payload: response.data.accessToken });
-    yield put({ type: TYPE.CHECK_ACCESS_TOKEN });
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield call(removeLocalStorage, TOKEN);
   }
-  yield put(push(PRIVATE));
-
-  yield delay(500);
+  yield put(push(PRIVATE_USERS));
+  yield delay(200);
   yield put({ type: SIGN_IN_TYPE.META, payload: { disabled: false } });
 }
 

@@ -1,19 +1,20 @@
 // outsource dependencies
 import qs from 'qs';
-import { replace } from 'connected-react-router';
+import { push } from 'connected-react-router';
 import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
 
 // local dependencies
 import { history } from '../../../redux';
 import { selector, TYPE } from './reducer';
 import { privateAPI } from '../../../utils/API';
+import { SIZE, SORT_DOWN, SORT_UP, VALID_FILTERS, VALID_SORT_NAMES } from '../../../constants/query-params-validation';
 
 function getUsersApi ({ data, params }) {
   return privateAPI({
     method: 'POST',
     url: 'admin-service/users/filter',
     data: data || {},
-    params
+    params: params || {}
   });
 }
 
@@ -62,7 +63,10 @@ function * updateFilters ({ type, payload }) {
   const { page, size, name, roles, sort } = yield select(selector);
   const filters = { page, size, name, roles, sort, ...payload };
   yield call(setFilters, filters);
-  yield put({ type: TYPE.META, payload: { ...filters, hasAllUsersChecked: false } });
+  yield put({
+    type: TYPE.META,
+    payload: { ...filters, hasAllUsersChecked: false }
+  });
 }
 
 function * isAtLeastOneSelected () {
@@ -77,20 +81,36 @@ function * isAtLeastOneSelected () {
 function * setFilters (filters) {
   const { size, page, name, roles, sort } = filters;
   const queriesString = qs.stringify({ size, page, sort });
-  yield put(replace(`?${queriesString}`));
+  yield put(push(`?${queriesString}`));
   yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
 }
 
 function * parseQueryParams (queryParams) {
-  const validFilters = ['page', 'size', 'sort'];
   const state = yield select(selector);
   const queries = yield call(qs.parse, queryParams);
-  let filters = validFilters.reduce((acc, filter) => {
+  const filters = VALID_FILTERS.reduce((acc, filter) => {
     const hasQuery = queries[filter] ? queries[filter] : state[filter];
     return { ...acc, [filter]: hasQuery };
   }, {});
-  filters = { ...filters, size: Number(filters.size), page: Number(filters.page) };
-  return filters;
+  return yield call(validParsedQueryParams, filters, state);
+}
+
+function validParsedQueryParams (filters, state) {
+  // parsed sort params like sorted field and direction
+  const [sortField, sortDirection] = filters.sort.split(',');
+  const pageNumber = Number(filters.page);
+  const validPage = pageNumber >= 0 ? pageNumber : state.page;
+  const validSize = SIZE.includes(filters.size) ? filters.size : state.size;
+  const validSortField = VALID_SORT_NAMES.includes(sortField) ? sortField : state.sortField;
+  const validSortDirection = sortDirection === SORT_DOWN || sortDirection === SORT_UP ? sortDirection : SORT_DOWN;
+  const sortDirectionBoolean = validSortDirection === SORT_DOWN;
+  return {
+    size: validSize,
+    page: validPage,
+    sortDirectionBoolean,
+    sortField: validSortField,
+    sort: `${validSortField},${validSortDirection}`,
+  };
 }
 
 function * initializeSaga () {
