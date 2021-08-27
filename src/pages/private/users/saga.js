@@ -57,6 +57,7 @@ function * getUsers (payload) {
   } catch (error) {
     console.log(error);
   }
+  yield call(isAtLeastOneSelected);
 }
 
 function * handleSortBy ({ type, payload: fieldName }) {
