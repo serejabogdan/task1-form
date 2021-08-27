@@ -103,7 +103,7 @@ function * isAtLeastOneSelected () {
 
 function * updateUrlFilters (filters) {
   const { size, page, name, roles, sort } = filters;
-  const queriesString = qs.stringify(filters);
+  const queriesString = qs.stringify({ size, page, name, roles, sort });
   yield put(push(`?${queriesString}`));
   yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
 }

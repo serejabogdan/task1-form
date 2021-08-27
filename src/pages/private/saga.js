@@ -5,6 +5,7 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 // local dependencies
 import { TYPE } from '../reducer';
 import usersSaga from './users/saga';
+import userEditSaga from './user-edit/saga';
 import { TYPE as PRIVATE_TYPE } from './reducer';
 import { TOKEN } from '../../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../../constants/routes';
@@ -50,6 +51,7 @@ function * watchGettingUser () {
 }
 
 export default function * privateSaga () {
-  yield fork(watchGettingUser);
   yield fork(usersSaga);
+  yield fork(watchGettingUser);
+  yield fork(userEditSaga);
 }

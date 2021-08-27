@@ -8,9 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import User from './user';
 import Users from './users';
 import Homepage from './homepage';
+import UserEdit from './user-edit';
 import { selector as privateSelector } from './reducer';
 import { selector as pagesSelector, TYPE } from '../reducer';
-import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USERS, PUBLIC_SIGN_IN } from '../../constants/routes';
+import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USER_EDIT, PRIVATE_USERS, PUBLIC_SIGN_IN } from '../../constants/routes';
 
 function Private () {
   const { auth } = useSelector(pagesSelector);
@@ -26,6 +27,10 @@ function Private () {
       <Route
         path={PRIVATE_USERS}
         component={Users}
+      />
+      <Route
+        path={PRIVATE_USER_EDIT}
+        component={UserEdit}
       />
       <Route
         path={PRIVATE_USER}

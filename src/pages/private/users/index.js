@@ -12,21 +12,13 @@ import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, In
 import { TYPE, selector } from './reducer';
 import FontIcon from '../../../components/font-icon';
 import SortField from '../../../components/sort-field';
+import { roles } from '../../../constants/select-options';
 import { EMPTY_STRING, START_PAGE } from '../../../constants/common';
 import { SIZES, SORT_FIELDS } from '../../../constants/valid-query-params';
 
 // styles
 import './styles.css';
 import 'rc-pagination/assets/index.css';
-
-const selectOptions = [
-  { value: 'USER', label: 'USER' },
-  { value: 'CHEF', label: 'CHEF' },
-  { value: 'SUPER_ADMIN', label: 'SUPER_ADMIN' },
-  { value: 'NUTRITIONIST', label: 'NUTRITIONIST' },
-  { value: 'TALENT_ADMIN', label: 'TALENT_ADMIN' },
-  { value: 'DATABASE_MANAGER', label: 'DATABASE_MANAGER' },
-];
 
 function Users () {
   const {
@@ -157,7 +149,7 @@ function Users () {
             </Dropdown>
           </div>
           <div className="role col-3">
-            <Select isClearable={true} onChange={handleChangeSelectedRole} options={selectOptions} placeholder="Roles" />
+            <Select isClearable={true} onChange={handleChangeSelectedRole} options={roles} placeholder="Roles" />
           </div>
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={isActionsDropdownOpened} toggle={handleToggleActionsDropdown}>

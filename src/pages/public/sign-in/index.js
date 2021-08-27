@@ -18,7 +18,7 @@ function formValidation (values) {
   const MAX_CHARACTERS = 30;
 
   if (!values.username) {
-    errors.username = 'Username must be required';
+    errors.username = 'Email must be required';
   } else if (values.username.length > MAX_CHARACTERS) {
     errors.username = `Maximum ${MAX_CHARACTERS} characters`;
   } else if (isEmailRegEx(values.username)) {
@@ -44,8 +44,8 @@ function SignIn () {
   return <div style={{ minHeight: '100vh' }} className="d-flex flex-column justify-content-center align-items-center">
     <h1>Public form</h1>
     <ReduxForm form="SignInForm" onSubmit={submit} validate={formValidation} initialValues={signIn.initialValues}>
-      <Field type="text" disabled={signIn.disabled} name="username" id="username" component={InputField}/>
-      <Field type="password" disabled={signIn.disabled} name="password" id="password" component={InputField}/>
+      <Field type="text" disabled={signIn.disabled} name="username" id="username" label="Email Address" component={InputField}/>
+      <Field type="password" disabled={signIn.disabled} name="password" id="password" label="Password" component={InputField}/>
       <Button disabled={signIn.disabled}>Go!</Button>
     </ReduxForm>
     { signIn.disabled && <div><Spinner color="primary" /> authorization</div> }
