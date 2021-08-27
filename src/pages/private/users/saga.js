@@ -85,7 +85,7 @@ function * handleSortBy ({ type, payload: fieldName }) {
 function * updateFilters ({ type, payload }) {
   const { page, size, name, roles, sort } = yield select(selector);
   const filters = { page, size, name, roles, sort, ...payload };
-  yield call(setFilters, filters);
+  yield call(updateUrlFilters, filters);
   yield put({
     type: TYPE.META,
     payload: { ...filters, hasAllUsersChecked: false }
@@ -101,9 +101,9 @@ function * isAtLeastOneSelected () {
   });
 }
 
-function * setFilters (filters) {
+function * updateUrlFilters (filters) {
   const { size, page, name, roles, sort } = filters;
-  const queriesString = qs.stringify({ size, page, sort });
+  const queriesString = qs.stringify(filters);
   yield put(push(`?${queriesString}`));
   yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
 }
