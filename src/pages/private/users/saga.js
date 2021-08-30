@@ -14,7 +14,7 @@ function getUsersApi ({ data, params }) {
     method: 'POST',
     url: 'admin-service/users/filter',
     data: data || {},
-    params: params || {}
+    params: params || {},
   });
 }
 
@@ -101,8 +101,7 @@ function * isAtLeastOneSelected () {
   });
 }
 
-function * updateUrlFilters (filters) {
-  const { size, page, name, roles, sort } = filters;
+function * updateUrlFilters ({ size, page, name, roles, sort }) {
   const queriesString = qs.stringify({ size, page, name, roles, sort });
   yield put(push(`?${queriesString}`));
   yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
@@ -127,9 +126,11 @@ function validParsedQueryParams (filters, state) {
   const validSortField = Object.values(SORT_FIELDS).includes(sortField) ? sortField : state.sortField;
   const validSortDirection = sortDirection === SORT_DOWN || sortDirection === SORT_UP ? sortDirection : SORT_DOWN;
   const sortDirectionBoolean = validSortDirection === SORT_DOWN;
+  const validRoles = Array.isArray(filters.roles) ? filters.roles : [];
   return {
     size: validSize,
     page: validPage,
+    roles: validRoles,
     sortDirectionBoolean,
     sortField: validSortField,
     sort: `${validSortField},${validSortDirection}`,
@@ -143,7 +144,7 @@ function * initializeSaga () {
     yield call(updateFilters, { payload: filters });
     yield put({ type: TYPE.META, payload: filters });
   } else {
-    yield call(updateFilters, {});
+    yield call(updateFilters, { type: '', payload: {} });
   }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }

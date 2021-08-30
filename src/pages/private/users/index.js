@@ -28,6 +28,7 @@ function Users () {
     name,
     initialized,
     hasAllUsersChecked,
+    roles: currentRoles,
     isActionsDropdownDisabled,
   } = useSelector(selector);
   const dispatch = useDispatch();
@@ -102,6 +103,11 @@ function Users () {
     [dispatch]
   );
 
+  const role = useMemo(() => {
+    const [currentRole] = currentRoles;
+    return currentRoles.length ? { value: currentRole, label: currentRole } : null;
+  }, [currentRoles]);
+
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE });
     return () => {
@@ -149,7 +155,7 @@ function Users () {
             </Dropdown>
           </div>
           <div className="role col-3">
-            <Select isClearable={true} onChange={handleChangeSelectedRole} options={roles} placeholder="Roles" />
+            <Select isClearable={true} onChange={handleChangeSelectedRole} options={roles} placeholder="Roles" value={role} />
           </div>
           <div className="d-flex justify-content-end col-4">
             <Dropdown group isOpen={isActionsDropdownOpened} toggle={handleToggleActionsDropdown}>
@@ -174,7 +180,7 @@ function Users () {
                 <th className="col-4">
                   <div className="d-flex align-items-center">
                     <div className="check d-inline-block custom-checkbox custom-control">
-                      <Input type="checkbox" checked={hasAllUsersChecked} readOnly onChange={handleSelectedAllUsers} />
+                      <Input type="checkbox" disabled={!content.length} checked={hasAllUsersChecked} onChange={handleSelectedAllUsers} />
                     </div>
                     <SortField sortFieldName={SORT_FIELDS.NAME}>
                       <strong className="text-primary">Name</strong>
@@ -204,15 +210,15 @@ function Users () {
           </Table>
         </div>
         <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
-          <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px', marginRight: '-17px' }}>
+          <div style={{ position: 'absolute', overflowY: 'scroll', inset: '0px', marginRight: '-10px' }}>
             <Table striped bordered>
               <tbody>
-                { content.map(user => {
-                  return <tr key={user.id}>
+                { content.map((user, index) => {
+                  return <tr key={index}>
                     <td className="col-4 align-middle">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={user.checked} readOnly onChange={user.onSelect} />
+                          <Input type="checkbox" checked={user.checked} onChange={user.onSelect} />
                         </div>
                         <Link to="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
@@ -242,8 +248,7 @@ function Users () {
         />
       </div>
     </div> : <div>
-      <Spinner color="primary" />
-    users
+      <Spinner color="primary" /> users
     </div>;
 }
 
