@@ -15,6 +15,10 @@ function getUsersApi ({ data, params }) {
     url: 'admin-service/users/filter',
     data: data || {},
     params: params || {},
+    // FIXME Move to axios instance
+    paramsSerializer: function (params) {
+      return qs.stringify(params, { arrayFormat: 'repeat', encode: false });
+    },
   });
 }
 
@@ -57,7 +61,6 @@ function * getUsers (payload) {
   } catch (error) {
     console.log(error);
   }
-  yield call(isAtLeastOneSelected);
 }
 
 function * handleSortBy ({ type, payload: fieldName }) {
@@ -102,9 +105,10 @@ function * isAtLeastOneSelected () {
 }
 
 function * updateUrlFilters ({ size, page, name, roles, sort }) {
-  const queriesString = qs.stringify({ size, page, name, roles, sort });
+  const rolesString = roles.map(role => role.value);
+  const queriesString = qs.stringify({ size, page, name, roles: rolesString, sort });
   yield put(push(`?${queriesString}`));
-  yield call(getUsers, { params: { size, page, sort }, data: { name, roles } });
+  yield call(getUsers, { params: { size, page, sort: [sort, 'id,DESC'] }, data: { name, roles: rolesString } });
 }
 
 function * parseQueryParams (queryParams) {
@@ -126,7 +130,7 @@ function validParsedQueryParams (filters, state) {
   const validSortField = Object.values(SORT_FIELDS).includes(sortField) ? sortField : state.sortField;
   const validSortDirection = sortDirection === SORT_DOWN || sortDirection === SORT_UP ? sortDirection : SORT_DOWN;
   const sortDirectionBoolean = validSortDirection === SORT_DOWN;
-  const validRoles = Array.isArray(filters.roles) ? filters.roles : [];
+  const validRoles = Array.isArray(filters.roles) ? filters.roles.map(role => ({ value: role, label: role })) : [];
   return {
     size: validSize,
     page: validPage,
@@ -144,7 +148,7 @@ function * initializeSaga () {
     yield call(updateFilters, { payload: filters });
     yield put({ type: TYPE.META, payload: filters });
   } else {
-    yield call(updateFilters, { type: '', payload: {} });
+    yield call(updateFilters, { payload: {} });
   }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }

@@ -16,9 +16,6 @@ function Pages () {
 
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE, payload: token });
-    return () => {
-      console.log('app is destroyed');
-    };
   }, [dispatch, token]);
   return initialized
     ? <Switch>

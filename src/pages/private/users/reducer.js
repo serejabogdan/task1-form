@@ -13,18 +13,20 @@ export const TYPE = (function (prefix) {
 })('@users/');
 
 const initial = {
+  disabled: false,
+  errorMessage: '',
+  initialized: false,
+
   page: 0,
   size: 10,
   name: '',
   roles: [],
-  disabled: false,
-  errorMessage: '',
   sort: 'name,ASC',
-  initialized: false,
   sortDirection: true,
-  currentSortField: 'name',
-  hasAllUsersChecked: false,
   sortDirectionBoolean: true,
+  currentSortField: 'name',
+
+  hasAllUsersChecked: false,
   isActionsDropdownDisabled: true,
   data: {
     content: [],
