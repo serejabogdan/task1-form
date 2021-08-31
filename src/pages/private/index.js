@@ -42,9 +42,8 @@ function Private () {
       />
       <Redirect to={PUBLIC_SIGN_IN}/>
     </Switch>
-    : <div>
+    : <div className="vh-100 d-flex justify-content-center align-items-center">
       <Spinner color="primary" />
-      private
     </div>;
 }
 

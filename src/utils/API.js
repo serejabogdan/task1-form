@@ -1,9 +1,10 @@
 // outsource dependencies
+import qs from 'qs';
 import axios from 'axios';
 
 // local dependencies
 import { TOKEN } from '../constants/local-storage';
-import { getLocalStorage, setLocalStorage } from './local-storage';
+import { getLocalStorage, removeLocalStorage, setLocalStorage } from './local-storage';
 
 const URL = 'https://healthene-gateway-dev.intelliceed.cf/api';
 
@@ -22,7 +23,10 @@ export const privateAPI = axios.create({
   headers: {
     'Cache-Control': 'no-cache',
     'Content-Type': 'application/json',
-  }
+  },
+  paramsSerializer: function (params) {
+    return qs.stringify(params, { arrayFormat: 'repeat', encode: false });
+  },
 });
 
 export function getUserData () {
@@ -82,7 +86,7 @@ privateAPI.interceptors.response.use(null, (error) => {
         onRefreshed(data.accessToken);
         setLocalStorage(TOKEN, data);
         subscribers = [];
-      }).catch(e => console.log('delete token'));
+      }).catch(() => removeLocalStorage(TOKEN));
     }
 
     return new Promise((resolve) => {

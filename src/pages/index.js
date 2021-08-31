@@ -23,9 +23,8 @@ function Pages () {
       <Route path={PRIVATE} component={Private}/>
       <Redirect to={PUBLIC}/>
     </Switch>
-    : <div>
+    : <div className="vh-100 d-flex justify-content-center align-items-center">
       <Spinner color="primary" />
-      pages
     </div>;
 }
 

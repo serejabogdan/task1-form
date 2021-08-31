@@ -20,14 +20,13 @@ const initial = {
   page: 0,
   size: 10,
   name: '',
-  roles: [],
+  role: '',
   sort: 'name,ASC',
   sortDirection: true,
-  sortDirectionBoolean: true,
   currentSortField: 'name',
+  sortDirectionBoolean: true,
 
   hasAllUsersChecked: false,
-  isActionsDropdownDisabled: true,
   data: {
     content: [],
     size: 0,

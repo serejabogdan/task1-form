@@ -7,8 +7,8 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 // local dependencies
 import { ReduxForm } from '../../../utils/redux-form';
 import InputField from '../../../components/input-field';
-import { roles } from '../../../constants/select-options';
 import MultiSelect from '../../../components/multi-select';
+import { roleSelectOptions } from '../../../constants/select-options';
 
 function UserEdit () {
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ function UserEdit () {
                     </h4>
                   </CardHeader>
                   <CardBody>
-                    <Field type="text" name="select" id="select" label="Multi Select" options={roles} component={MultiSelect}/>
+                    <Field type="text" name="select" id="select" label="Multi Select" options={roleSelectOptions} component={MultiSelect}/>
                   </CardBody>
                 </Card>
               </div>

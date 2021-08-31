@@ -1,4 +1,4 @@
-export const roles = [
+export const roleSelectOptions = [
   { value: 'USER', label: 'USER' },
   { value: 'CHEF', label: 'CHEF' },
   { value: 'SUPER_ADMIN', label: 'SUPER_ADMIN' },

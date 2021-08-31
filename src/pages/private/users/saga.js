@@ -15,14 +15,10 @@ function getUsersApi ({ data, params }) {
     url: 'admin-service/users/filter',
     data: data || {},
     params: params || {},
-    // FIXME Move to axios instance
-    paramsSerializer: function (params) {
-      return qs.stringify(params, { arrayFormat: 'repeat', encode: false });
-    },
   });
 }
 
-function * userSelected ({ type, payload }) {
+function * userSelected ({ payload }) {
   const { data } = yield select(selector);
   const users = yield data.content.map(user => {
     if (user.id === payload.userId) {
@@ -40,7 +36,7 @@ function * userSelected ({ type, payload }) {
   yield call(isAtLeastOneSelected);
 }
 
-function * usersSelected ({ type, payload }) {
+function * usersSelected () {
   const state = yield select(selector);
   const { data, hasAllUsersChecked } = state;
   const users = data.content.map(user => ({ ...user, checked: !hasAllUsersChecked }));
@@ -59,11 +55,11 @@ function * getUsers (payload) {
     const { data } = yield call(getUsersApi, payload);
     yield put({ type: TYPE.META, payload: { data } });
   } catch (error) {
-    console.log(error);
+    yield put({ type: TYPE.META, payload: { errorMessage: error.message() } });
   }
 }
 
-function * handleSortBy ({ type, payload: fieldName }) {
+function * handleSortBy ({ payload: fieldName }) {
   const { currentSortField, sortDirectionBoolean } = yield select(selector);
   if (currentSortField === fieldName) {
     yield put({
@@ -85,9 +81,9 @@ function * handleSortBy ({ type, payload: fieldName }) {
   }
 }
 
-function * updateFilters ({ type, payload }) {
-  const { page, size, name, roles, sort } = yield select(selector);
-  const filters = { page, size, name, roles, sort, ...payload };
+function * updateFilters ({ payload }) {
+  const { page, size, name, role, sort } = yield select(selector);
+  const filters = { page, size, name, role, sort, ...payload };
   yield call(updateUrlFilters, filters);
   yield put({
     type: TYPE.META,
@@ -104,11 +100,10 @@ function * isAtLeastOneSelected () {
   });
 }
 
-function * updateUrlFilters ({ size, page, name, roles, sort }) {
-  const rolesString = roles.map(role => role.value);
-  const queriesString = qs.stringify({ size, page, name, roles: rolesString, sort });
+function * updateUrlFilters ({ size, page, name, role, sort }) {
+  const queriesString = qs.stringify({ size, page, name, role, sort }, { arrayFormat: 'repeat' });
   yield put(push(`?${queriesString}`));
-  yield call(getUsers, { params: { size, page, sort: [sort, 'id,DESC'] }, data: { name, roles: rolesString } });
+  yield call(getUsers, { params: { size, page, sort: [sort, 'id,DESC'] }, data: { name, roles: role ? [role] : [] } });
 }
 
 function * parseQueryParams (queryParams) {
@@ -130,11 +125,10 @@ function validParsedQueryParams (filters, state) {
   const validSortField = Object.values(SORT_FIELDS).includes(sortField) ? sortField : state.sortField;
   const validSortDirection = sortDirection === SORT_DOWN || sortDirection === SORT_UP ? sortDirection : SORT_DOWN;
   const sortDirectionBoolean = validSortDirection === SORT_DOWN;
-  const validRoles = Array.isArray(filters.roles) ? filters.roles.map(role => ({ value: role, label: role })) : [];
   return {
     size: validSize,
     page: validPage,
-    roles: validRoles,
+    role: filters.role,
     sortDirectionBoolean,
     sortField: validSortField,
     sort: `${validSortField},${validSortDirection}`,

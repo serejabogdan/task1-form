@@ -48,7 +48,9 @@ function SignIn () {
       <Field type="password" disabled={signIn.disabled} name="password" id="password" label="Password" component={InputField}/>
       <Button disabled={signIn.disabled}>Go!</Button>
     </ReduxForm>
-    { signIn.disabled && <div><Spinner color="primary" /> authorization</div> }
+    { signIn.disabled && <div className="vh-100 d-flex justify-content-center align-items-center">
+      <Spinner color="primary" />
+    </div> }
   </div>;
 }
 
