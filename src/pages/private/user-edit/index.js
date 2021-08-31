@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { Field, submit } from 'redux-form';
-import { Card, CardBody, CardHeader } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Container, FormGroup, Input, Label, Row } from 'reactstrap';
 
 // local dependencies
 import { ReduxForm } from '../../../utils/redux-form';
@@ -16,18 +16,18 @@ function UserEdit () {
   const handleSubmit = useCallback((value) => { console.log(value); }, []);
 
   return <div className="content d-flex flex-column overflow-hidden vh-100">
-    <div className="p-3 d-flex justify-content-between">
+    <header className="p-3 d-flex justify-content-between">
       <h2 className="text-info mb-0">User edit page</h2>
-      <div className="text-right col-4">
+      <Col xs="4" className="text-right">
         <button type="button" className="btn btn-danger"> Delete User</button>
-      </div>
-    </div>
-    <div className="container-fluid flex-grow-1 overflow-hidden mb-3">
+      </Col>
+    </header>
+    <Container fluid className="flex-grow-1 overflow-hidden mb-3">
       <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
         <div style={{ position: 'absolute', overflow: 'scroll', inset: '0px', marginRight: '-19px', marginBottom: '-19px' }}>
           <ReduxForm form="UserEdit" onSubmit={handleSubmit}>
-            <div className="row w-100">
-              <div className="col-8">
+            <Row className="w-100">
+              <Col xs="8">
                 <Card className="mb-2">
                   <CardHeader>
                     <h4 className="mb-0 text-info card-title">
@@ -37,9 +37,9 @@ function UserEdit () {
                     </h4>
                   </CardHeader>
                   <CardBody>
-                    <Field type="text" name="firstName" id="firstname" label="First Name" component={InputField}/>
+                    <Field type="text" name="firstName" id="firstname" label="First Name" required component={InputField}/>
                     <Field type="text" name="middleName" id="middleName" label="Middle Name" component={InputField}/>
-                    <Field type="text" name="lastName" id="lastName" label="Last Name" component={InputField}/>
+                    <Field type="text" name="lastName" id="lastName" label="Last Name" required component={InputField}/>
                     <Field type="text" name="suffix" id="suffix" label="Suffix" component={InputField}/>
                   </CardBody>
                 </Card>
@@ -52,11 +52,20 @@ function UserEdit () {
                     </h4>
                   </CardHeader>
                   <CardBody>
-                    <Field type="text" name="select" id="select" label="Multi Select" options={roleSelectOptions} component={MultiSelect}/>
+                    <Field type="text" name="roles" id="roles" label="Roles" options={roleSelectOptions} required component={MultiSelect}/>
+                    <FormGroup className="mb-2 mb-sm-0">
+                      <Label for="email" className="d-flex justify-content-between">
+                        <strong>
+                          Email
+                        </strong>
+                        <button className="p-0 btn btn-link btn-sm">Change E-mail</button>
+                      </Label>
+                      <Input disabled type="email" name="email" id="email" placeholder="something@idk.cool" />
+                    </FormGroup>
                   </CardBody>
                 </Card>
-              </div>
-              <div className="col-4">
+              </Col>
+              <Col xs="4">
                 <Card className="mb-2">
                   <CardHeader>
                     <h4 className="mb-0 text-info card-title">
@@ -68,12 +77,12 @@ function UserEdit () {
                   <CardBody>
                   </CardBody>
                 </Card>
-              </div>
-            </div>
+              </Col>
+            </Row>
           </ReduxForm>
         </div>
       </div>
-    </div>
+    </Container>
     <div className="px-3 py-2 text-right">
       <button type="button" className="btn btn-success" onClick={() => dispatch(submit('UserEdit'))}>Save</button>
     </div>

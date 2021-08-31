@@ -211,7 +211,7 @@ function Users () {
                     </td>
                     <td className="align-middle user-creation-date">{ user.createdDate.format('L') }</td>
                     <td className="align-middle user-actions">
-                      <Link to="/private/users" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
+                      <Link to={`/private/users/${user.id}`} className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
                     </td>
                   </tr>;
                 }) }

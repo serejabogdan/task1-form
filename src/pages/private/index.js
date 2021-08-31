@@ -11,7 +11,7 @@ import Homepage from './homepage';
 import UserEdit from './user-edit';
 import { selector as privateSelector } from './reducer';
 import { selector as pagesSelector, TYPE } from '../reducer';
-import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USER_EDIT, PRIVATE_USERS, PUBLIC_SIGN_IN } from '../../constants/routes';
+import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USERS, PUBLIC_SIGN_IN } from '../../constants/routes';
 
 function Private () {
   const { auth } = useSelector(pagesSelector);
@@ -25,11 +25,12 @@ function Private () {
   return initialized
     ? auth && <Switch>
       <Route
+        exact
         path={PRIVATE_USERS}
         component={Users}
       />
       <Route
-        path={PRIVATE_USER_EDIT}
+        path={`${PRIVATE_USERS}/:id`}
         component={UserEdit}
       />
       <Route
