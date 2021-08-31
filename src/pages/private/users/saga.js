@@ -18,36 +18,30 @@ function getUsersApi ({ data, params }) {
   });
 }
 
-function * userSelected ({ payload }) {
-  const { data } = yield select(selector);
-  const users = yield data.content.map(user => {
-    if (user.id === payload.userId) {
-      return { ...user, checked: !user.checked };
-    }
-    return user;
-  });
+function * handleSelectedUser ({ payload }) {
+  const { selectedUsers } = yield select(selector);
+  const newSelectedUsers = payload.isChecked
+    ? selectedUsers.concat(payload.userId)
+    : selectedUsers.filter(userId => userId !== payload.userId);
   yield put({
     type: TYPE.META,
     payload: {
-      hasAllUsersChecked: false,
-      data: { ...data, content: users }
+      selectedUsers: newSelectedUsers
     }
   });
-  yield call(isAtLeastOneSelected);
 }
 
-function * usersSelected () {
-  const state = yield select(selector);
-  const { data, hasAllUsersChecked } = state;
-  const users = data.content.map(user => ({ ...user, checked: !hasAllUsersChecked }));
+function * handleSelectedUsers ({ payload }) {
+  const { data } = yield select(selector);
+  const newSelectedUsers = payload.isChecked
+    ? data.content.map(user => user.id)
+    : [];
   yield put({
     type: TYPE.META,
     payload: {
-      hasAllUsersChecked: !hasAllUsersChecked,
-      data: { ...data, content: users }
+      selectedUsers: newSelectedUsers
     }
   });
-  yield call(isAtLeastOneSelected);
 }
 
 function * getUsers (payload) {
@@ -61,24 +55,18 @@ function * getUsers (payload) {
 
 function * handleSortBy ({ payload: fieldName }) {
   const { currentSortField, sortDirectionBoolean } = yield select(selector);
-  if (currentSortField === fieldName) {
-    yield put({
-      type: TYPE.UPDATE_FILTERS,
-      payload: {
-        sortDirectionBoolean: !sortDirectionBoolean,
-        sort: `${fieldName},${!sortDirectionBoolean ? SORT_DOWN : SORT_UP}`,
-      }
-    });
-  } else {
-    yield put({
-      type: TYPE.UPDATE_FILTERS,
-      payload: {
-        sortDirectionBoolean: true,
-        currentSortField: fieldName,
-        sort: `${fieldName},${SORT_DOWN}`,
-      }
-    });
-  }
+  const sortBy = currentSortField === fieldName
+    ? `${fieldName},${!sortDirectionBoolean ? SORT_DOWN : SORT_UP}`
+    : `${fieldName},${SORT_DOWN}`;
+
+  yield put({
+    type: TYPE.UPDATE_FILTERS,
+    payload: {
+      sortDirectionBoolean: true,
+      currentSortField: fieldName,
+      sort: sortBy,
+    }
+  });
 }
 
 function * updateFilters ({ payload }) {
@@ -87,16 +75,7 @@ function * updateFilters ({ payload }) {
   yield call(updateUrlFilters, filters);
   yield put({
     type: TYPE.META,
-    payload: { ...filters, hasAllUsersChecked: false }
-  });
-}
-
-function * isAtLeastOneSelected () {
-  const { data } = yield select(selector);
-  const isActionsDropdownDisabled = yield !data.content.some(user => user.checked);
-  yield put({
-    type: TYPE.META,
-    payload: { isActionsDropdownDisabled }
+    payload: { ...filters, selectedUsers: [] }
   });
 }
 
@@ -150,8 +129,8 @@ function * initializeSaga () {
 function * usersWatcher () {
   yield takeLatest(TYPE.SORT_BY, handleSortBy);
   yield takeLatest(TYPE.INITIALIZE, initializeSaga);
-  yield takeLatest(TYPE.USER_SELECTED, userSelected);
-  yield takeLatest(TYPE.USERS_SELECTED, usersSelected);
+  yield takeLatest(TYPE.SELECTED_USER, handleSelectedUser);
+  yield takeLatest(TYPE.SELECTED_USERS, handleSelectedUsers);
   yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);
 }
 

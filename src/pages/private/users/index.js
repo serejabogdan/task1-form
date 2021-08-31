@@ -26,18 +26,31 @@ function Users () {
     page,
     name,
     role,
-    initialized
+    initialized,
+    selectedUsers,
   } = useSelector(selector);
   const dispatch = useDispatch();
 
   const content = useMemo(
     () => (data.content ?? []).map(user => {
       const createdDate = moment(user.createdDate, 'YYYY-MM-DD').isValid() ? moment(user.createdDate) : null;
-      const onSelect = () => dispatch({ type: TYPE.USER_SELECTED, payload: { userId: user.id } });
+      const onSelect = (event) => dispatch({
+        type: TYPE.SELECTED_USER,
+        payload: {
+          userId: user.id,
+          isChecked: event.target.checked
+        }
+      });
       return { ...user, createdDate, onSelect };
     }),
     [data.content, dispatch]
   );
+
+  const handleSelectedUsers = useCallback((event) => dispatch({
+    type: TYPE.SELECTED_USERS,
+    payload: { isChecked: event.target.checked }
+  }),
+  [dispatch]);
 
   const handleChangePage = useCallback(
     page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1 } }),
@@ -64,16 +77,18 @@ function Users () {
     [dispatch]
   );
 
-  const handleSelectedAllUsers = useCallback(() => dispatch({ type: TYPE.USERS_SELECTED }), [dispatch]);
-
   const handleChangeSelectedRole = useCallback(
-    (role) => {
+    (newRole) => {
+      const newRoleValue = newRole && newRole.value ? newRole.value : '';
+      if (newRoleValue === role) {
+        return;
+      }
       dispatch({
         type: TYPE.UPDATE_FILTERS,
-        payload: { page: 0, role: role ? role.value : '' }
+        payload: { page: 0, role: newRoleValue }
       });
     },
-    [dispatch]
+    [dispatch, role]
   );
 
   useEffect(() => {
@@ -84,9 +99,7 @@ function Users () {
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
       <Container fluid className="flex-grow-1 overflow-hidden mb-3">
         <h2 className="pt-3 text-primary">Users</h2>
-        <Row>
-          <hr/>
-        </Row>
+        <hr className="row" />
         <Row className="mb-3">
           <Col xs="4" className="search">
             <InputGroup>
@@ -108,7 +121,7 @@ function Users () {
             </InputGroup>
           </Col>
           <Col xs="1" className="dropdown">
-            <UncontrolledDropdown color="primary" group>
+            <UncontrolledDropdown group>
               <DropdownToggle caret color="secondary">
                 { size }
               </DropdownToggle>
@@ -127,21 +140,21 @@ function Users () {
               onChange={handleChangeSelectedRole}
               options={roleSelectOptions}
               placeholder="Roles"
-              value={roleSelectOptions.find(currentRole => currentRole.value === role)}
+              value={roleSelectOptions.find(currentRole => currentRole.value === role) || null}
             />
           </Col>
           <Col xs="4" className="d-flex justify-content-end">
             <UncontrolledDropdown group>
-              <DropdownToggle caret color="secondary" disabled={!content.some(user => user.checked)}>
+              <DropdownToggle caret color="secondary" disabled={!selectedUsers.length}>
                 List actions
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem disabled={!content.some(user => user.checked)}>
+                <DropdownItem disabled={!selectedUsers.length}>
                   Delete
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
-            <Link to="#" className="mx-2 btn btn-success">
+            <Link to="/private/users" className="mx-2 btn btn-success">
               <FontIcon icon={faPlus} className="mr-1" /> Create User
             </Link>
           </Col>
@@ -154,7 +167,7 @@ function Users () {
                   <th className="user-name">
                     <div className="d-flex align-items-center ">
                       <div className="check d-inline-block custom-checkbox custom-control">
-                        <Input type="checkbox" disabled={!content.length} checked={content.every(user => user.checked)} onChange={handleSelectedAllUsers} />
+                        <Input type="checkbox" disabled={!content.length} checked={content.every(user => selectedUsers.includes(user.id))} onChange={handleSelectedUsers} />
                       </div>
                       <SortField sortFieldName={SORT_FIELDS.NAME}>
                         <strong className="text-primary">Name</strong>
@@ -167,7 +180,7 @@ function Users () {
                     </SortField>
                   </th>
                   <th className="user-roles">
-                    <SortField sortFieldName={SORT_FIELDS.ROLES}>
+                    <SortField disabled sortFieldName={SORT_FIELDS.ROLES}>
                     Roles
                     </SortField>
                   </th>
@@ -177,7 +190,7 @@ function Users () {
                     </SortField>
                   </th>
                   <th className="align-middle user-actions">
-                    <h6 className="m-0 font-weight-bold text-primary">Actions</h6>
+                    <strong className="m-0 font-weight-bold text-primary">Actions</strong>
                   </th>
                 </tr>
               </thead>
@@ -187,9 +200,9 @@ function Users () {
                     <td className="align-middle user-name">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={user.checked || false} onChange={user.onSelect} />
+                          <Input type="checkbox" checked={selectedUsers.includes(user.id) || false} onChange={user.onSelect} />
                         </div>
-                        <Link to="#" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
+                        <Link to="/private/users" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
                     </td>
                     <td className="align-middle user-id">{ user.id }</td>
@@ -198,7 +211,7 @@ function Users () {
                     </td>
                     <td className="align-middle user-creation-date">{ user.createdDate.format('L') }</td>
                     <td className="align-middle user-actions">
-                      <Link to="#" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
+                      <Link to="/private/users" className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
                     </td>
                   </tr>;
                 }) }

@@ -6,8 +6,8 @@ export const TYPE = (function (prefix) {
     // complex actions
     SORT_BY: `${prefix}SORT_BY`,
     INITIALIZE: `${prefix}INITIALIZE`,
-    USER_SELECTED: `${prefix}USER_SELECTED`,
-    USERS_SELECTED: `${prefix}USERS_SELECTED`,
+    SELECTED_USER: `${prefix}SELECTED_USER`,
+    SELECTED_USERS: `${prefix}SELECTED_USERS`,
     UPDATE_FILTERS: `${prefix}UPDATE_FILTERS`,
   };
 })('@users/');
@@ -22,11 +22,11 @@ const initial = {
   name: '',
   role: '',
   sort: 'name,ASC',
+  selectedUsers: [],
   sortDirection: true,
   currentSortField: 'name',
   sortDirectionBoolean: true,
 
-  hasAllUsersChecked: false,
   data: {
     content: [],
     size: 0,

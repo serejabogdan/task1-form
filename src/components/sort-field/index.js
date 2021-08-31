@@ -8,7 +8,7 @@ import { faSort, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-soli
 import FontIcon from '../font-icon';
 import { TYPE, selector } from '../../pages/private/users/reducer';
 
-function SortField ({ sortFieldName, children }) {
+function SortField ({ sortFieldName, children, disabled }) {
   const dispatch = useDispatch();
   const { currentSortField, sortDirectionBoolean } = useSelector(selector);
   const getSortIcon = useCallback((name) => {
@@ -26,18 +26,20 @@ function SortField ({ sortFieldName, children }) {
     [dispatch, sortFieldName]
   );
 
-  return <button className="text-nowrap btn btn-outline-link" onClick={sortBy}>
+  return <button disabled={disabled} className="text-nowrap btn btn-outline-link" onClick={sortBy}>
     { getSortIcon(sortFieldName) } { children }
   </button>;
 }
 
 SortField.defaultProps = {
-  children: 'Field'
+  disabled: false,
+  children: 'Field',
 };
 
 SortField.propTypes = {
+  children: PropTypes.any,
+  disabled: PropTypes.bool,
   sortFieldName: PropTypes.string.isRequired,
-  children: PropTypes.any
 };
 
 export default SortField;
