@@ -1,24 +1,34 @@
 // outsource dependencies
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormGroup, Input, Label } from 'reactstrap';
+import { FormFeedback, FormGroup, Input, Label } from 'reactstrap';
 
 // styles
 import './input-field.css';
 
-function InputField ({ id, type, label, input, disabled, meta, required }) {
+function InputField ({ id, label, input, meta, required, ...props }) {
   return <FormGroup>
-    <Label for={id}>
+    { label && <Label for={id}>
       <strong className={required ? 'required' : null}>
         { label } { ' ' }
       </strong>
-    </Label>
-    <Input disabled={disabled} type={type} id={id} placeholder={label} {...input}/>
-    { meta.touched && ((meta.error && <span>{ meta.error }</span>)) }
+    </Label> }
+    <Input
+      {...input}
+      placeholder={label}
+      valid={!!(meta.touched && !meta.error)}
+      invalid={!!(meta.touched && meta.error)}
+      {...props}
+    />
+    { meta.touched && (meta.error && <FormFeedback valid={!!(meta.touched && !meta.error)}>
+      { meta.error }
+    </FormFeedback>) }
+
   </FormGroup>;
 }
 
 InputField.defaultProps = {
+  label: '',
   disabled: false,
   required: false
 };
@@ -29,7 +39,7 @@ InputField.propTypes = {
   id: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   input: PropTypes.object.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   meta: PropTypes.shape({
     touched: PropTypes.bool,
     warning: PropTypes.string,

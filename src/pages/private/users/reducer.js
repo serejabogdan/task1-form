@@ -37,8 +37,7 @@ const initial = {
   },
 };
 
-export default function usersReducer (state= initial, action) {
-  const { type, payload } = action;
+export default function usersReducer (state= initial, { type, payload }) {
   switch (type) {
     case TYPE.META: return { ...state, ...payload };
     case TYPE.CLEAR: return { ...initial, initialized: true };
