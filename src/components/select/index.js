@@ -6,7 +6,6 @@ import { FormFeedback, FormGroup, Label } from 'reactstrap';
 function Select ({ input, meta, options, label, required, isMulti }) {
   const requiredStyles = {
     container: styles => ({ ...styles, outline: 'none' }),
-    placeholder: styles => ({ ...styles, color: 'red' }),
     dropdownIndicator: styles => ({ ...styles, color: 'red' }),
     indicatorSeparator: styles => ({ ...styles, backgroundColor: 'red' }),
     control: styles => ({

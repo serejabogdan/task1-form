@@ -5,11 +5,15 @@ import { submit } from 'redux-form';
 import { useDispatch } from 'react-redux';
 
 // local dependencies
+import { TYPE } from './reducer';
 import UserForm from '../../../components/user-form';
 
 function UserCreate () {
   const dispatch = useDispatch();
-  const handleSubmit = useCallback((value) => { console.log(value); }, []);
+  const handleSubmit = useCallback((value) => dispatch({
+    type: TYPE.CREATE_USER,
+    payload: value
+  }), [dispatch]);
 
   return <div className="content d-flex flex-column overflow-hidden vh-100">
     <header className="p-3 d-flex justify-content-between">
@@ -18,7 +22,7 @@ function UserCreate () {
         <button type="button" className="btn btn-danger">Delete User</button>
       </Col>
     </header>
-    <UserForm form="CreateUser" handleSubmit={handleSubmit} createForm />
+    <UserForm form="CreateUser" handleSubmit={handleSubmit} isUserCreationForm />
     <div className="px-3 py-2 text-right">
       <button type="button" className="btn btn-success" onClick={() => dispatch(submit('CreateUser'))}>
         Save

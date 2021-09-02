@@ -4,7 +4,8 @@ export const TYPE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
-    INITIALIZE: `${prefix}INITIALIZE`
+    INITIALIZE: `${prefix}INITIALIZE`,
+    CREATE_USER: `${prefix}CREATE_USER`,
   };
 })('@user-create/');
 

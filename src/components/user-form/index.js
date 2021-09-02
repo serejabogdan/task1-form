@@ -13,39 +13,46 @@ import { ReduxForm } from '../../utils/redux-form';
 import { selector } from '../../pages/reducer';
 import { suffixSelectOptions } from '../../constants/select-options';
 
-function UserForm ({ form, handleSubmit, initialValues, createForm }) {
+function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
   const { roles } = useSelector(selector);
-  function firstNameValidation (firstName, MAX_CHARACTERS) {
-    if (!firstName) {
+  function firstNameValidation (value, MAX_CHARACTERS) {
+    if (!value) {
       return 'First name is required';
-    } else if (firstName.length > MAX_CHARACTERS) {
+    } else if (value.length > MAX_CHARACTERS) {
       return `Maximum ${MAX_CHARACTERS} characters`;
+    } else if (!/\w/.test(value)) {
+      return 'Latin alphabet only';
     }
   }
 
-  function lastNameValidation (lastName, MAX_CHARACTERS) {
-    if (!lastName) {
+  function lastNameValidation (value, MAX_CHARACTERS) {
+    if (!value) {
       return 'Last name is required';
-    } else if (lastName.length > MAX_CHARACTERS) {
+    } else if (value.length > MAX_CHARACTERS) {
       return `Last ${MAX_CHARACTERS} characters`;
+    } else if (!/\w/.test(value)) {
+      return 'Latin alphabet only';
     }
   }
 
-  function rolesValidation (roles) {
-    if (!roles?.length) {
+  function rolesValidation (value) {
+    if (!value?.length) {
       return 'Roles are required';
     }
   }
 
   function emailValidation (value) {
+    const isEmailRegEx = (value) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
+
     if (!value) {
       return 'Email is required';
+    } else if (isEmailRegEx(value)) {
+      return 'Invalid email address';
     }
   }
 
   function formValidation (values) {
     const errors = {};
-    // const isEmailRegEx = (value) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
     const MAX_CHARACTERS = 30;
 
     errors.firstName = firstNameValidation(values.firstName, MAX_CHARACTERS);
@@ -59,12 +66,12 @@ function UserForm ({ form, handleSubmit, initialValues, createForm }) {
   const selectRolesOptions = useMemo(() => roles.map(role => ({ value: role.name, label: role.name })), [roles]);
 
   return <Container fluid className="flex-grow-1 overflow-hidden mb-3">
-    <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
-      <div style={{ position: 'absolute', overflow: 'scroll', inset: '0px', marginRight: '-19px', marginBottom: '-19px' }}>
+    <div className="mb-3">
+      <div>
         <ReduxForm
           form={form}
           onSubmit={handleSubmit}
-          enableReinitialize={true}
+          enableReinitialize
           validate={formValidation}
           initialValues={initialValues}
         >
@@ -96,13 +103,13 @@ function UserForm ({ form, handleSubmit, initialValues, createForm }) {
                 <CardBody>
                   <Field type="text" name="roles" label="Roles" options={selectRolesOptions} isMulti required component={Select} />
                   <FormGroup className="mb-2 mb-sm-0">
-                    <Field type="email" name="email" label="Email" disabled={!createForm} required component={InputField}>
+                    <Field type="email" name="email" label="Email" disabled={!isUserCreationForm} required component={InputField}>
                       <Label htmlFor="email" className="w-100">
                         <div className="d-flex justify-content-between">
                           <strong className="required">
                             Email { ' ' }
                           </strong>
-                          <button type="button" className="p-0 btn btn-link btn-sm" disabled={createForm}>Change E-mail</button>
+                          <button type="button" className="p-0 btn btn-link btn-sm" disabled={isUserCreationForm}>Change E-mail</button>
                         </div>
                       </Label>
                     </Field>
@@ -127,14 +134,14 @@ function UserForm ({ form, handleSubmit, initialValues, createForm }) {
 }
 
 UserForm.defaultProps = {
-  createForm: false,
   initialValues: null,
+  isUserCreationForm: false,
 };
 
 UserForm.propTypes = {
-  createForm: PropTypes.bool,
   initialValues: PropTypes.object,
   form: PropTypes.string.isRequired,
+  isUserCreationForm: PropTypes.bool,
   handleSubmit: PropTypes.func.isRequired,
 };
 
