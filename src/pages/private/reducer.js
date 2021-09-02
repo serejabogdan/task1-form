@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 
 // local dependencies
 import usersReducer from './users/reducer';
-import userEditReducer from './user-edit/reduce';
+import userEditReducer from './user-edit/reducer';
 
 export const TYPE = (function (prefix) {
   return {
@@ -20,6 +20,7 @@ const initial = {
   disabled: false,
   errorMessage: '',
   initialized: false,
+
 };
 
 function privateReducer (state= initial, action) {

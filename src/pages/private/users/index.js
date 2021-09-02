@@ -10,9 +10,9 @@ import { Badge, Button, Col, Container, DropdownItem, DropdownMenu, DropdownTogg
 
 // local dependencies
 import { TYPE, selector } from './reducer';
+import { selector as pagesSelector } from '../../reducer';
 import FontIcon from '../../../components/font-icon';
 import SortField from '../../../components/sort-field';
-import { roleSelectOptions } from '../../../constants/select-options';
 import { SIZES, SORT_FIELDS } from '../../../constants/valid-query-params';
 
 // styles
@@ -29,6 +29,7 @@ function Users () {
     initialized,
     selectedUsers,
   } = useSelector(selector);
+  const { roles } = useSelector(pagesSelector);
   const dispatch = useDispatch();
 
   const content = useMemo(
@@ -91,6 +92,8 @@ function Users () {
     [dispatch, role]
   );
 
+  const selectRolesOptions = useMemo(() => roles.map(role => ({ value: role.name, label: role.name })), [roles]);
+
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE });
   }, [dispatch]);
@@ -138,9 +141,9 @@ function Users () {
             <Select
               isClearable
               onChange={handleChangeSelectedRole}
-              options={roleSelectOptions}
+              options={selectRolesOptions}
               placeholder="Roles"
-              value={roleSelectOptions.find(currentRole => currentRole.value === role) || null}
+              value={selectRolesOptions.find(currentRole => currentRole.value === role) || null}
             />
           </Col>
           <Col xs="4" className="d-flex justify-content-end">
@@ -154,7 +157,7 @@ function Users () {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
-            <Link to="/private/users" className="mx-2 btn btn-success">
+            <Link to="/private/users/new" className="mx-2 btn btn-success">
               <FontIcon icon={faPlus} className="mr-1" /> Create User
             </Link>
           </Col>

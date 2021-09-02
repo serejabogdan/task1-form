@@ -21,6 +21,7 @@ const initial = {
   size: 10,
   name: '',
   role: '',
+  roles: [],
   sort: 'name,ASC',
   selectedUsers: [],
   sortDirection: true,

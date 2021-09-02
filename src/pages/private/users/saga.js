@@ -55,16 +55,17 @@ function * getUsers (payload) {
 
 function * handleSortBy ({ payload: fieldName }) {
   const { currentSortField, sortDirectionBoolean } = yield select(selector);
-  const sortBy = currentSortField === fieldName
-    ? `${fieldName},${!sortDirectionBoolean ? SORT_DOWN : SORT_UP}`
+  const isFieldSame = currentSortField === fieldName;
+  const hasDirectionChanged = isFieldSame ? !sortDirectionBoolean : true;
+  const sortBy = isFieldSame
+    ? `${fieldName},${hasDirectionChanged ? SORT_DOWN : SORT_UP}`
     : `${fieldName},${SORT_DOWN}`;
-
   yield put({
     type: TYPE.UPDATE_FILTERS,
     payload: {
-      sortDirectionBoolean: true,
-      currentSortField: fieldName,
       sort: sortBy,
+      currentSortField: fieldName,
+      sortDirectionBoolean: hasDirectionChanged,
     }
   });
 }
@@ -109,12 +110,12 @@ function validParsedQueryParams (filters, state) {
     page: validPage,
     role: filters.role,
     sortDirectionBoolean,
-    sortField: validSortField,
+    currentSortField: validSortField,
     sort: `${validSortField},${validSortDirection}`,
   };
 }
 
-function * initializeSaga () {
+function * initialSaga () {
   const queryParams = history.location.search.substr(1);
   if (queryParams) {
     const filters = yield call(parseQueryParams, queryParams);
@@ -128,7 +129,7 @@ function * initializeSaga () {
 
 function * usersWatcher () {
   yield takeLatest(TYPE.SORT_BY, handleSortBy);
-  yield takeLatest(TYPE.INITIALIZE, initializeSaga);
+  yield takeLatest(TYPE.INITIALIZE, initialSaga);
   yield takeLatest(TYPE.SELECTED_USER, handleSelectedUser);
   yield takeLatest(TYPE.SELECTED_USERS, handleSelectedUsers);
   yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactSelect from 'react-select';
 import { FormFeedback, FormGroup, Label } from 'reactstrap';
 
-function Select ({ input, meta, options, id, label, required, isMulti }) {
+function Select ({ input, meta, options, label, required, isMulti }) {
   const requiredStyles = {
     container: styles => ({ ...styles, outline: 'none' }),
     placeholder: styles => ({ ...styles, color: 'red' }),
@@ -19,19 +19,19 @@ function Select ({ input, meta, options, id, label, required, isMulti }) {
     }),
   };
   return <FormGroup>
-    { label && <Label for={id}>
+    { label && <Label for={input.name}>
       <strong className={required ? 'required' : ''}>
         { label } { ' ' }
       </strong>
     </Label> }
     <ReactSelect
-      id={id}
+      id={input.name}
       isMulti={isMulti}
       {...input}
       options={options}
       placeholder={label}
       classNamePrefix="select"
-      className="basic-multi-select"
+      className={`basic-multi-select ${meta.touched && meta.error ? 'is-invalid' : ''}`}
       onBlur={() => input.onBlur(input.value)}
       styles={meta.touched && meta.error && requiredStyles}
     />
@@ -51,7 +51,6 @@ Select.propTypes = {
   label: PropTypes.string,
   isMulti: PropTypes.bool,
   required: PropTypes.bool,
-  id: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
   input: PropTypes.object.isRequired,
   options: PropTypes.array.isRequired,
