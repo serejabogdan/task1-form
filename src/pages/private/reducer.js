@@ -38,5 +38,5 @@ export function selector (state) {
 export default combineReducers({
   users: usersReducer,
   state: privateReducer,
-  userEditForm: userEditReducer
+  userEdit: userEditReducer
 });

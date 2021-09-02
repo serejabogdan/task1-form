@@ -5,6 +5,10 @@
     tab-index: -1;
 }
 
+.drop-zone img {
+    width: 100%;
+}
+
 .drop-zone:focus {
     outline: 0;
     color: #495057;
@@ -17,5 +21,6 @@
     position: absolute;
     inset: 0;
     opacity: 0;
+    cursor: pointer;
     /*pointer-events: none;*/
 }

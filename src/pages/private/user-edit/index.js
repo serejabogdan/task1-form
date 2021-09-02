@@ -1,17 +1,20 @@
 // outsource dependencies
-import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import { Field, submit } from 'redux-form';
 import { Card, CardBody, CardHeader, Col, Container, FormGroup, Label, Row } from 'reactstrap';
 
 // local dependencies
+import { selector, TYPE } from './reduce';
+import Select from '../../../components/select';
 import DropZone from '../../../components/drop-zone';
 import { ReduxForm } from '../../../utils/redux-form';
 import InputField from '../../../components/input-field';
-import Select from '../../../components/select';
 import { roleSelectOptions, suffixSelectOptions } from '../../../constants/select-options';
 
-function UserEdit () {
+function UserEdit ({ match }) {
+  const { user } = useSelector(selector);
   const dispatch = useDispatch();
   const handleSubmit = useCallback((value) => { console.log(value); }, []);
 
@@ -49,17 +52,21 @@ function UserEdit () {
     return errors;
   }
 
+  useEffect(() => {
+    dispatch({ type: TYPE.INITIALIZE, payload: { userId: match?.params?.id } });
+  }, [dispatch, match?.params?.id]);
+
   return <div className="content d-flex flex-column overflow-hidden vh-100">
     <header className="p-3 d-flex justify-content-between">
       <h2 className="text-info mb-0">User edit page</h2>
       <Col xs="4" className="text-right">
-        <button type="button" className="btn btn-danger"> Delete User</button>
+        <button type="button" className="btn btn-danger">Delete User</button>
       </Col>
     </header>
     <Container fluid className="flex-grow-1 overflow-hidden mb-3">
       <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
         <div style={{ position: 'absolute', overflow: 'scroll', inset: '0px', marginRight: '-19px', marginBottom: '-19px' }}>
-          <ReduxForm form="UserEdit" onSubmit={handleSubmit} validate={formValidation} initialValues={{ email: 'something@idk.cool' }}>
+          <ReduxForm form="UserEdit" onSubmit={handleSubmit} validate={formValidation} enableReinitialize={true} initialValues={user}>
             <Row className="w-100">
               <Col xs="8">
                 <Card className="mb-2">
@@ -120,5 +127,9 @@ function UserEdit () {
     </div>
   </div>;
 }
+
+UserEdit.propTypes = {
+  match: PropTypes.object.isRequired
+};
 
 export default UserEdit;
