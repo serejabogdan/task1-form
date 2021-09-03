@@ -1,10 +1,10 @@
 // outsource dependencies
-import React, { useCallback, useEffect, useMemo } from 'react';
 import moment from 'moment';
 import Select from 'react-select';
 import Pagination from 'rc-pagination';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { faPlus, faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Badge, Button, Col, Container, DropdownItem, DropdownMenu, DropdownToggle, Input, InputGroup, InputGroupAddon, Row, Spinner, Table, UncontrolledDropdown } from 'reactstrap';
 

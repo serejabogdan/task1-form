@@ -1,8 +1,8 @@
 // outsource dependencies
-import React, { useCallback } from 'react';
 import { Col } from 'reactstrap';
 import { submit } from 'redux-form';
 import { useDispatch } from 'react-redux';
+import React, { useCallback } from 'react';
 
 // local dependencies
 import { TYPE } from './reducer';
