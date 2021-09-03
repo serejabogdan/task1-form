@@ -9,7 +9,6 @@ import User from './user';
 import Users from './users';
 import Homepage from './homepage';
 import UserEdit from './user-edit';
-import CreateUser from './user-create';
 import { selector as privateSelector } from './reducer';
 import { selector as pagesSelector, TYPE } from '../reducer';
 import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USERS, PUBLIC_SIGN_IN } from '../../constants/routes';
@@ -32,7 +31,7 @@ function Private () {
       />
       <Route exact
         path={`${PRIVATE_USERS}/new`}
-        component={CreateUser}
+        component={UserEdit}
       />
       <Route exact
         path={`${PRIVATE_USERS}/:id`}

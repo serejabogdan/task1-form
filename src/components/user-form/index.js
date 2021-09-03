@@ -13,7 +13,7 @@ import { selector } from '../../pages/reducer';
 import { ReduxForm } from '../../utils/redux-form';
 import { suffixSelectOptions } from '../../constants/select-options';
 
-function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
+function UserForm ({ form, handleSubmit, initialValues, isUserId, disabled }) {
   const { roles } = useSelector(selector);
 
   function formValidation (values) {
@@ -50,7 +50,7 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
     return errors;
   }
 
-  return <Container fluid className="flex-grow-1 overflow-hidden mb-3">
+  return <Container fluid className="flex-grow-1 mb-3">
     <div className="mb-3">
       <div>
         <ReduxForm
@@ -71,12 +71,34 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
                   </h4>
                 </CardHeader>
                 <CardBody>
-                  <Field type="text" name="firstName" label={<strong className="required">First Name </strong>} placeholder="First Name" required component={InputField} />
-                  <Field type="text" name="middleName" label={<strong>Middle Name </strong>} placeholder="Middle Name" component={InputField} />
-                  <Field type="text" name="lastName" label={<strong className="required">Last Name </strong>} placeholder="Last Name" required component={InputField} />
+                  <Field
+                    type="text"
+                    name="firstName"
+                    disabled={disabled}
+                    placeholder="First Name" required component={InputField}
+                    label={<strong className="required">First Name </strong>}
+                  />
+                  <Field
+                    type="text"
+                    name="middleName"
+                    disabled={disabled}
+                    component={InputField}
+                    placeholder="Middle Name"
+                    label={<strong>Middle Name </strong>}
+                  />
+                  <Field
+                    required
+                    type="text"
+                    name="lastName"
+                    disabled={disabled}
+                    component={InputField}
+                    placeholder="Last Name"
+                    label={<strong className="required">Last Name </strong>}
+                  />
                   <Field
                     name="suffix"
                     component={Select}
+                    disabled={disabled}
                     placeholder="Suffix"
                     options={suffixSelectOptions}
                     label={<strong>Suffix </strong>}
@@ -98,19 +120,27 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
                     isMulti
                     required
                     name="roles"
+                    options={roles}
                     component={Select}
                     placeholder="Roles"
-                    options={roles}
+                    disabled={disabled}
                     preprocessValue={selectRoles => selectRoles}
                     postprocessValue={roles => roles.map(role => role)}
                     label={<strong className="required">Roles </strong>}
                   />
                   <FormGroup className="mb-2 mb-sm-0">
-                    <Field type="email" name="email" label={<div className="d-flex justify-content-between">
-                      <strong className="required">Email </strong>
-                      <button type="button" className="p-0 btn btn-link btn-sm" disabled={isUserCreationForm}>Change E-mail</button>
-                    </div>} placeholder="Email" disabled={!isUserCreationForm} required component={InputField}>
-                    </Field>
+                    <Field
+                      required
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      component={InputField}
+                      disabled={isUserId || disabled}
+                      label={<div className="d-flex justify-content-between">
+                        <strong className="required">Email </strong>
+                        <button type="button" className="p-0 btn btn-link btn-sm" disabled={!isUserId || disabled}>Change E-mail</button>
+                      </div>}
+                    />
                   </FormGroup>
                 </CardBody>
               </Card>
@@ -120,6 +150,7 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
                 title="Image"
                 id="user-photo"
                 label="User Photo"
+                disabled={disabled}
                 alt="It is a drop zone to load user photo"
                 src="https://admin-dev.intelliceed.cf/static/media/def-image.ac931042.svg"
               />
@@ -132,14 +163,15 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
 }
 
 UserForm.defaultProps = {
+  disabled: false,
   initialValues: null,
-  isUserCreationForm: false,
 };
 
 UserForm.propTypes = {
+  disabled: PropTypes.bool,
+  isUserId: PropTypes.bool.isRequired,
   initialValues: PropTypes.object,
   form: PropTypes.string.isRequired,
-  isUserCreationForm: PropTypes.bool,
   handleSubmit: PropTypes.func.isRequired,
 };
 

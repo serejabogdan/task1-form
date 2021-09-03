@@ -19,7 +19,7 @@ function validateStyles (color) {
   };
 }
 
-function Select ({ input, meta, options, label, isMulti, preprocessValue, postprocessValue, ...props }) {
+function Select ({ input, meta, options, label, isMulti, disabled, preprocessValue, postprocessValue, ...props }) {
   function validateSelect () {
     if (meta.touched) {
       return meta.error ? validateStyles('red') : validateStyles('green');
@@ -34,6 +34,7 @@ function Select ({ input, meta, options, label, isMulti, preprocessValue, postpr
       id={input.name}
       options={options}
       isMulti={isMulti}
+      isDisabled={disabled}
       styles={validateSelect()}
       getOptionValue={({ id }) => id}
       getOptionLabel={({ name }) => name}
@@ -51,10 +52,12 @@ function Select ({ input, meta, options, label, isMulti, preprocessValue, postpr
 
 Select.defaultProps = {
   isMulti: false,
+  disabled: false,
 };
 
 Select.propTypes = {
   isMulti: PropTypes.bool,
+  disabled: PropTypes.bool,
   meta: PropTypes.object.isRequired,
   input: PropTypes.object.isRequired,
   options: PropTypes.array.isRequired,

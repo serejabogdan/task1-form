@@ -6,7 +6,7 @@ import { Card, CardBody, CardHeader, FormGroup, Input, Label } from 'reactstrap'
 // styles
 import './style.css';
 
-function DropZone ({ label, id, title, src, alt }) {
+function DropZone ({ label, id, title, src, alt, disabled }) {
   return <Card className="mb-2">
     <CardHeader>
       <h4 className="mb-0 text-info card-title">
@@ -24,14 +24,24 @@ function DropZone ({ label, id, title, src, alt }) {
         </Label>
         <div className="drop-zone d-flex justify-content-center align-items-center">
           <img src={src} alt={alt}/>
-          <Input accept="image/jpe, image/jpg, image/jpeg, image/gif, image/png" type="file" className="file-input"/>
+          <Input
+            type="file"
+            disabled={disabled}
+            className="file-input"
+            accept="image/jpe, image/jpg, image/jpeg, image/gif, image/png"
+          />
         </div>
       </FormGroup>
     </CardBody>
   </Card>;
 }
 
+DropZone.defaultProps = {
+  disabled: false,
+};
+
 DropZone.propTypes = {
+  disabled: PropTypes.bool,
   id: PropTypes.string.isRequired,
   src: PropTypes.string.isRequired,
   alt: PropTypes.string.isRequired,

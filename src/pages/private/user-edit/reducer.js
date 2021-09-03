@@ -4,7 +4,9 @@ export const TYPE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
+    EDIT_USER: `${prefix}EDIT_USER`,
     INITIALIZE: `${prefix}INITIALIZE`,
+    CREATE_USER: `${prefix}CREATE_USER`,
   };
 })('@user-edit/');
 
