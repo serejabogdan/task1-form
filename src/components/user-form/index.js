@@ -1,77 +1,62 @@
 // outsource dependencies
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Field } from 'redux-form';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { Card, CardBody, CardHeader, Col, Container, FormGroup, Label, Row } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, Container, FormGroup, Row } from 'reactstrap';
 
 // local dependencies
 import Select from '../select';
 import DropZone from '../drop-zone';
 import InputField from '../input-field';
-import { ReduxForm } from '../../utils/redux-form';
 import { selector } from '../../pages/reducer';
+import { ReduxForm } from '../../utils/redux-form';
 import { suffixSelectOptions } from '../../constants/select-options';
 
 function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
   const { roles } = useSelector(selector);
-  function firstNameValidation (value, MAX_CHARACTERS) {
-    if (!value) {
-      return 'First name is required';
-    } else if (value.length > MAX_CHARACTERS) {
-      return `Maximum ${MAX_CHARACTERS} characters`;
-    } else if (!/\w/.test(value)) {
-      return 'Latin alphabet only';
-    }
-  }
-
-  function lastNameValidation (value, MAX_CHARACTERS) {
-    if (!value) {
-      return 'Last name is required';
-    } else if (value.length > MAX_CHARACTERS) {
-      return `Last ${MAX_CHARACTERS} characters`;
-    } else if (!/\w/.test(value)) {
-      return 'Latin alphabet only';
-    }
-  }
-
-  function rolesValidation (value) {
-    if (!value?.length) {
-      return 'Roles are required';
-    }
-  }
-
-  function emailValidation (value) {
-    const isEmailRegEx = (value) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
-
-    if (!value) {
-      return 'Email is required';
-    } else if (isEmailRegEx(value)) {
-      return 'Invalid email address';
-    }
-  }
 
   function formValidation (values) {
     const errors = {};
     const MAX_CHARACTERS = 30;
 
-    errors.firstName = firstNameValidation(values.firstName, MAX_CHARACTERS);
-    errors.lastName = lastNameValidation(values.lastName, MAX_CHARACTERS);
-    errors.roles = rolesValidation(values.roles);
-    errors.email = emailValidation(values.email);
+    if (!values.firstName) {
+      errors.firstName = 'First name is required';
+    } else if (values.firstName.length > MAX_CHARACTERS) {
+      errors.firstName = `Maximum ${MAX_CHARACTERS} characters`;
+    } else if (!/\w/.test(values.firstName)) {
+      errors.firstName = 'Latin alphabet only';
+    }
+
+    if (!values.lastName) {
+      errors.lastName = 'Last name is required';
+    } else if (values.lastName.length > MAX_CHARACTERS) {
+      errors.lastName = `Last ${MAX_CHARACTERS} characters`;
+    } else if (!/\w/.test(values.lastName)) {
+      errors.lastName = 'Latin alphabet only';
+    }
+
+    if (!values?.roles?.length) {
+      errors.roles = 'Roles are required';
+    }
+
+    const isEmailRegEx = (value) => !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
+    if (!values.email) {
+      errors.email = 'Email is required';
+    } else if (isEmailRegEx(values.email)) {
+      errors.email = 'Invalid email address';
+    }
 
     return errors;
   }
-
-  const selectRolesOptions = useMemo(() => roles.map(role => ({ value: role.name, label: role.name })), [roles]);
 
   return <Container fluid className="flex-grow-1 overflow-hidden mb-3">
     <div className="mb-3">
       <div>
         <ReduxForm
           form={form}
-          onSubmit={handleSubmit}
           enableReinitialize
+          onSubmit={handleSubmit}
           validate={formValidation}
           initialValues={initialValues}
         >
@@ -86,10 +71,18 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
                   </h4>
                 </CardHeader>
                 <CardBody>
-                  <Field type="text" name="firstName" label="First Name" placeholder="First Name" required component={InputField} />
-                  <Field type="text" name="middleName" label="Middle Name" component={InputField} />
-                  <Field type="text" name="lastName" label="Last Name" required component={InputField} />
-                  <Field type="text" name="suffix" label="Suffix" placeholder="Suffix" options={suffixSelectOptions} component={Select} />
+                  <Field type="text" name="firstName" label={<strong className="required">First Name </strong>} placeholder="First Name" required component={InputField} />
+                  <Field type="text" name="middleName" label={<strong>Middle Name </strong>} placeholder="Middle Name" component={InputField} />
+                  <Field type="text" name="lastName" label={<strong className="required">Last Name </strong>} placeholder="Last Name" required component={InputField} />
+                  <Field
+                    name="suffix"
+                    component={Select}
+                    placeholder="Suffix"
+                    options={suffixSelectOptions}
+                    label={<strong>Suffix </strong>}
+                    postprocessValue={({ name }) => name}
+                    preprocessValue={(name) => suffixSelectOptions.find(suffix => name === suffix.name)}
+                  />
                 </CardBody>
               </Card>
               <Card className="mb-2">
@@ -101,17 +94,22 @@ function UserForm ({ form, handleSubmit, initialValues, isUserCreationForm }) {
                   </h4>
                 </CardHeader>
                 <CardBody>
-                  <Field type="text" name="roles" label="Roles" options={selectRolesOptions} isMulti required component={Select} />
+                  <Field
+                    isMulti
+                    required
+                    name="roles"
+                    component={Select}
+                    placeholder="Roles"
+                    options={roles}
+                    preprocessValue={selectRoles => selectRoles}
+                    postprocessValue={roles => roles.map(role => role)}
+                    label={<strong className="required">Roles </strong>}
+                  />
                   <FormGroup className="mb-2 mb-sm-0">
-                    <Field type="email" name="email" label="Email" disabled={!isUserCreationForm} required component={InputField}>
-                      <Label htmlFor="email" className="w-100">
-                        <div className="d-flex justify-content-between">
-                          <strong className="required">
-                            Email { ' ' }
-                          </strong>
-                          <button type="button" className="p-0 btn btn-link btn-sm" disabled={isUserCreationForm}>Change E-mail</button>
-                        </div>
-                      </Label>
+                    <Field type="email" name="email" label={<div className="d-flex justify-content-between">
+                      <strong className="required">Email </strong>
+                      <button type="button" className="p-0 btn btn-link btn-sm" disabled={isUserCreationForm}>Change E-mail</button>
+                    </div>} placeholder="Email" disabled={!isUserCreationForm} required component={InputField}>
                     </Field>
                   </FormGroup>
                 </CardBody>

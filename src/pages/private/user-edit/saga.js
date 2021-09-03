@@ -15,8 +15,7 @@ function getUserById (userId) {
 function * initialSaga ({ payload }) {
   try {
     const { data } = yield call(getUserById, payload.userId);
-    const user = { ...data, roles: data.roles.map(role => ({ ...role, value: role.name, label: role.name })) };
-    yield put({ type: TYPE.META, payload: { user } });
+    yield put({ type: TYPE.META, payload: { user: data } });
   } catch (error) {
     yield put({ type: TYPE.META, payload: { errorMessage: error.message } });
   }

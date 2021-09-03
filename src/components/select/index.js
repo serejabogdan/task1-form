@@ -3,56 +3,64 @@ import PropTypes from 'prop-types';
 import ReactSelect from 'react-select';
 import { FormFeedback, FormGroup, Label } from 'reactstrap';
 
-function Select ({ input, meta, options, label, required, isMulti }) {
-  const requiredStyles = {
+function validateStyles (color) {
+  return {
     container: styles => ({ ...styles, outline: 'none' }),
-    dropdownIndicator: styles => ({ ...styles, color: 'red' }),
-    indicatorSeparator: styles => ({ ...styles, backgroundColor: 'red' }),
+    dropdownIndicator: styles => ({ ...styles, color: color }),
+    indicatorSeparator: styles => ({ ...styles, backgroundColor: color }),
     control: styles => ({
       ...styles,
       boxShadow: 0,
-      border: '1px solid red',
+      border: `1px solid ${color}`,
       '&:hover': {
-        borderColor: 'red'
+        borderColor: color
       }
     }),
   };
+}
+
+function Select ({ input, meta, options, label, isMulti, preprocessValue, postprocessValue, ...props }) {
+  function validateSelect () {
+    if (meta.touched) {
+      return meta.error ? validateStyles('red') : validateStyles('green');
+    }
+  }
   return <FormGroup>
     { label && <Label for={input.name}>
-      <strong className={required ? 'required' : ''}>
-        { label } { ' ' }
-      </strong>
+      { label }
     </Label> }
     <ReactSelect
-      id={input.name}
-      isMulti={isMulti}
       {...input}
+      id={input.name}
       options={options}
-      placeholder={label}
-      classNamePrefix="select"
-      className={`basic-multi-select ${meta.touched && meta.error ? 'is-invalid' : ''}`}
+      isMulti={isMulti}
+      styles={validateSelect()}
+      getOptionValue={({ id }) => id}
+      getOptionLabel={({ name }) => name}
+      value={preprocessValue(input.value)}
       onBlur={() => input.onBlur(input.value)}
-      styles={meta.touched && meta.error && requiredStyles}
+      onChange={(value) => input.onChange(postprocessValue(value))}
+      className={`basic-multi-select ${meta.touched && meta.error ? 'is-invalid' : 'invalid'}`}
+      {...props}
     />
-    { meta.touched && (meta.error && <FormFeedback valid={!!(meta.touched && !meta.error)}>
+    { meta.touched && (meta.error && <FormFeedback valid={meta.touched && !meta.error}>
       { meta.error }
     </FormFeedback>) }
   </FormGroup>;
 }
 
 Select.defaultProps = {
-  label: '',
   isMulti: false,
-  required: false,
 };
 
 Select.propTypes = {
-  label: PropTypes.string,
   isMulti: PropTypes.bool,
-  required: PropTypes.bool,
   meta: PropTypes.object.isRequired,
   input: PropTypes.object.isRequired,
   options: PropTypes.array.isRequired,
+  label: PropTypes.element.isRequired,
+  preprocessValue: PropTypes.func.isRequired,
+  postprocessValue: PropTypes.func.isRequired,
 };
 
 export default Select;

@@ -6,41 +6,35 @@ import { FormFeedback, FormGroup, Input, Label } from 'reactstrap';
 // styles
 import './input-field.css';
 
-function InputField ({ label, input, meta, required, children, ...props }) {
+function InputField ({ label, input, meta, required, ...props }) {
   return <FormGroup>
-    { children ? children : label && <Label for={input.name}>
-      <strong className={required ? 'required' : null}>
-        { label } { ' ' }
-      </strong>
-    </Label> }
+    <Label for={input.name} className="w-100">
+      { label }
+    </Label>
     <Input
       id={input.name}
-      placeholder={label}
-      valid={!!(meta.touched && !meta.error)}
-      invalid={!!(meta.touched && meta.error)}
+      valid={meta.touched && !meta.error}
+      invalid={meta.touched && !!meta.error}
       {...props}
       {...input}
     />
-    { meta.touched && (meta.error && <FormFeedback valid={!!(meta.touched && !meta.error)}>
+    { meta.touched && (meta.error && <FormFeedback valid={meta.touched && !meta.error}>
       { meta.error }
     </FormFeedback>) }
   </FormGroup>;
 }
 
 InputField.defaultProps = {
-  label: '',
-  children: null,
   disabled: false,
   required: false,
 };
 
 InputField.propTypes = {
-  label: PropTypes.string,
-  children: PropTypes.any,
   disabled: PropTypes.bool,
   required: PropTypes.bool,
   type: PropTypes.string.isRequired,
   input: PropTypes.object.isRequired,
+  label: PropTypes.element.isRequired,
   meta: PropTypes.shape({
     touched: PropTypes.bool,
     error: PropTypes.string,

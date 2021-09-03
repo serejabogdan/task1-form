@@ -17,7 +17,7 @@ const initial = {
     id: 0,
     email: '',
     roles: [],
-    suffix: {},
+    suffix: '',
     prefix: {},
     username: '',
     lastName: '',

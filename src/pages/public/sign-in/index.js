@@ -44,8 +44,8 @@ function SignIn () {
   return <div style={{ minHeight: '100vh' }} className="d-flex flex-column justify-content-center align-items-center">
     <h1>Public form</h1>
     <ReduxForm form="SignInForm" onSubmit={submit} validate={formValidation} initialValues={signIn.initialValues}>
-      <Field type="text" disabled={signIn.disabled} name="username" label="Email Address" component={InputField}/>
-      <Field type="password" disabled={signIn.disabled} name="password" label="Password" component={InputField}/>
+      <Field type="text" disabled={signIn.disabled} name="username" label={<strong>Email Address</strong>} component={InputField}/>
+      <Field type="password" disabled={signIn.disabled} name="password" label={<strong>Password</strong>} component={InputField}/>
       <Button disabled={signIn.disabled}>Go!</Button>
     </ReduxForm>
     { signIn.disabled && <div className="vh-100 d-flex justify-content-center align-items-center">
