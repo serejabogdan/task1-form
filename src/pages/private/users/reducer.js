@@ -4,27 +4,30 @@ export const TYPE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
+    SORT_BY: `${prefix}SORT_BY`,
     INITIALIZE: `${prefix}INITIALIZE`,
-    USER_SELECTED: `${prefix}USER_SELECTED`,
-    USERS_SELECTED: `${prefix}USERS_SELECTED`,
+    SELECTED_USER: `${prefix}SELECTED_USER`,
+    SELECTED_USERS: `${prefix}SELECTED_USERS`,
     UPDATE_FILTERS: `${prefix}UPDATE_FILTERS`,
   };
 })('@users/');
 
 const initial = {
+  disabled: false,
+  errorMessage: '',
+  initialized: false,
+
   page: 0,
   size: 10,
   name: '',
+  role: '',
   roles: [],
-  disabled: false,
-  errorMessage: '',
   sort: 'name,ASC',
-  sortField: 'name',
-  initialized: false,
+  selectedUsers: [],
   sortDirection: true,
-  hasAllUsersChecked: false,
+  currentSortField: 'name',
   sortDirectionBoolean: true,
-  isActionsDropdownDisabled: true,
+
   data: {
     content: [],
     size: 0,
@@ -35,8 +38,7 @@ const initial = {
   },
 };
 
-export default function usersReducer (state= initial, action) {
-  const { type, payload } = action;
+export default function usersReducer (state= initial, { type, payload }) {
   switch (type) {
     case TYPE.META: return { ...state, ...payload };
     case TYPE.CLEAR: return { ...initial, initialized: true };

@@ -1,9 +1,10 @@
 // outsource dependencies
+import qs from 'qs';
 import axios from 'axios';
 
 // local dependencies
 import { TOKEN } from '../constants/local-storage';
-import { getLocalStorage, setLocalStorage } from './local-storage';
+import { getLocalStorage, removeLocalStorage, setLocalStorage } from './local-storage';
 
 const URL = 'https://healthene-gateway-dev.intelliceed.cf/api';
 
@@ -22,7 +23,10 @@ export const privateAPI = axios.create({
   headers: {
     'Cache-Control': 'no-cache',
     'Content-Type': 'application/json',
-  }
+  },
+  paramsSerializer: function (params) {
+    return qs.stringify(params, { arrayFormat: 'repeat', encode: false });
+  },
 });
 
 export function getUserData () {
@@ -50,12 +54,12 @@ privateAPI.interceptors.request.use(
 let isRefreshing = false;
 let subscribers = [];
 
-function subscribeTokenRefresh (cb) {
-  subscribers.push(cb);
+function subscribeTokenRefresh (failedRequest) {
+  subscribers.push(failedRequest);
 }
 
 function onRefreshed (token) {
-  subscribers.map((cb) => cb(token));
+  subscribers.map((failedRequest) => failedRequest(token));
 }
 
 function updateTokenApi (token) {
@@ -66,11 +70,11 @@ function updateTokenApi (token) {
   });
 }
 
-privateAPI.interceptors.response.use(null, (err) => {
+privateAPI.interceptors.response.use(null, (error) => {
   const {
     config,
     response: { status },
-  } = err;
+  } = error;
 
   if (status === 401) {
     if (!isRefreshing) {
@@ -82,7 +86,7 @@ privateAPI.interceptors.response.use(null, (err) => {
         onRefreshed(data.accessToken);
         setLocalStorage(TOKEN, data);
         subscribers = [];
-      });
+      }).catch(() => removeLocalStorage(TOKEN));
     }
 
     return new Promise((resolve) => {
@@ -92,5 +96,5 @@ privateAPI.interceptors.response.use(null, (err) => {
       });
     });
   }
-  return Promise.reject(err);
+  return Promise.reject(error);
 });

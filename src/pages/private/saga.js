@@ -5,6 +5,8 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 // local dependencies
 import { TYPE } from '../reducer';
 import usersSaga from './users/saga';
+import userEditSaga from './user-edit/saga';
+import userCreateSaga from './user-create/saga';
 import { TYPE as PRIVATE_TYPE } from './reducer';
 import { TOKEN } from '../../constants/local-storage';
 import { PUBLIC_SIGN_IN } from '../../constants/routes';
@@ -18,13 +20,22 @@ function logOut () {
   });
 }
 
-function * gettingUserDataWorker ({ type, payload }) {
+function getRoles ({ data, params }) {
+  return privateAPI({
+    method: 'POST',
+    url: 'admin-service/roles/filter',
+    data: data || {},
+    params: params || {},
+  });
+}
+
+function * initialSaga () {
   try {
     const { accessToken } = yield call(getLocalStorage, TOKEN);
     yield call(addAuthorizationHeader, accessToken);
     const response = yield call(getUserData, accessToken);
-    yield put({ type: TYPE.META, payload: { user: response.data } });
-    yield put({ type: TYPE.META, payload: { auth: true } });
+    const { data } = yield call(getRoles, { params: { page: 0, size: 15 } });
+    yield put({ type: TYPE.META, payload: { user: response.data, auth: true, roles: data.content } });
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield put(push(PUBLIC_SIGN_IN));
@@ -45,11 +56,13 @@ function * logOutWorker () {
 }
 
 function * watchGettingUser () {
-  yield takeEvery(PRIVATE_TYPE.VALID_TOKEN, gettingUserDataWorker);
+  yield takeEvery(PRIVATE_TYPE.VALID_TOKEN, initialSaga);
   yield takeEvery(PRIVATE_TYPE.LOGOUT, logOutWorker);
 }
 
 export default function * privateSaga () {
-  yield fork(watchGettingUser);
   yield fork(usersSaga);
+  yield fork(userEditSaga);
+  yield fork(userCreateSaga);
+  yield fork(watchGettingUser);
 }

@@ -1,0 +1,26 @@
+.drop-zone {
+    position: relative;
+    height: auto;
+    cursor: pointer;
+    tab-index: -1;
+}
+
+.drop-zone img {
+    width: 100%;
+}
+
+.drop-zone:focus {
+    outline: 0;
+    color: #495057;
+    border-radius: 8px;
+    border: 2px dashed #66afe9;
+    box-shadow: 0 0 0 0.2rem rgba(27, 145, 192, 0.25);
+}
+
+.file-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    /*pointer-events: none;*/
+}

@@ -19,12 +19,14 @@ export const TYPE = (function (prefix) {
 })('@pages/');
 
 const initial = {
-  auth: false,
-  user: '',
-  token: getLocalStorage(TOKEN) || '',
-  initialized: false,
-  errorMessage: '',
   disabled: false,
+  errorMessage: '',
+  initialized: false,
+
+  user: '',
+  roles: [],
+  auth: false,
+  token: getLocalStorage(TOKEN) || '',
 };
 
 function pagesReducer (state = initial, action) {

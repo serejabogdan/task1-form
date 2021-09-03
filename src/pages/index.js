@@ -16,9 +16,6 @@ function Pages () {
 
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE, payload: token });
-    return () => {
-      console.log('app is destroyed');
-    };
   }, [dispatch, token]);
   return initialized
     ? <Switch>
@@ -26,9 +23,8 @@ function Pages () {
       <Route path={PRIVATE} component={Private}/>
       <Redirect to={PUBLIC}/>
     </Switch>
-    : <div>
+    : <div className="vh-100 d-flex justify-content-center align-items-center">
       <Spinner color="primary" />
-      pages
     </div>;
 }
 

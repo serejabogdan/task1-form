@@ -10,3 +10,41 @@
 .text-gray-d {
     color: var(--text-gray-d);
 }
+
+table {
+    border-collapse: collapse;
+}
+
+thead {
+    position: sticky;
+    top: -2px;
+    z-index: 2;
+}
+
+.role {
+    z-index: 3;
+}
+
+th {
+    background-color: #fff;
+}
+
+.user-name {
+    width: 30%;
+}
+
+.user-id {
+    width: 10%;
+}
+
+.user-roles {
+    width: 20%;
+}
+
+.user-creation-date {
+    width: 10%;
+}
+
+.user-actions {
+    width: 10%;
+}
