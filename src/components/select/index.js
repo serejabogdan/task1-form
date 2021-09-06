@@ -53,17 +53,19 @@ function Select ({ input, meta, options, label, isMulti, disabled, preprocessVal
 Select.defaultProps = {
   isMulti: false,
   disabled: false,
+  preprocessValue: value => value,
+  postprocessValue: value => value,
 };
 
 Select.propTypes = {
   isMulti: PropTypes.bool,
   disabled: PropTypes.bool,
+  preprocessValue: PropTypes.func,
+  postprocessValue: PropTypes.func,
   meta: PropTypes.object.isRequired,
   input: PropTypes.object.isRequired,
   options: PropTypes.array.isRequired,
   label: PropTypes.element.isRequired,
-  preprocessValue: PropTypes.func.isRequired,
-  postprocessValue: PropTypes.func.isRequired,
 };
 
 export default Select;

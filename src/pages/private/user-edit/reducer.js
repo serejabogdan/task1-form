@@ -7,7 +7,6 @@ export const TYPE = (function (prefix) {
     EDIT_USER: `${prefix}EDIT_USER`,
     INITIALIZE: `${prefix}INITIALIZE`,
     DELETE_USER: `${prefix}DELETE_USER`,
-    CREATE_USER: `${prefix}CREATE_USER`,
   };
 })('@user-edit/');
 
@@ -17,7 +16,7 @@ const initial = {
   initialized: false,
 
   user: {
-    id: 0,
+    id: null,
     email: '',
     roles: [],
     suffix: '',

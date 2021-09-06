@@ -18,56 +18,13 @@ function getUsersApi ({ data, params }) {
   });
 }
 
-function * handleSelectedUser ({ payload }) {
-  const { selectedUsers } = yield select(selector);
-  const newSelectedUsers = payload.isChecked
-    ? selectedUsers.concat(payload.userId)
-    : selectedUsers.filter(userId => userId !== payload.userId);
-  yield put({
-    type: TYPE.META,
-    payload: {
-      selectedUsers: newSelectedUsers
-    }
-  });
-}
-
-function * handleSelectedUsers ({ payload }) {
-  const { data } = yield select(selector);
-  const newSelectedUsers = payload.isChecked
-    ? data.content.map(user => user.id)
-    : [];
-  yield put({
-    type: TYPE.META,
-    payload: {
-      selectedUsers: newSelectedUsers
-    }
-  });
-}
-
 function * getUsers (payload) {
   try {
     const { data } = yield call(getUsersApi, payload);
     yield put({ type: TYPE.META, payload: { data } });
   } catch (error) {
-    yield put({ type: TYPE.META, payload: { errorMessage: error.message() } });
+    yield put({ type: TYPE.META, payload: { errorMessage: error.message } });
   }
-}
-
-function * handleSortBy ({ payload: fieldName }) {
-  const { currentSortField, sortDirectionBoolean } = yield select(selector);
-  const isFieldSame = currentSortField === fieldName;
-  const hasDirectionChanged = isFieldSame ? !sortDirectionBoolean : true;
-  const sortBy = isFieldSame
-    ? `${fieldName},${hasDirectionChanged ? SORT_DOWN : SORT_UP}`
-    : `${fieldName},${SORT_DOWN}`;
-  yield put({
-    type: TYPE.UPDATE_FILTERS,
-    payload: {
-      sort: sortBy,
-      currentSortField: fieldName,
-      sortDirectionBoolean: hasDirectionChanged,
-    }
-  });
 }
 
 function * updateFilters ({ payload }) {
@@ -131,10 +88,7 @@ function * initialSaga () {
 }
 
 function * usersWatcher () {
-  yield takeLatest(TYPE.SORT_BY, handleSortBy);
   yield takeLatest(TYPE.INITIALIZE, initialSaga);
-  yield takeLatest(TYPE.SELECTED_USER, handleSelectedUser);
-  yield takeLatest(TYPE.SELECTED_USERS, handleSelectedUsers);
   yield takeLatest(TYPE.UPDATE_FILTERS, updateFilters);
 }
 

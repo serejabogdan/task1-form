@@ -2,6 +2,7 @@
 import { combineReducers } from 'redux';
 import { reducer as reduxForm } from 'redux-form';
 import { connectRouter } from 'connected-react-router';
+import { reducer as toastrReducer } from 'react-redux-toastr';
 
 // local dependencies
 import pagesReducer from '../../pages/reducer';
@@ -12,8 +13,9 @@ export function selector (state) {
 
 export default function rootReducer (history) {
   return combineReducers({
-    root: pagesReducer,
     form: reduxForm,
+    root: pagesReducer,
+    toastr: toastrReducer,
     router: connectRouter(history)
   });
 }

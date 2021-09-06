@@ -5,13 +5,13 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 // local dependencies
 import SignUp from './sign-up';
 import SignIn from './sign-in';
-import { PUBLIC_SIGN_IN, PUBLIC_SIGN_UP } from '../../constants/routes';
+import { SIGN_IN, SIGN_UP } from '../../constants/routes';
 
 function Public () {
   return <Switch>
-    <Route path={PUBLIC_SIGN_IN} component={SignIn}/>
-    <Route path={PUBLIC_SIGN_UP} component={SignUp}/>
-    <Redirect to={PUBLIC_SIGN_IN}/>
+    <Route path={SIGN_IN.route} component={SignIn}/>
+    <Route path={SIGN_UP.route} component={SignUp}/>
+    <Redirect to={SIGN_IN.route} />
   </Switch>;
 }
 

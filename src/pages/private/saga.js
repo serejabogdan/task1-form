@@ -6,9 +6,9 @@ import { call, delay, fork, put, takeEvery } from 'redux-saga/effects';
 import { TYPE } from '../reducer';
 import usersSaga from './users/saga';
 import userEditSaga from './user-edit/saga';
+import { SIGN_IN } from '../../constants/routes';
 import { TYPE as PRIVATE_TYPE } from './reducer';
 import { TOKEN } from '../../constants/local-storage';
-import { PUBLIC_SIGN_IN } from '../../constants/routes';
 import { getLocalStorage, removeLocalStorage } from '../../utils/local-storage';
 import { addAuthorizationHeader, getUserData, privateAPI } from '../../utils/API';
 
@@ -37,7 +37,7 @@ function * initialSaga () {
     yield put({ type: TYPE.META, payload: { user: response.data, auth: true, roles: data.content } });
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
-    yield put(push(PUBLIC_SIGN_IN));
+    yield put(push(SIGN_IN.link()));
   }
   yield delay(200);
   yield put({ type: PRIVATE_TYPE.META, payload: { initialized: true } });
@@ -48,7 +48,7 @@ function * logOutWorker () {
     yield call(logOut);
     yield put({ type: TYPE.CLEAR });
     yield call(removeLocalStorage, TOKEN);
-    yield put(push(PUBLIC_SIGN_IN));
+    yield put(push(SIGN_IN.link()));
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
   }

@@ -7,6 +7,7 @@ import { faSort, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-soli
 // local dependencies
 import FontIcon from '../font-icon';
 import { TYPE, selector } from '../../pages/private/users/reducer';
+import { SORT_DOWN, SORT_UP } from '../../constants/valid-query-params';
 
 function SortField ({ sortFieldName, children, disabled }) {
   const dispatch = useDispatch();
@@ -21,12 +22,26 @@ function SortField ({ sortFieldName, children, disabled }) {
     return <FontIcon icon={faSortAmountUp} className="text-gray-d" />;
   }, [sortDirectionBoolean, currentSortField]);
 
-  const sortBy = useCallback(
-    () => dispatch({ type: TYPE.SORT_BY, payload: sortFieldName }),
-    [dispatch, sortFieldName]
+  const handleSortBy = useCallback(
+    () => {
+      const isFieldSame = currentSortField === sortFieldName;
+      const hasDirectionChanged = isFieldSame ? !sortDirectionBoolean : true;
+      const sortBy = isFieldSame
+        ? `${sortFieldName},${hasDirectionChanged ? SORT_DOWN : SORT_UP}`
+        : `${sortFieldName},${SORT_DOWN}`;
+      dispatch({
+        type: TYPE.UPDATE_FILTERS,
+        payload: {
+          sort: sortBy,
+          currentSortField: sortFieldName,
+          sortDirectionBoolean: hasDirectionChanged,
+        }
+      });
+    },
+    [currentSortField, dispatch, sortDirectionBoolean, sortFieldName]
   );
 
-  return <button disabled={disabled} className="text-nowrap btn btn-outline-link" onClick={sortBy}>
+  return <button disabled={disabled} className="text-nowrap btn btn-outline-link" onClick={handleSortBy}>
     { getSortIcon(sortFieldName) } { children }
   </button>;
 }

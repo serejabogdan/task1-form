@@ -19,9 +19,9 @@ function Pages () {
   }, [dispatch, token]);
   return initialized
     ? <Switch>
-      <Route path={PUBLIC} component={Public}/>
-      <Route path={PRIVATE} component={Private}/>
-      <Redirect to={PUBLIC}/>
+      <Route path={PUBLIC.route} component={Public}/>
+      <Route path={PRIVATE.route} component={Private}/>
+      <Redirect to={PUBLIC.route} />
     </Switch>
     : <div className="vh-100 d-flex justify-content-center align-items-center">
       <Spinner color="primary" />

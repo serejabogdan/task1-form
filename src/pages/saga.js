@@ -7,8 +7,8 @@ import { TYPE } from './reducer';
 import publicSaga from './public/saga';
 import privateSaga from './private/saga';
 import { getUserData } from '../utils/API';
+import { SIGN_IN } from '../constants/routes';
 import { TOKEN } from '../constants/local-storage';
-import { PUBLIC_SIGN_IN } from '../constants/routes';
 import { TYPE as PRIVATE_TYPE } from './private/reducer';
 import { getLocalStorage } from '../utils/local-storage';
 
@@ -21,7 +21,7 @@ function * appInitialize ({ type, payload }) {
     yield put({ type: TYPE.META, payload: { auth: true } });
   } catch ({ message }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
-    yield put(push(PUBLIC_SIGN_IN));
+    yield put(push(SIGN_IN.link()));
   }
   yield put({ type: TYPE.META, payload: { initialized: true } });
 }

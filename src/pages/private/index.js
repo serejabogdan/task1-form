@@ -5,14 +5,13 @@ import { Route, Switch } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 // local dependencies
-import User from './user';
 import Users from './users';
 import Homepage from './homepage';
 import UserEdit from './user-edit';
 import Navigation from '../../components/navigation';
 import { selector as privateSelector } from './reducer';
 import { selector as pagesSelector, TYPE } from '../reducer';
-import { PRIVATE_HOMEPAGE, PRIVATE_USER, PRIVATE_USERS, PRIVATE_USERS_EDIT, PRIVATE_USERS_NEW } from '../../constants/routes';
+import { HOMEPAGE, NEW_USER, USERS, USERS_EDIT } from '../../constants/routes';
 
 function Private () {
   const { auth } = useSelector(pagesSelector);
@@ -29,23 +28,19 @@ function Private () {
       <Switch>
         <Route
           exact
-          path={PRIVATE_USERS}
+          path={USERS.route}
           component={Users}
         />
         <Route exact
-          path={PRIVATE_USERS_NEW}
+          path={NEW_USER.route}
           component={UserEdit}
         />
         <Route exact
-          path={PRIVATE_USERS_EDIT}
+          path={USERS_EDIT.route}
           component={UserEdit}
         />
         <Route
-          path={PRIVATE_USER}
-          component={User}
-        />
-        <Route
-          path={PRIVATE_HOMEPAGE}
+          path={HOMEPAGE.route}
           component={Homepage}
         />
       </Switch>

@@ -7,7 +7,7 @@ import { TYPE } from '../../reducer';
 import { publicAPI } from '../../../utils/API';
 import { TYPE as SIGN_IN_TYPE } from './reducer';
 import { TOKEN } from '../../../constants/local-storage';
-import { PRIVATE_USERS } from '../../../constants/routes';
+import { USERS } from '../../../constants/routes';
 import { TYPE as PRIVATE_TYPE } from '../../private/reducer';
 import { removeLocalStorage, setLocalStorage } from '../../../utils/local-storage';
 
@@ -30,7 +30,7 @@ function * authorizationWorker ({ type, payload }) {
     yield put({ type: TYPE.META, payload: { errorMessage: message } });
     yield call(removeLocalStorage, TOKEN);
   }
-  yield put(push(PRIVATE_USERS));
+  yield put(push(USERS.link()));
   yield delay(200);
   yield put({ type: SIGN_IN_TYPE.META, payload: { disabled: false } });
 }

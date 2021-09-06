@@ -1,4 +1,5 @@
 // outsource dependencies
+import { toastr } from 'react-redux-toastr';
 import { push } from 'connected-react-router';
 import { call, fork, put, takeEvery, takeLatest } from 'redux-saga/effects';
 
@@ -6,7 +7,7 @@ import { call, fork, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { TYPE } from './reducer';
 import { TYPE as usersType } from '../users/reducer';
 import { privateAPI } from '../../../utils/API';
-import { PRIVATE_USERS } from '../../../constants/routes';
+import { USERS, USERS_EDIT } from '../../../constants/routes';
 
 function getUserById (userId) {
   return privateAPI({
@@ -39,26 +40,19 @@ function deleteUser (user) {
   });
 }
 
-function * handleCreateUser ({ payload }) {
-  try {
-    yield put({ type: TYPE.META, payload: { disabled: true } });
-    const { data } = yield call(createUser, payload);
-    alert('Create user success');
-    yield put(push(`${PRIVATE_USERS}/${data.id}`));
-  } catch (error) {
-    alert(error.message);
-    yield put({ type: TYPE.META, payload: { errorMessage: error.message } });
-  }
-  yield put({ type: TYPE.META, payload: { disabled: false } });
-}
-
 function * handleEditUser ({ payload }) {
+  yield put({ type: TYPE.META, payload: { disabled: true } });
   try {
-    yield put({ type: TYPE.META, payload: { disabled: true } });
-    yield call(editUser, payload);
-    alert('Edit user success');
+    if (payload.id) {
+      yield call(editUser, payload);
+      toastr.success('Successful!', 'User was successfully edited');
+    } else {
+      const { data } = yield call(createUser, payload);
+      toastr.success('Successful!', 'User was successfully created');
+      yield put(push(USERS_EDIT.link(data.id)));
+    }
   } catch (error) {
-    alert(error.message);
+    toastr.error('Failed!', error.message);
     yield put({ type: TYPE.META, payload: { errorMessage: error.message } });
   }
   yield put({ type: TYPE.META, payload: { disabled: false } });
@@ -68,14 +62,14 @@ function * handleDeleteUser ({ payload }) {
   try {
     yield put({ type: TYPE.META, payload: { disabled: true } });
     yield call(deleteUser, payload);
-    alert('Delete user success');
+    toastr.success('Successful!', 'User was successfully deleted');
     yield put({ type: usersType.INITIALIZE });
   } catch (error) {
-    alert(error.message);
+    toastr.error('Failed!', error.message);
     yield put({ type: TYPE.META, payload: { errorMessage: error.message } });
   }
   yield put({ type: TYPE.META, payload: { disabled: false } });
-  yield put(push(PRIVATE_USERS));
+  yield put(push(USERS.link()));
 }
 
 function * initialSaga ({ payload }) {
@@ -93,7 +87,6 @@ function * initialSaga ({ payload }) {
 function * userEditWatcher () {
   yield takeEvery(TYPE.INITIALIZE, initialSaga);
   yield takeLatest(TYPE.EDIT_USER, handleEditUser);
-  yield takeLatest(TYPE.CREATE_USER, handleCreateUser);
   yield takeLatest(TYPE.DELETE_USER, handleDeleteUser);
 }
 

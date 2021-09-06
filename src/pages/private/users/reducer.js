@@ -4,10 +4,7 @@ export const TYPE = (function (prefix) {
     META: `${prefix}META`,
     CLEAR: `${prefix}CLEAR`,
     // complex actions
-    SORT_BY: `${prefix}SORT_BY`,
     INITIALIZE: `${prefix}INITIALIZE`,
-    SELECTED_USER: `${prefix}SELECTED_USER`,
-    SELECTED_USERS: `${prefix}SELECTED_USERS`,
     UPDATE_FILTERS: `${prefix}UPDATE_FILTERS`,
   };
 })('@users/');

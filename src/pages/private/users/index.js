@@ -10,11 +10,12 @@ import { Badge, Button, Col, Container, DropdownItem, DropdownMenu, DropdownTogg
 
 // local dependencies
 import { TYPE, selector } from './reducer';
+import ModalButton from '../../../components/modal';
 import FontIcon from '../../../components/font-icon';
 import SortField from '../../../components/sort-field';
 import { selector as pagesSelector } from '../../reducer';
 import { TYPE as userEditType } from '../user-edit/reducer';
-import { PRIVATE_USERS_NEW } from '../../../constants/routes';
+import { NEW_USER, USERS, USERS_EDIT } from '../../../constants/routes';
 import { SIZES, SORT_FIELDS } from '../../../constants/valid-query-params';
 
 // styles
@@ -38,23 +39,24 @@ function Users () {
   const content = useMemo(
     () => (data.content ?? []).map(user => {
       const createdDate = moment(user.createdDate, 'YYYY-MM-DD').isValid() ? moment(user.createdDate) : null;
-      const onSelect = (event) => dispatch({
-        type: TYPE.SELECTED_USER,
-        payload: {
-          userId: user.id,
-          isChecked: event.target.checked
-        }
-      });
+      const onSelect = (event) => {
+        const newSelectedUsers = event.target.checked
+          ? selectedUsers.concat(user.id)
+          : selectedUsers.filter(userId => userId !== user.id);
+        dispatch({ type: TYPE.UPDATE_FILTERS, payload: { selectedUsers: newSelectedUsers } });
+      };
       return { ...user, createdDate, onSelect };
     }),
-    [data.content, dispatch]
+    [data.content, dispatch, selectedUsers]
   );
 
-  const handleSelectedUsers = useCallback((event) => dispatch({
-    type: TYPE.SELECTED_USERS,
-    payload: { isChecked: event.target.checked }
-  }),
-  [dispatch]);
+  const handleSelectedUsers = useCallback((event) => {
+    const selectedUsers = event.target.checked
+      ? data.content.map(user => user.id)
+      : [];
+    dispatch({ type: TYPE.UPDATE_FILTERS, payload: { selectedUsers }
+    });
+  }, [data.content, dispatch]);
 
   const handleChangePage = useCallback(
     page => dispatch({ type: TYPE.UPDATE_FILTERS, payload: { page: page - 1 } }),
@@ -97,14 +99,6 @@ function Users () {
 
   const selectRolesOptions = useMemo(() => roles.map(role => ({ value: role.name, label: role.name })), [roles]);
 
-  function confirmDeletingUser (payload) {
-    if (confirm('Do you really want to delete user(s)?')) {
-      if (confirm('Rly rly?')) {
-        handleDeletingUser(payload);
-      }
-    }
-  }
-
   const handleDeletingUser = useCallback((users) => dispatch({
     type: userEditType.DELETE_USER,
     payload: users
@@ -145,11 +139,9 @@ function Users () {
                 { size }
               </DropdownToggle>
               <DropdownMenu>
-                { SIZES.map(size => {
-                  return <DropdownItem key={size} onClick={() => handleChangeNumberOfUsers(size)} >
-                    { size } items
-                  </DropdownItem>;
-                }) }
+                { SIZES.map(size => <DropdownItem key={size} onClick={() => handleChangeNumberOfUsers(size)} >
+                  { size } items
+                </DropdownItem>) }
               </DropdownMenu>
             </UncontrolledDropdown>
           </Col>
@@ -171,19 +163,19 @@ function Users () {
               <DropdownMenu>
                 <DropdownItem
                   disabled={!selectedUsers.length}
-                  onClick={() => confirmDeletingUser(selectedUsers.map(userId => ({ id: userId })))}
+                  onClick={() => handleDeletingUser(selectedUsers.map(userId => ({ id: userId })))}
                 >
                   Delete
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
-            <Link to={PRIVATE_USERS_NEW} className={`mx-2 btn btn-success ${disabled && 'disabled'}`}>
+            <Link to={NEW_USER.link()} className={`mx-2 btn btn-success ${disabled && 'disabled'}`}>
               <FontIcon icon={faPlus} className="mr-1" /> Create User
             </Link>
           </Col>
         </Row>
         <div className="mb-3" style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
-          <div style={{ position: 'absolute', overflowY: 'auto', inset: '0px' }}>
+          <div style={{ position: 'absolute', overflowY: 'auto', inset: 0 }}>
             <Table striped bordered>
               <thead>
                 <tr>
@@ -237,16 +229,16 @@ function Users () {
                             checked={selectedUsers.includes(user.id) || false}
                           />
                         </div>
-                        <Link to="/private/users" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
+                        <Link to={USERS.link()} className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
                     </td>
-                    <td className="align-middle user-id">{ user.id }</td>
-                    <td className="align-middle user-roles">
+                    <td className="align-middle w-10">{ user.id }</td>
+                    <td className="align-middle w-20">
                       { (user.roles ?? []).map(role => <Badge key={role.id} className="bg-danger mr-1">{ role.name } </Badge>) }
                     </td>
-                    <td className="align-middle user-creation-date">{ user.createdDate.format('L') }</td>
-                    <td className="align-middle user-actions">
-                      <Link to={`/private/users/${user.id}`} className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm" onClick={() => confirmDeletingUser([{ id: user.id }])}>Delete</button>
+                    <td className="align-middle w-10">{ user.createdDate.format('L') }</td>
+                    <td className="align-middle w-10">
+                      <Link to={USERS_EDIT.link(user.id)} className="p-1 btn btn-link btn-sm">Edit</Link> / <ModalButton className="p-1 btn btn-link btn-sm" color="link" label="Delete" confirmDeletingUser={() => handleDeletingUser([{ id: user.id }])} />
                     </td>
                   </tr>;
                 }) }
