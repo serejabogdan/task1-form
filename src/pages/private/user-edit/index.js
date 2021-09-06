@@ -10,7 +10,7 @@ import { selector, TYPE } from './reducer';
 import UserForm from '../../../components/user-form';
 
 function UserEdit ({ match }) {
-  const userId = useMemo(() => match?.params?.id, [match?.params?.id]);
+  const userId = useMemo(() => match.params?.id, [match.params?.id]);
   const { user, disabled } = useSelector(selector);
   const dispatch = useDispatch();
   const handleEditUserSubmit = useCallback((value) => dispatch({
@@ -21,6 +21,16 @@ function UserEdit ({ match }) {
     type: TYPE.CREATE_USER,
     payload: value
   }), [dispatch]);
+  const handleDeleteUser = useCallback(() => dispatch({
+    type: TYPE.DELETE_USER,
+    payload: [{ id: userId }]
+  }), [dispatch, userId]);
+
+  function confirmDeletingUser () {
+    if (confirm('Do you really want to delete user?')) {
+      handleDeleteUser();
+    }
+  }
 
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE, payload: { userId } });
@@ -29,15 +39,15 @@ function UserEdit ({ match }) {
   return <div className="content d-flex flex-column vh-100">
     <header className="p-3 d-flex justify-content-between">
       <h2 className="text-info mb-0">User edit page</h2>
-      <Col xs="4" className="text-right">
-        <button disabled={disabled} type="button" className="btn btn-danger">Delete User</button>
-      </Col>
+      { !!userId && <Col xs="4" className="text-right">
+        <button disabled={disabled} type="button" className="btn btn-danger" onClick={confirmDeletingUser}>Delete User</button>
+      </Col> }
     </header>
     <UserForm
       form="UserEdit"
       isUserId={!!userId}
       disabled={disabled}
-      initialValues={user}
+      initialValues={userId ? user : {}}
       handleSubmit={userId ? handleEditUserSubmit : handleCreateUserSubmit}
     />
     <div className="px-3 py-2 text-right">

@@ -10,9 +10,11 @@ import { Badge, Button, Col, Container, DropdownItem, DropdownMenu, DropdownTogg
 
 // local dependencies
 import { TYPE, selector } from './reducer';
-import { selector as pagesSelector } from '../../reducer';
 import FontIcon from '../../../components/font-icon';
 import SortField from '../../../components/sort-field';
+import { selector as pagesSelector } from '../../reducer';
+import { TYPE as userEditType } from '../user-edit/reducer';
+import { PRIVATE_USERS_NEW } from '../../../constants/routes';
 import { SIZES, SORT_FIELDS } from '../../../constants/valid-query-params';
 
 // styles
@@ -26,6 +28,7 @@ function Users () {
     page,
     name,
     role,
+    disabled,
     initialized,
     selectedUsers,
   } = useSelector(selector);
@@ -94,10 +97,22 @@ function Users () {
 
   const selectRolesOptions = useMemo(() => roles.map(role => ({ value: role.name, label: role.name })), [roles]);
 
+  function confirmDeletingUser (payload) {
+    if (confirm('Do you really want to delete user(s)?')) {
+      if (confirm('Rly rly?')) {
+        handleDeletingUser(payload);
+      }
+    }
+  }
+
+  const handleDeletingUser = useCallback((users) => dispatch({
+    type: userEditType.DELETE_USER,
+    payload: users
+  }), [dispatch]);
+
   useEffect(() => {
     dispatch({ type: TYPE.INITIALIZE });
   }, [dispatch]);
-
   return initialized
     ? <div className="content d-flex flex-column overflow-hidden vh-100">
       <Container fluid className="flex-grow-1 overflow-hidden mb-3">
@@ -107,17 +122,18 @@ function Users () {
           <Col xs="4" className="search">
             <InputGroup>
               { name && <InputGroupAddon addonType="prepend" onClick={handleClearSearch}>
-                <Button color="primary">
+                <Button color="primary" disabled={disabled}>
                   <FontIcon icon={faTimes} />
                 </Button>
               </InputGroupAddon> }
               <Input
-                placeholder="⌕ Search"
                 value={name}
+                disabled={disabled}
+                placeholder="⌕ Search"
                 onChange={handleChangeSearch}
                 onKeyPress={event => (event.key === 'Enter') && handleGetUsersBySearch()} />
               <InputGroupAddon addonType="append">
-                <Button color="primary" onClick={handleGetUsersBySearch}>
+                <Button color="primary" onClick={handleGetUsersBySearch} disabled={disabled}>
                   <FontIcon icon={faSearch} />
                 </Button>
               </InputGroupAddon>
@@ -125,7 +141,7 @@ function Users () {
           </Col>
           <Col xs="1" className="dropdown">
             <UncontrolledDropdown group>
-              <DropdownToggle caret color="secondary">
+              <DropdownToggle caret color="secondary" disabled={disabled}>
                 { size }
               </DropdownToggle>
               <DropdownMenu>
@@ -140,9 +156,10 @@ function Users () {
           <Col xs="3" className="role">
             <Select
               isClearable
-              onChange={handleChangeSelectedRole}
-              options={selectRolesOptions}
               placeholder="Roles"
+              isDisabled={disabled}
+              options={selectRolesOptions}
+              onChange={handleChangeSelectedRole}
               value={selectRolesOptions.find(currentRole => currentRole.value === role) || null}
             />
           </Col>
@@ -152,12 +169,15 @@ function Users () {
                 List actions
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem disabled={!selectedUsers.length}>
+                <DropdownItem
+                  disabled={!selectedUsers.length}
+                  onClick={() => confirmDeletingUser(selectedUsers.map(userId => ({ id: userId })))}
+                >
                   Delete
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
-            <Link to="/private/users/new" className="mx-2 btn btn-success">
+            <Link to={PRIVATE_USERS_NEW} className={`mx-2 btn btn-success ${disabled && 'disabled'}`}>
               <FontIcon icon={faPlus} className="mr-1" /> Create User
             </Link>
           </Col>
@@ -170,15 +190,22 @@ function Users () {
                   <th className="user-name">
                     <div className="d-flex align-items-center ">
                       <div className="check d-inline-block custom-checkbox custom-control">
-                        <Input type="checkbox" disabled={!content.length} checked={content.every(user => selectedUsers.includes(user.id))} onChange={handleSelectedUsers} />
+                        <Input
+                          type="checkbox"
+                          disabled={!content.length || disabled}
+                          onChange={handleSelectedUsers}
+                          checked={selectedUsers.length
+                            ? content.every(user => selectedUsers.includes(user.id))
+                            : false}
+                        />
                       </div>
-                      <SortField sortFieldName={SORT_FIELDS.NAME}>
+                      <SortField sortFieldName={SORT_FIELDS.NAME} disabled={!content.length || disabled}>
                         <strong className="text-primary">Name</strong>
                       </SortField>
                     </div>
                   </th>
                   <th className="user-id">
-                    <SortField sortFieldName={SORT_FIELDS.ID}>
+                    <SortField sortFieldName={SORT_FIELDS.ID} disabled={!content.length || disabled}>
                       <strong className="text-primary">id</strong>
                     </SortField>
                   </th>
@@ -188,7 +215,7 @@ function Users () {
                     </SortField>
                   </th>
                   <th className="user-creation-date">
-                    <SortField sortFieldName={SORT_FIELDS.CREATED_DATE}>
+                    <SortField sortFieldName={SORT_FIELDS.CREATED_DATE} disabled={!content.length || disabled}>
                       <strong className="text-primary">Creation Date</strong>
                     </SortField>
                   </th>
@@ -203,7 +230,12 @@ function Users () {
                     <td className="align-middle user-name">
                       <div className="d-flex align-items-center">
                         <div className="check d-inline-block custom-checkbox custom-control">
-                          <Input type="checkbox" checked={selectedUsers.includes(user.id) || false} onChange={user.onSelect} />
+                          <Input
+                            type="checkbox"
+                            disabled={disabled}
+                            onChange={user.onSelect}
+                            checked={selectedUsers.includes(user.id) || false}
+                          />
                         </div>
                         <Link to="/private/users" className="btn btn-link">{ user.name ? user.name : 'Undefined Name' }</Link>
                       </div>
@@ -214,7 +246,7 @@ function Users () {
                     </td>
                     <td className="align-middle user-creation-date">{ user.createdDate.format('L') }</td>
                     <td className="align-middle user-actions">
-                      <Link to={`/private/users/${user.id}`} className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm">Delete</button>
+                      <Link to={`/private/users/${user.id}`} className="p-1 btn btn-link btn-sm">Edit</Link> / <button className="p-1 btn btn-link btn-sm" onClick={() => confirmDeletingUser([{ id: user.id }])}>Delete</button>
                     </td>
                   </tr>;
                 }) }

@@ -1,7 +1,7 @@
 // outsource dependencies
 import qs from 'qs';
 import { push } from 'connected-react-router';
-import { call, fork, put, takeLatest, select } from 'redux-saga/effects';
+import { call, fork, put, takeLatest, select, delay } from 'redux-saga/effects';
 
 // local dependencies
 import { history } from '../../../redux';
@@ -71,12 +71,14 @@ function * handleSortBy ({ payload: fieldName }) {
 }
 
 function * updateFilters ({ payload }) {
+  yield put({ type: TYPE.META, payload: { disabled: true } });
+  yield delay(300);
   const { page, size, name, role, sort } = yield select(selector);
   const filters = { page, size, name, role, sort, ...payload };
   yield call(updateUrlFilters, filters);
   yield put({
     type: TYPE.META,
-    payload: { ...filters, selectedUsers: [] }
+    payload: { ...filters, selectedUsers: [], disabled: false }
   });
 }
 
@@ -106,6 +108,7 @@ function validParsedQueryParams (filters, state) {
   const validSortDirection = sortDirection === SORT_DOWN || sortDirection === SORT_UP ? sortDirection : SORT_DOWN;
   const sortDirectionBoolean = validSortDirection === SORT_DOWN;
   return {
+    ...filters,
     size: validSize,
     page: validPage,
     role: filters.role,

@@ -6,6 +6,7 @@ export const TYPE = (function (prefix) {
     // complex actions
     EDIT_USER: `${prefix}EDIT_USER`,
     INITIALIZE: `${prefix}INITIALIZE`,
+    DELETE_USER: `${prefix}DELETE_USER`,
     CREATE_USER: `${prefix}CREATE_USER`,
   };
 })('@user-edit/');
